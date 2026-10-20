@@ -12,7 +12,6 @@
     "build:client": "cd client && npm run build",
     "build:server": "cd server && npm run build",
     "build": "npm run build:client && npm run build:server",
-    "vercel-build": "npm run build",
     "test": "cd server && npm test"
   },
   "dependencies": {

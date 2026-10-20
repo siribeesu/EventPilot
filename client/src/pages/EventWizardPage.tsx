@@ -3,15 +3,9 @@ import {
   Sparkles,
   ArrowRight,
   ArrowLeft,
-  Calendar,
-  DollarSign,
-  Users,
-  MapPin,
   CheckCircle,
-  HelpCircle,
-  AlertCircle,
 } from 'lucide-react';
-import { EventType, IndoorOutdoor, EventFullDetail } from '../types';
+import type { EventType, IndoorOutdoor, EventFullDetail } from '../types';
 import { api } from '../services/api';
 
 interface EventWizardPageProps {
@@ -147,15 +141,23 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
             <h2 className="text-2xl font-bold tracking-tight mt-1">EventPilot Event Creation Wizard</h2>
           </div>
           <button
+            type="button"
             onClick={onCancel}
-            className="text-xs font-semibold text-white/80 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/10 transition"
+            className="text-xs font-semibold text-white/80 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white transition"
           >
             Cancel
           </button>
         </div>
 
-        {/* Step Progress Bar */}
-        <div className="w-full bg-slate-100 h-1.5">
+        {/* Accessible Progress Bar */}
+        <div
+          role="progressbar"
+          aria-valuenow={step}
+          aria-valuemin={1}
+          aria-valuemax={3}
+          aria-label={`Step ${step} of 3`}
+          className="w-full bg-slate-100 h-1.5"
+        >
           <div
             className="bg-indigo-600 h-1.5 transition-all duration-300"
             style={{ width: `${(step / 3) * 100}%` }}
@@ -172,27 +174,40 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
 
               {/* Event Title */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">
-                  Event Name or Celebration Title <span className="text-red-500">*</span>
+                <label htmlFor="wizard-event-title" className="block text-sm font-semibold text-slate-700 mb-1">
+                  Event Name or Celebration Title <span className="text-red-500" aria-hidden="true">*</span>
                 </label>
                 <input
+                  id="wizard-event-title"
                   type="text"
+                  required
+                  aria-required="true"
+                  aria-invalid={!!errors.title}
+                  aria-describedby={errors.title ? 'wizard-title-error' : undefined}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Aarav & Diya Wedding, Sarah's 25th Birthday, Annual Techfest Gala"
-                  className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 ${
-                    errors.title ? 'border-red-400 focus:ring-red-400' : 'border-slate-300 focus:ring-indigo-500'
+                  className={`w-full px-4 py-2.5 rounded-xl border text-sm focus-visible:outline-none focus-visible:ring-2 ${
+                    errors.title ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-300 focus-visible:ring-indigo-500'
                   }`}
                 />
-                {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title}</p>}
+                {errors.title && (
+                  <p id="wizard-title-error" role="alert" className="text-xs text-red-500 mt-1">
+                    {errors.title}
+                  </p>
+                )}
               </div>
 
               {/* Event Type Grid */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Event Category <span className="text-red-500">*</span>
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                <span id="event-type-label" className="block text-sm font-semibold text-slate-700 mb-2">
+                  Event Category <span className="text-red-500" aria-hidden="true">*</span>
+                </span>
+                <div
+                  role="radiogroup"
+                  aria-labelledby="event-type-label"
+                  className="grid grid-cols-2 sm:grid-cols-3 gap-2.5"
+                >
                   {[
                     { id: 'wedding', label: 'Wedding' },
                     { id: 'birthday', label: 'Birthday' },
@@ -204,8 +219,10 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                     <button
                       key={t.id}
                       type="button"
+                      role="radio"
+                      aria-checked={eventType === t.id}
                       onClick={() => setEventType(t.id as EventType)}
-                      className={`p-3 rounded-xl border text-xs font-semibold text-center transition ${
+                      className={`p-3 rounded-xl border text-xs font-semibold text-center transition focus-visible:ring-2 focus-visible:ring-indigo-500 ${
                         eventType === t.id
                           ? 'border-indigo-600 bg-indigo-50 text-indigo-700 ring-1 ring-indigo-500'
                           : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
@@ -220,41 +237,52 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
               {/* Event Date & Times */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">
-                    Event Date <span className="text-red-500">*</span>
+                  <label htmlFor="wizard-event-date" className="block text-sm font-semibold text-slate-700 mb-1">
+                    Event Date <span className="text-red-500" aria-hidden="true">*</span>
                   </label>
                   <input
+                    id="wizard-event-date"
                     type="date"
+                    required
+                    aria-required="true"
+                    aria-invalid={!!errors.eventDate}
+                    aria-describedby={errors.eventDate ? 'wizard-date-error' : undefined}
                     value={eventDate}
                     onChange={(e) => setEventDate(e.target.value)}
-                    className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 ${
-                      errors.eventDate ? 'border-red-400 focus:ring-red-400' : 'border-slate-300 focus:ring-indigo-500'
+                    className={`w-full px-4 py-2.5 rounded-xl border text-sm focus-visible:outline-none focus-visible:ring-2 ${
+                      errors.eventDate ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-300 focus-visible:ring-indigo-500'
                     }`}
                   />
-                  {errors.eventDate && <p className="text-xs text-red-500 mt-1">{errors.eventDate}</p>}
+                  {errors.eventDate && (
+                    <p id="wizard-date-error" role="alert" className="text-xs text-red-500 mt-1">
+                      {errors.eventDate}
+                    </p>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  <label htmlFor="wizard-start-time" className="block text-sm font-semibold text-slate-700 mb-1">
                     Start Time
                   </label>
                   <input
+                    id="wizard-start-time"
                     type="time"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  <label htmlFor="wizard-end-time" className="block text-sm font-semibold text-slate-700 mb-1">
                     End Time
                   </label>
                   <input
+                    id="wizard-end-time"
                     type="time"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                   />
                 </div>
               </div>
@@ -270,29 +298,39 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
               {/* Location & Indoor/Outdoor */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">
-                    City / Venue Location <span className="text-red-500">*</span>
+                  <label htmlFor="wizard-location" className="block text-sm font-semibold text-slate-700 mb-1">
+                    City / Venue Location <span className="text-red-500" aria-hidden="true">*</span>
                   </label>
                   <input
+                    id="wizard-location"
                     type="text"
+                    required
+                    aria-required="true"
+                    aria-invalid={!!errors.location}
+                    aria-describedby={errors.location ? 'wizard-location-error' : undefined}
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     placeholder="e.g. Bengaluru, Grand Palace Banquet Mumbai, Delhi NCR"
-                    className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 ${
-                      errors.location ? 'border-red-400 focus:ring-red-400' : 'border-slate-300 focus:ring-indigo-500'
+                    className={`w-full px-4 py-2.5 rounded-xl border text-sm focus-visible:outline-none focus-visible:ring-2 ${
+                      errors.location ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-300 focus-visible:ring-indigo-500'
                     }`}
                   />
-                  {errors.location && <p className="text-xs text-red-500 mt-1">{errors.location}</p>}
+                  {errors.location && (
+                    <p id="wizard-location-error" role="alert" className="text-xs text-red-500 mt-1">
+                      {errors.location}
+                    </p>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  <label htmlFor="wizard-venue-style" className="block text-sm font-semibold text-slate-700 mb-1">
                     Venue Style
                   </label>
                   <select
+                    id="wizard-venue-style"
                     value={indoorOutdoor}
                     onChange={(e) => setIndoorOutdoor(e.target.value as IndoorOutdoor)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                   >
                     <option value="indoor">Indoor Hall</option>
                     <option value="outdoor">Outdoor Lawn</option>
@@ -304,34 +342,44 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
               {/* Budget & Currency */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">
-                    Total Event Budget <span className="text-red-500">*</span>
+                  <label htmlFor="wizard-budget" className="block text-sm font-semibold text-slate-700 mb-1">
+                    Total Event Budget <span className="text-red-500" aria-hidden="true">*</span>
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold" aria-hidden="true">
                       {currency === 'INR' ? '₹' : currency}
                     </span>
                     <input
+                      id="wizard-budget"
                       type="number"
+                      required
+                      aria-required="true"
+                      aria-invalid={!!errors.budget}
+                      aria-describedby={errors.budget ? 'wizard-budget-error' : undefined}
                       value={budget}
                       onChange={(e) => setBudget(Number(e.target.value))}
                       placeholder="50000"
-                      className={`w-full pl-9 pr-4 py-2.5 rounded-xl border text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 ${
-                        errors.budget ? 'border-red-400 focus:ring-red-400' : 'border-slate-300 focus:ring-indigo-500'
+                      className={`w-full pl-9 pr-4 py-2.5 rounded-xl border text-sm font-bold text-slate-900 focus-visible:outline-none focus-visible:ring-2 ${
+                        errors.budget ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-300 focus-visible:ring-indigo-500'
                       }`}
                     />
                   </div>
-                  {errors.budget && <p className="text-xs text-red-500 mt-1">{errors.budget}</p>}
+                  {errors.budget && (
+                    <p id="wizard-budget-error" role="alert" className="text-xs text-red-500 mt-1">
+                      {errors.budget}
+                    </p>
+                  )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  <label htmlFor="wizard-currency" className="block text-sm font-semibold text-slate-700 mb-1">
                     Currency
                   </label>
                   <select
+                    id="wizard-currency"
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                   >
                     <option value="INR">INR (₹)</option>
                     <option value="USD">USD ($)</option>
@@ -344,20 +392,29 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
 
               {/* Guest Count */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">
-                  Expected Guest Headcount <span className="text-red-500">*</span>
+                <label htmlFor="wizard-guest-count" className="block text-sm font-semibold text-slate-700 mb-1">
+                  Expected Guest Headcount <span className="text-red-500" aria-hidden="true">*</span>
                 </label>
                 <input
+                  id="wizard-guest-count"
                   type="number"
+                  required
+                  aria-required="true"
+                  aria-invalid={!!errors.guestCount}
+                  aria-describedby={errors.guestCount ? 'wizard-guest-error' : undefined}
                   value={guestCount}
                   onChange={(e) => setGuestCount(Number(e.target.value))}
                   placeholder="100"
-                  className={`w-full px-4 py-2.5 rounded-xl border text-sm font-bold focus:outline-none focus:ring-2 ${
-                    errors.guestCount ? 'border-red-400 focus:ring-red-400' : 'border-slate-300 focus:ring-indigo-500'
+                  className={`w-full px-4 py-2.5 rounded-xl border text-sm font-bold focus-visible:outline-none focus-visible:ring-2 ${
+                    errors.guestCount ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-300 focus-visible:ring-indigo-500'
                   }`}
                 />
-                {errors.guestCount && <p className="text-xs text-red-500 mt-1">{errors.guestCount}</p>}
-                <p className="text-xs text-slate-400 mt-1">
+                {errors.guestCount && (
+                  <p id="wizard-guest-error" role="alert" className="text-xs text-red-500 mt-1">
+                    {errors.guestCount}
+                  </p>
+                )}
+                <p className="text-xs text-slate-500 mt-1">
                   Per-guest catering and seating formulas will adapt to this headcount.
                 </p>
               </div>
@@ -372,16 +429,21 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
 
               {/* Priority areas */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                <span id="priority-areas-label" className="block text-sm font-semibold text-slate-700 mb-1">
                   Select Priority Areas (AI safeguards these budgets first)
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                </span>
+                <div
+                  role="group"
+                  aria-labelledby="priority-areas-label"
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2"
+                >
                   {priorityOptions.map((opt) => (
                     <button
                       key={opt.id}
                       type="button"
+                      aria-pressed={priorityAreas.includes(opt.id)}
                       onClick={() => togglePriority(opt.id)}
-                      className={`p-3 rounded-xl border text-xs font-semibold text-left flex items-center justify-between transition ${
+                      className={`p-3 rounded-xl border text-xs font-semibold text-left flex items-center justify-between transition focus-visible:ring-2 focus-visible:ring-indigo-500 ${
                         priorityAreas.includes(opt.id)
                           ? 'border-indigo-600 bg-indigo-50 text-indigo-800'
                           : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
@@ -389,7 +451,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                     >
                       <span>{opt.label}</span>
                       {priorityAreas.includes(opt.id) && (
-                        <CheckCircle className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-indigo-600 flex-shrink-0" aria-hidden="true" />
                       )}
                     </button>
                   ))}
@@ -399,57 +461,61 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
               {/* Theme & Cultural */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  <label htmlFor="wizard-theme" className="block text-sm font-semibold text-slate-700 mb-1">
                     Theme / Aesthetic Preference
                   </label>
                   <input
+                    id="wizard-theme"
                     type="text"
                     value={themePreference}
                     onChange={(e) => setThemePreference(e.target.value)}
                     placeholder="e.g. Royal Marigold, Boho Sunset, Starlit Modern"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">
+                  <label htmlFor="wizard-cultural" className="block text-sm font-semibold text-slate-700 mb-1">
                     Cultural / Regional Preference
                   </label>
                   <input
+                    id="wizard-cultural"
                     type="text"
                     value={culturalPreference}
                     onChange={(e) => setCulturalPreference(e.target.value)}
                     placeholder="e.g. Traditional Indian, Punjabi Sangeet, South Indian, Western"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                   />
                 </div>
               </div>
 
               {/* Dietary Preferences */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                <label htmlFor="wizard-dietary" className="block text-sm font-semibold text-slate-700 mb-1">
                   Dietary Requirements & Menu Style
                 </label>
                 <input
+                  id="wizard-dietary"
                   type="text"
                   value={dietaryPreferences}
                   onChange={(e) => setDietaryPreferences(e.target.value)}
                   placeholder="e.g. Pure Vegetarian, Jain counters available, Halal, Multi-cuisine live counters"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                 />
               </div>
 
               {/* Additional Requirements */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">
+                <label htmlFor="wizard-notes" className="block text-sm font-semibold text-slate-700 mb-1">
                   Additional Notes or Special Requests
                 </label>
                 <textarea
+                  id="wizard-notes"
                   rows={2}
                   value={additionalRequirements}
                   onChange={(e) => setAdditionalRequirements(e.target.value)}
                   placeholder="e.g. Need acoustic live music during dinner; require photo booth for youth guests..."
-                  className="w-full px-4 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 rounded-xl border border-slate-300 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                 />
               </div>
             </div>
@@ -462,9 +528,9 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                 type="button"
                 onClick={handleBack}
                 disabled={isSubmitting}
-                className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"
+                className="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-indigo-500 transition"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-4 h-4" aria-hidden="true" />
                 <span>Back</span>
               </button>
             ) : (
@@ -475,22 +541,22 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
               <button
                 type="button"
                 onClick={handleNext}
-                className="inline-flex items-center space-x-1.5 px-6 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-sm"
+                className="inline-flex items-center space-x-1.5 px-6 py-2.5 rounded-xl text-sm font-bold bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-sm"
               >
                 <span>Continue</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </button>
             ) : (
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:opacity-95 active:scale-[0.98] transition shadow-md shadow-indigo-200 disabled:opacity-50"
+                className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:opacity-95 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-md shadow-indigo-200 disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <span>Generating AI Master Plan...</span>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4" />
+                    <Sparkles className="w-4 h-4" aria-hidden="true" />
                     <span>Generate Complete Event Plan</span>
                   </>
                 )}

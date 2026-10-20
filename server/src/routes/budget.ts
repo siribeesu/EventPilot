@@ -11,7 +11,7 @@ router.get('/events/:id/budget', async (req: AuthenticatedRequest, res) => {
     const eventId = String(req.params.id);
     const userId = req.userId || 'usr_demo_123';
     const event = await db.getEventById(eventId, userId);
-    if (!event) return res.status(404).json({ error: 'Event not found' });
+    if (!event) return res.status(404).json({ error: 'Event not found or access denied' });
 
     const items = await db.getBudgetItems(event.id);
     const totalEstimated = items.reduce((acc, i) => acc + (Number(i.estimated_cost) || 0), 0);
@@ -41,7 +41,7 @@ router.post('/events/:id/budget-items', async (req: AuthenticatedRequest, res) =
     const eventId = String(req.params.id);
     const userId = req.userId || 'usr_demo_123';
     const event = await db.getEventById(eventId, userId);
-    if (!event) return res.status(404).json({ error: 'Event not found' });
+    if (!event) return res.status(404).json({ error: 'Event not found or access denied' });
 
     const parsed = CreateBudgetItemSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -59,10 +59,18 @@ router.post('/events/:id/budget-items', async (req: AuthenticatedRequest, res) =
   }
 });
 
-// PATCH update budget item
+// PATCH update budget item with strict ownership verification
 router.patch('/budget-items/:id', async (req: AuthenticatedRequest, res) => {
   try {
     const itemId = String(req.params.id);
+    const userId = req.userId || 'usr_demo_123';
+
+    // Verify ownership
+    const isOwner = await db.verifyBudgetItemOwnership(itemId, userId);
+    if (!isOwner) {
+      return res.status(403).json({ error: 'Access denied: item does not belong to user events' });
+    }
+
     const parsed = UpdateBudgetItemSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten().fieldErrors });
@@ -76,10 +84,18 @@ router.patch('/budget-items/:id', async (req: AuthenticatedRequest, res) => {
   }
 });
 
-// DELETE budget item
+// DELETE budget item with strict ownership verification
 router.delete('/budget-items/:id', async (req: AuthenticatedRequest, res) => {
   try {
     const itemId = String(req.params.id);
+    const userId = req.userId || 'usr_demo_123';
+
+    // Verify ownership
+    const isOwner = await db.verifyBudgetItemOwnership(itemId, userId);
+    if (!isOwner) {
+      return res.status(403).json({ error: 'Access denied: item does not belong to user events' });
+    }
+
     const deleted = await db.deleteBudgetItem(itemId);
     if (!deleted) return res.status(404).json({ error: 'Budget item not found' });
     res.json({ success: true });

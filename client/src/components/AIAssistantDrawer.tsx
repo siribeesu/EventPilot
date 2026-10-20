@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Sparkles,
   Send,
@@ -6,13 +6,9 @@ import {
   Bot,
   User,
   CheckCircle2,
-  AlertCircle,
   HelpCircle,
-  ArrowRight,
-  PlusCircle,
-  MessageSquare,
 } from 'lucide-react';
-import { EventFullDetail, AIAssistantAction } from '../types';
+import type { EventFullDetail, AIAssistantAction } from '../types';
 import { api } from '../services/api';
 
 interface AIAssistantDrawerProps {
@@ -52,6 +48,18 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [applyingChangeId, setApplyingChangeId] = useState<string | null>(null);
+
+  // Accessibility: Close drawer on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -129,26 +137,34 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
   };
 
   return (
-    <div className="fixed inset-y-0 right-0 z-50 w-full sm:w-[480px] bg-white shadow-2xl border-l border-slate-200 flex flex-col transition-all">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="assistant-drawer-title"
+      className="fixed inset-y-0 right-0 z-50 w-full sm:w-[480px] bg-white shadow-2xl border-l border-slate-200 flex flex-col transition-all"
+    >
       {/* Header */}
       <div className="p-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white flex items-center justify-between">
         <div className="flex items-center space-x-2.5">
-          <div className="p-2 bg-white/10 rounded-xl backdrop-blur-xs">
+          <div className="p-2 bg-white/10 rounded-xl backdrop-blur-xs" aria-hidden="true">
             <Bot className="w-5 h-5 text-indigo-100" />
           </div>
           <div>
-            <h3 className="font-bold text-base leading-tight flex items-center space-x-1.5">
+            <h3 id="assistant-drawer-title" className="font-bold text-base leading-tight flex items-center space-x-1.5">
               <span>EventPilot AI Assistant</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-label="Online" />
             </h3>
             <p className="text-xs text-indigo-100/90">Contextual Co-Planner</p>
           </div>
         </div>
         <button
+          type="button"
           onClick={onClose}
-          className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition"
+          aria-label="Close assistant panel"
+          className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5" aria-hidden="true" />
+          <span className="sr-only">Close assistant panel</span>
         </button>
       </div>
 
@@ -161,8 +177,9 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
           {quickPrompts.map((prompt, i) => (
             <button
               key={i}
+              type="button"
               onClick={() => handleSendMessage(prompt)}
-              className="text-xs font-medium whitespace-nowrap bg-white border border-indigo-200 text-indigo-700 px-2.5 py-1 rounded-full hover:bg-indigo-600 hover:text-white transition shadow-2xs"
+              className="text-xs font-medium whitespace-nowrap bg-white border border-indigo-200 text-indigo-700 px-2.5 py-1 rounded-full hover:bg-indigo-600 hover:text-white focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-2xs"
             >
               {prompt}
             </button>
@@ -171,7 +188,12 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
       </div>
 
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div
+        className="flex-1 overflow-y-auto p-4 space-y-4"
+        role="log"
+        aria-live="polite"
+        aria-label="Conversation history"
+      >
         {messages.map((m) => {
           const isUser = m.sender === 'user';
           return (
@@ -180,6 +202,7 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
               className={`flex items-start space-x-2.5 ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`}
             >
               <div
+                aria-hidden="true"
                 className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-xs font-bold ${
                   isUser
                     ? 'bg-slate-800 text-white'
@@ -204,7 +227,7 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
                 {m.action?.clarifyingQuestions && m.action.clarifyingQuestions.length > 0 && (
                   <div className="p-3 bg-amber-50/90 border border-amber-200 rounded-xl space-y-1.5 text-xs text-amber-800">
                     <span className="font-bold flex items-center space-x-1 text-amber-900">
-                      <HelpCircle className="w-3.5 h-3.5 text-amber-600" />
+                      <HelpCircle className="w-3.5 h-3.5 text-amber-600" aria-hidden="true" />
                       <span>Clarification Needed:</span>
                     </span>
                     <ul className="list-disc pl-4 space-y-1 text-amber-800/90">
@@ -220,12 +243,12 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
                   <div className="p-3.5 bg-white border border-indigo-200 rounded-xl shadow-xs space-y-2.5">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-indigo-900 flex items-center space-x-1.5">
-                        <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                        <Sparkles className="w-3.5 h-3.5 text-indigo-600" aria-hidden="true" />
                         <span>Proposed Plan Modifications</span>
                       </span>
                       {m.changesApplied ? (
                         <span className="text-[11px] font-semibold text-emerald-600 flex items-center space-x-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
                           <span>Changes Applied</span>
                         </span>
                       ) : (
@@ -285,13 +308,13 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
                         type="button"
                         onClick={() => handleApplyChanges(m.id, m.action!)}
                         disabled={applyingChangeId === m.id}
-                        className="w-full py-2 px-3 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 active:scale-[0.99] transition flex items-center justify-center space-x-1.5 shadow-2xs"
+                        className="w-full py-2 px-3 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-500 active:scale-[0.99] transition flex items-center justify-center space-x-1.5 shadow-2xs"
                       >
                         {applyingChangeId === m.id ? (
                           <span>Applying to your Plan...</span>
                         ) : (
                           <>
-                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
                             <span>Approve & Apply Changes</span>
                           </>
                         )}
@@ -309,14 +332,14 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
         })}
 
         {loading && (
-          <div className="flex items-center space-x-2 text-slate-500 text-xs italic p-2 bg-slate-50 rounded-xl w-fit">
-            <Sparkles className="w-4 h-4 text-indigo-500 animate-spin" />
+          <div className="flex items-center space-x-2 text-slate-500 text-xs italic p-2 bg-slate-50 rounded-xl w-fit" aria-live="polite">
+            <Sparkles className="w-4 h-4 text-indigo-500 animate-spin" aria-hidden="true" />
             <span>EventPilot AI is analyzing your event and calculating adjustments...</span>
           </div>
         )}
       </div>
 
-      {/* Input Form */}
+      {/* Input Form with accessible label */}
       <div className="p-4 bg-slate-50 border-t border-slate-200">
         <form
           onSubmit={(e) => {
@@ -325,19 +348,25 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
           }}
           className="flex items-center space-x-2"
         >
+          <label htmlFor="assistant-user-input" className="sr-only">
+            Ask AI Assistant
+          </label>
           <input
+            id="assistant-user-input"
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Ask AI to modify budget, suggest menus, add tasks..."
-            className="flex-1 px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none placeholder-slate-400"
+            className="flex-1 px-4 py-2.5 text-xs sm:text-sm bg-white border border-slate-300 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 placeholder-slate-400"
           />
           <button
             type="submit"
             disabled={!inputText.trim() || loading}
-            className="p-2.5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95 transition disabled:opacity-40"
+            aria-label="Send message to AI assistant"
+            className="p-2.5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-500 active:scale-95 transition disabled:opacity-40"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-4 h-4" aria-hidden="true" />
+            <span className="sr-only">Send message</span>
           </button>
         </form>
       </div>

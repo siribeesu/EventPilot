@@ -254,6 +254,28 @@ class StorageManager {
     return true;
   }
 
+  // --- Ownership Verification Helpers for Strict Security ---
+  async verifyBudgetItemOwnership(budgetItemId: string, userId: string): Promise<boolean> {
+    const item = this.memoryData.budget_items.find(b => b.id === budgetItemId);
+    if (!item) return false;
+    const event = await this.getEventById(item.event_id, userId);
+    return !!event;
+  }
+
+  async verifyTaskOwnership(taskId: string, userId: string): Promise<boolean> {
+    const item = this.memoryData.tasks.find(t => t.id === taskId);
+    if (!item) return false;
+    const event = await this.getEventById(item.event_id, userId);
+    return !!event;
+  }
+
+  async verifyVendorOwnership(vendorId: string, userId: string): Promise<boolean> {
+    const item = this.memoryData.vendors.find(v => v.id === vendorId);
+    if (!item) return false;
+    const event = await this.getEventById(item.event_id, userId);
+    return !!event;
+  }
+
   // --- Budget Items ---
   async getBudgetItems(eventId: string): Promise<BudgetItem[]> {
     if (this.isPostgres && this.pool) {
@@ -282,6 +304,32 @@ class StorageManager {
     this.memoryData.budget_items.push(newItem);
     this.persist();
     return newItem;
+  }
+
+  // Optimized batch insertion
+  async createBudgetItemsBatch(items: Omit<BudgetItem, 'id' | 'created_at' | 'updated_at'>[]): Promise<void> {
+    if (items.length === 0) return;
+    const now = new Date().toISOString();
+    const newItems: BudgetItem[] = items.map(item => ({
+      id: uuidv4(),
+      ...item,
+      created_at: now,
+      updated_at: now,
+    }));
+
+    if (this.isPostgres && this.pool) {
+      for (const newItem of newItems) {
+        await this.pool.query(
+          `INSERT INTO budget_items (id, event_id, category, name, estimated_cost, actual_cost, paid_amount, notes, status, created_at, updated_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+          [newItem.id, newItem.event_id, newItem.category, newItem.name, newItem.estimated_cost, newItem.actual_cost, newItem.paid_amount, newItem.notes, newItem.status, newItem.created_at, newItem.updated_at]
+        );
+      }
+      return;
+    }
+
+    this.memoryData.budget_items.push(...newItems);
+    this.persist();
   }
 
   async updateBudgetItem(id: string, updates: Partial<BudgetItem>): Promise<BudgetItem | null> {
@@ -348,6 +396,31 @@ class StorageManager {
     return newTask;
   }
 
+  async createTasksBatch(items: Omit<TaskItem, 'id' | 'created_at' | 'updated_at'>[]): Promise<void> {
+    if (items.length === 0) return;
+    const now = new Date().toISOString();
+    const newItems: TaskItem[] = items.map(item => ({
+      id: uuidv4(),
+      ...item,
+      created_at: now,
+      updated_at: now,
+    }));
+
+    if (this.isPostgres && this.pool) {
+      for (const newItem of newItems) {
+        await this.pool.query(
+          `INSERT INTO tasks (id, event_id, title, category, due_date, days_before_event, priority, status, notes, created_at, updated_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+          [newItem.id, newItem.event_id, newItem.title, newItem.category, newItem.due_date, newItem.days_before_event, newItem.priority, newItem.status, newItem.notes, newItem.created_at, newItem.updated_at]
+        );
+      }
+      return;
+    }
+
+    this.memoryData.tasks.push(...newItems);
+    this.persist();
+  }
+
   async updateTask(id: string, updates: Partial<TaskItem>): Promise<TaskItem | null> {
     const now = new Date().toISOString();
     if (this.isPostgres && this.pool) {
@@ -412,6 +485,31 @@ class StorageManager {
     return newVendor;
   }
 
+  async createVendorsBatch(items: Omit<VendorItem, 'id' | 'created_at' | 'updated_at'>[]): Promise<void> {
+    if (items.length === 0) return;
+    const now = new Date().toISOString();
+    const newItems: VendorItem[] = items.map(item => ({
+      id: uuidv4(),
+      ...item,
+      created_at: now,
+      updated_at: now,
+    }));
+
+    if (this.isPostgres && this.pool) {
+      for (const newItem of newItems) {
+        await this.pool.query(
+          `INSERT INTO vendors (id, event_id, category, name, contact_name, contact_phone, contact_email, quoted_amount, estimated_budget, booking_status, payment_status, notes, is_ai_estimate, created_at, updated_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+          [newItem.id, newItem.event_id, newItem.category, newItem.name, newItem.contact_name, newItem.contact_phone, newItem.contact_email, newItem.quoted_amount, newItem.estimated_budget, newItem.booking_status, newItem.payment_status, newItem.notes, newItem.is_ai_estimate, newItem.created_at, newItem.updated_at]
+        );
+      }
+      return;
+    }
+
+    this.memoryData.vendors.push(...newItems);
+    this.persist();
+  }
+
   async updateVendor(id: string, updates: Partial<VendorItem>): Promise<VendorItem | null> {
     const now = new Date().toISOString();
     if (this.isPostgres && this.pool) {
@@ -471,6 +569,29 @@ class StorageManager {
     this.memoryData.event_ideas.push(newIdea);
     this.persist();
     return newIdea;
+  }
+
+  async createIdeasBatch(ideas: Omit<EventIdea, 'id' | 'created_at'>[]): Promise<void> {
+    if (ideas.length === 0) return;
+    const now = new Date().toISOString();
+    const newIdeas: EventIdea[] = ideas.map(idea => ({
+      id: uuidv4(),
+      ...idea,
+      created_at: now,
+    }));
+
+    if (this.isPostgres && this.pool) {
+      for (const item of newIdeas) {
+        await this.pool.query(
+          'INSERT INTO event_ideas (id, event_id, type, title, description, estimated_cost, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+          [item.id, item.event_id, item.type, item.title, item.description, item.estimated_cost, item.created_at]
+        );
+      }
+      return;
+    }
+
+    this.memoryData.event_ideas.push(...newIdeas);
+    this.persist();
   }
 
   async deleteIdeasByEvent(eventId: string): Promise<void> {

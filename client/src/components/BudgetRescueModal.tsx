@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ShieldAlert,
   Sparkles,
   CheckCircle2,
-  XCircle,
   ArrowRight,
   TrendingDown,
   Info,
@@ -12,7 +11,7 @@ import {
   AlertTriangle,
   X,
 } from 'lucide-react';
-import { EventFullDetail, BudgetRescueResponse, BudgetRescueProposalItem } from '../types';
+import type { EventFullDetail, BudgetRescueResponse } from '../types';
 import { api } from '../services/api';
 
 interface BudgetRescueModalProps {
@@ -30,7 +29,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
 }) => {
   const currency = event.currency || 'INR';
   const currentTotal = event.metrics.totalEstimated;
-  const initialTarget = Math.round(currentTotal * 0.7); // default 30% reduction scenario e.g. 50k -> 35k
+  const initialTarget = Math.round(currentTotal * 0.7);
 
   const [targetBudget, setTargetBudget] = useState<number>(initialTarget);
   const [loading, setLoading] = useState<boolean>(false);
@@ -39,6 +38,18 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
   const [selectedProposalIds, setSelectedProposalIds] = useState<Set<string>>(new Set());
   const [step, setStep] = useState<'input' | 'review'>('input');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Accessibility: Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -52,7 +63,6 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
     try {
       const data = await api.previewBudgetRescue(event.id, targetBudget);
       setRescueData(data);
-      // Select all proposals by default for seamless review
       setSelectedProposalIds(new Set(data.proposals.map(p => p.id)));
       setStep('review');
     } catch (err) {
@@ -81,7 +91,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
     setSelectedProposalIds(new Set());
   };
 
-  // Recalculate totals dynamically based on which proposals user accepts
+  // Recalculate totals dynamically
   const activeProposals = rescueData?.proposals.filter(p => selectedProposalIds.has(p.id)) || [];
   const currentAcceptedSavings = activeProposals.reduce((acc, p) => acc + p.savings, 0);
   const dynamicProposedTotal = currentTotal - currentAcceptedSavings;
@@ -106,16 +116,21 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="budget-rescue-title"
+      className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
+    >
       <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="bg-gradient-to-r from-indigo-700 via-indigo-600 to-purple-600 px-6 py-4 text-white flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-white/10 rounded-xl backdrop-blur-xs">
+            <div className="p-2 bg-white/10 rounded-xl backdrop-blur-xs" aria-hidden="true">
               <ShieldAlert className="w-6 h-6 text-amber-300" />
             </div>
             <div>
-              <h2 className="text-xl font-bold tracking-tight flex items-center space-x-2">
+              <h2 id="budget-rescue-title" className="text-xl font-bold tracking-tight flex items-center space-x-2">
                 <span>Budget Rescue Mode™</span>
                 <span className="text-[11px] font-semibold uppercase tracking-wider bg-amber-400 text-slate-900 px-2 py-0.5 rounded-full">
                   AI Optimization
@@ -127,18 +142,24 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+            aria-label="Close dialog"
+            className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
+            <span className="sr-only">Close dialog</span>
           </button>
         </div>
 
         {/* Content Body */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1">
           {errorMessage && (
-            <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-start space-x-2">
-              <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-500" />
+            <div
+              role="alert"
+              className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-start space-x-2"
+            >
+              <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-500" aria-hidden="true" />
               <span>{errorMessage}</span>
             </div>
           )}
@@ -182,7 +203,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
               <div className="bg-slate-50/70 p-6 rounded-2xl border border-slate-200/80 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <label className="text-sm font-bold text-slate-800 block">
+                    <label htmlFor="target-budget-input" className="text-sm font-bold text-slate-800 block">
                       Target Reduced Budget ({currency})
                     </label>
                     <p className="text-xs text-slate-500 mt-0.5">
@@ -191,7 +212,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
                   </div>
                   {currentTotal > targetBudget && (
                     <div className="inline-flex items-center space-x-1 px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">
-                      <TrendingDown className="w-3.5 h-3.5" />
+                      <TrendingDown className="w-3.5 h-3.5" aria-hidden="true" />
                       <span>Cut: {currency} {(currentTotal - targetBudget).toLocaleString()} ({Math.round(((currentTotal - targetBudget) / currentTotal) * 100)}%)</span>
                     </div>
                   )}
@@ -199,15 +220,17 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
 
                 <div className="flex items-center space-x-4">
                   <div className="relative flex-1">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold" aria-hidden="true">
                       {currency === 'INR' ? '₹' : currency}
                     </span>
                     <input
+                      id="target-budget-input"
                       type="number"
                       value={targetBudget}
                       onChange={(e) => setTargetBudget(Number(e.target.value))}
-                      className="w-full pl-9 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-lg font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      className="w-full pl-9 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-lg font-bold text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                       placeholder="e.g. 35000"
+                      aria-required="true"
                     />
                   </div>
                   {/* Quick percentage buttons */}
@@ -215,21 +238,24 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
                     <button
                       type="button"
                       onClick={() => setTargetBudget(Math.round(currentTotal * 0.85))}
-                      className="px-3 py-2 text-xs font-semibold rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 transition"
+                      className="px-3 py-2 text-xs font-semibold rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 focus-visible:ring-2 focus-visible:ring-indigo-500 transition"
+                      aria-label="Reduce budget by 15 percent"
                     >
                       -15%
                     </button>
                     <button
                       type="button"
                       onClick={() => setTargetBudget(Math.round(currentTotal * 0.70))}
-                      className="px-3 py-2 text-xs font-semibold rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 transition"
+                      className="px-3 py-2 text-xs font-semibold rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 focus-visible:ring-2 focus-visible:ring-indigo-500 transition"
+                      aria-label="Reduce budget by 30 percent"
                     >
                       -30%
                     </button>
                     <button
                       type="button"
                       onClick={() => setTargetBudget(Math.round(currentTotal * 0.50))}
-                      className="px-3 py-2 text-xs font-semibold rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 transition"
+                      className="px-3 py-2 text-xs font-semibold rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 focus-visible:ring-2 focus-visible:ring-indigo-500 transition"
+                      aria-label="Reduce budget by 50 percent"
                     >
                       -50%
                     </button>
@@ -237,7 +263,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
                 </div>
 
                 <div className="flex items-start space-x-2 text-xs text-slate-600 bg-white p-3 rounded-xl border border-slate-200">
-                  <Info className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" />
+                  <Info className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
                   <span>
                     EventPilot will run an optimization pass across all expense categories. High-cost discretionary items will be substituted with smart, tasteful alternatives, while your core priorities are shielded.
                   </span>
@@ -251,20 +277,22 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
               <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-xs font-bold text-indigo-700 uppercase tracking-wide flex items-center space-x-1.5">
-                    <Sparkles className="w-4 h-4" />
+                    <Sparkles className="w-4 h-4" aria-hidden="true" />
                     <span>EventPilot AI Optimization Analysis</span>
                   </span>
                   <div className="flex items-center space-x-3 text-xs">
                     <button
+                      type="button"
                       onClick={selectAll}
-                      className="text-indigo-600 hover:text-indigo-800 font-semibold underline"
+                      className="text-indigo-600 hover:text-indigo-800 font-semibold underline focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
                     >
                       Accept All ({rescueData?.proposals.length})
                     </button>
-                    <span className="text-slate-300">|</span>
+                    <span className="text-slate-300" aria-hidden="true">|</span>
                     <button
+                      type="button"
                       onClick={deselectAll}
-                      className="text-slate-500 hover:text-slate-700 font-medium underline"
+                      className="text-slate-500 hover:text-slate-700 font-medium underline focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
                     >
                       Deselect All
                     </button>
@@ -275,8 +303,11 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
                 </p>
               </div>
 
-              {/* Live Status Indicators */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+              {/* Live Status Indicators with aria-live */}
+              <div
+                aria-live="polite"
+                className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center"
+              >
                 <div className="p-3 rounded-xl bg-slate-100 border border-slate-200">
                   <span className="text-[11px] font-medium text-slate-500 block uppercase">Original Cost</span>
                   <span className="text-base font-bold text-slate-700 mt-0.5 block">
@@ -312,7 +343,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-bold text-slate-900 flex items-center space-x-2">
-                    <SlidersHorizontal className="w-4 h-4 text-indigo-600" />
+                    <SlidersHorizontal className="w-4 h-4 text-indigo-600" aria-hidden="true" />
                     <span>Review Proposed Reductions & Alternatives</span>
                   </h3>
                   <span className="text-xs text-slate-500">
@@ -326,8 +357,17 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
                     return (
                       <div
                         key={proposal.id}
+                        role="checkbox"
+                        aria-checked={isSelected}
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === ' ' || e.key === 'Enter') {
+                            e.preventDefault();
+                            toggleProposal(proposal.id);
+                          }
+                        }}
                         onClick={() => toggleProposal(proposal.id)}
-                        className={`p-4 rounded-xl border transition-all cursor-pointer ${
+                        className={`p-4 rounded-xl border transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
                           isSelected
                             ? 'bg-indigo-50/40 border-indigo-300 ring-1 ring-indigo-400'
                             : 'bg-white border-slate-200 hover:border-slate-300 opacity-75'
@@ -335,9 +375,12 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start space-x-3">
-                            <div className={`w-5 h-5 rounded-md mt-0.5 flex items-center justify-center border transition-colors ${
-                              isSelected ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300 bg-white'
-                            }`}>
+                            <div
+                              aria-hidden="true"
+                              className={`w-5 h-5 rounded-md mt-0.5 flex items-center justify-center border transition-colors ${
+                                isSelected ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-300 bg-white'
+                              }`}
+                            >
                               {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                             </div>
 
@@ -367,7 +410,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
                               {currency} {proposal.currentEstimatedCost.toLocaleString()}
                             </div>
                             <div className="text-sm font-bold text-indigo-700 flex items-center justify-end space-x-1">
-                              <ArrowRight className="w-3 h-3 text-slate-400" />
+                              <ArrowRight className="w-3 h-3 text-slate-400" aria-hidden="true" />
                               <span>{currency} {proposal.proposedEstimatedCost.toLocaleString()}</span>
                             </div>
                             <div className="text-[11px] font-semibold text-emerald-600 mt-0.5">
@@ -402,7 +445,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
             <button
               type="button"
               onClick={() => setStep('input')}
-              className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-200/60 rounded-xl transition"
+              className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-200/60 focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-xl transition"
             >
               ← Back to Budget Target
             </button>
@@ -410,7 +453,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-200/60 rounded-xl transition"
+              className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-200/60 focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-xl transition"
             >
               Cancel
             </button>
@@ -422,13 +465,13 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
                 type="button"
                 onClick={handleCalculate}
                 disabled={loading || targetBudget <= 0}
-                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 active:scale-[0.98] transition shadow-sm disabled:opacity-50"
+                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-500 active:scale-[0.98] transition shadow-sm disabled:opacity-50"
               >
                 {loading ? (
                   <span>Analyzing & Generating Alternatives...</span>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4" />
+                    <Sparkles className="w-4 h-4" aria-hidden="true" />
                     <span>Run Budget Rescue</span>
                   </>
                 )}
@@ -438,13 +481,13 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
                 type="button"
                 onClick={handleApplyChanges}
                 disabled={applying || selectedProposalIds.size === 0}
-                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 active:scale-[0.98] transition shadow-sm disabled:opacity-50"
+                className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-500 active:scale-[0.98] transition shadow-sm disabled:opacity-50"
               >
                 {applying ? (
                   <span>Applying Accepted Changes...</span>
                 ) : (
                   <>
-                    <CheckCircle2 className="w-4 h-4" />
+                    <CheckCircle2 className="w-4 h-4" aria-hidden="true" />
                     <span>Apply {selectedProposalIds.size} Changes to Plan</span>
                   </>
                 )}

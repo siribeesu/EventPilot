@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Calendar,
   PlusCircle,
@@ -10,11 +10,9 @@ import {
   Filter,
   DollarSign,
   Trash2,
-  ExternalLink,
-  ShieldAlert,
   Sparkles,
 } from 'lucide-react';
-import { EventFullDetail } from '../types';
+import type { EventFullDetail } from '../types';
 import { api } from '../services/api';
 
 interface DashboardPageProps {
@@ -66,19 +64,39 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
     }
   };
 
-  // Aggregated metrics
-  const totalPlannedSpending = events.reduce((acc, ev) => acc + (ev.metrics?.totalEstimated || 0), 0);
-  const totalBudgetAcross = events.reduce((acc, ev) => acc + (Number(ev.budget) || 0), 0);
-  const totalPendingTasks = events.reduce((acc, ev) => acc + ((ev.metrics?.tasksTotal || 0) - (ev.metrics?.tasksCompleted || 0)), 0);
-  const totalBookedVendors = events.reduce((acc, ev) => acc + (ev.metrics?.vendorsBooked || 0), 0);
+  // Code Optimality: Memoize aggregated metrics to prevent redundant calculations
+  const { totalPlannedSpending, totalBudgetAcross, totalPendingTasks, totalBookedVendors } = useMemo(() => {
+    let planned = 0;
+    let budgetTotal = 0;
+    let pending = 0;
+    let booked = 0;
 
-  // Filtered events
-  const filteredEvents = events.filter(ev => {
-    const matchesSearch = ev.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ev.location.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = filterType === 'all' || ev.event_type === filterType;
-    return matchesSearch && matchesType;
-  });
+    for (const ev of events) {
+      planned += ev.metrics?.totalEstimated || 0;
+      budgetTotal += Number(ev.budget) || 0;
+      pending += (ev.metrics?.tasksTotal || 0) - (ev.metrics?.tasksCompleted || 0);
+      booked += ev.metrics?.vendorsBooked || 0;
+    }
+
+    return {
+      totalPlannedSpending: planned,
+      totalBudgetAcross: budgetTotal,
+      totalPendingTasks: pending,
+      totalBookedVendors: booked,
+    };
+  }, [events]);
+
+  // Code Optimality: Memoize filtered events
+  const filteredEvents = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return events.filter(ev => {
+      const matchesSearch = !q ||
+        ev.title.toLowerCase().includes(q) ||
+        ev.location.toLowerCase().includes(q);
+      const matchesType = filterType === 'all' || ev.event_type === filterType;
+      return matchesSearch && matchesType;
+    });
+  }, [events, searchQuery, filterType]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -93,10 +111,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           </p>
         </div>
         <button
+          type="button"
           onClick={onCreateNew}
-          className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 active:scale-[0.98] transition shadow-sm shadow-indigo-200"
+          className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 active:scale-[0.98] transition shadow-sm shadow-indigo-200"
         >
-          <PlusCircle className="w-4 h-4" />
+          <PlusCircle className="w-4 h-4" aria-hidden="true" />
           <span>New Event Plan</span>
         </button>
       </div>
@@ -107,7 +126,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
           <div className="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider">
             <span>Planned Spending</span>
-            <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
+            <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600" aria-hidden="true">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
@@ -123,7 +142,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
           <div className="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider">
             <span>Total Budget Limit</span>
-            <div className="p-2 rounded-lg bg-purple-50 text-purple-600">
+            <div className="p-2 rounded-lg bg-purple-50 text-purple-600" aria-hidden="true">
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
@@ -147,7 +166,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
           <div className="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider">
             <span>Pending Tasks</span>
-            <div className="p-2 rounded-lg bg-amber-50 text-amber-600">
+            <div className="p-2 rounded-lg bg-amber-50 text-amber-600" aria-hidden="true">
               <Clock className="w-4 h-4" />
             </div>
           </div>
@@ -159,7 +178,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-2">
           <div className="flex items-center justify-between text-slate-500 text-xs font-semibold uppercase tracking-wider">
             <span>Active Events</span>
-            <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600">
+            <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600" aria-hidden="true">
               <Calendar className="w-4 h-4" />
             </div>
           </div>
@@ -170,25 +189,33 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
+      {/* Filter and Search Bar with accessible labels */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
         <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <label htmlFor="dashboard-search-input" className="sr-only">
+            Search events by title or city
+          </label>
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" aria-hidden="true" />
           <input
-            type="text"
+            id="dashboard-search-input"
+            type="search"
             placeholder="Search by event title or city..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           />
         </div>
 
         <div className="flex items-center space-x-2 w-full sm:w-auto">
-          <Filter className="w-4 h-4 text-slate-400" />
+          <label htmlFor="dashboard-type-filter" className="sr-only">
+            Filter by event category
+          </label>
+          <Filter className="w-4 h-4 text-slate-400" aria-hidden="true" />
           <select
+            id="dashboard-type-filter"
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
           >
             <option value="all">All Event Types</option>
             <option value="wedding">Weddings</option>
@@ -202,13 +229,18 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
       {/* Events Grid */}
       {loading ? (
-        <div className="p-12 text-center text-slate-400 text-sm space-y-3">
-          <div className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto" />
+        <div
+          role="status"
+          aria-live="polite"
+          className="p-12 text-center text-slate-400 text-sm space-y-3"
+        >
+          <div className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto" aria-hidden="true" />
           <p>Loading your event itineraries...</p>
+          <span className="sr-only">Loading events</span>
         </div>
       ) : filteredEvents.length === 0 ? (
         <div className="p-12 text-center bg-white rounded-3xl border border-dashed border-slate-300 space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
+          <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto" aria-hidden="true">
             <Sparkles className="w-7 h-7" />
           </div>
           <div className="max-w-md mx-auto space-y-1">
@@ -220,10 +252,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             </p>
           </div>
           <button
+            type="button"
             onClick={onCreateNew}
-            className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition"
+            className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-500 transition"
           >
-            <PlusCircle className="w-4 h-4" />
+            <PlusCircle className="w-4 h-4" aria-hidden="true" />
             <span>Create First Event</span>
           </button>
         </div>
@@ -237,8 +270,16 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             return (
               <div
                 key={evt.id}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectEvent(evt.id);
+                  }
+                }}
                 onClick={() => onSelectEvent(evt.id)}
-                className="bg-white rounded-2xl border border-slate-200 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer p-6 flex flex-col justify-between group space-y-4"
+                className="bg-white rounded-2xl border border-slate-200 hover:border-indigo-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-all cursor-pointer p-6 flex flex-col justify-between group space-y-4"
               >
                 {/* Card Top */}
                 <div className="space-y-3">
@@ -257,12 +298,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                         {daysLeft > 0 ? `${daysLeft} days away` : 'Today / Past'}
                       </span>
                       <button
+                        type="button"
                         onClick={(e) => handleDelete(e, evt.id)}
                         disabled={deletingId === evt.id}
-                        className="text-slate-400 hover:text-red-600 p-1 rounded transition"
-                        title="Delete event"
+                        aria-label={`Delete event ${evt.title}`}
+                        className="text-slate-400 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-red-500 p-1 rounded transition"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4" aria-hidden="true" />
+                        <span className="sr-only">Delete event</span>
                       </button>
                     </div>
                   </div>
@@ -273,7 +316,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     </h3>
                     <p className="text-xs text-slate-500 mt-0.5 flex items-center space-x-1">
                       <span>{evt.location}</span>
-                      <span>•</span>
+                      <span aria-hidden="true">•</span>
                       <span>{evt.guest_count} guests</span>
                     </p>
                   </div>
@@ -288,7 +331,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     </span>
                   </div>
 
-                  <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div
+                    role="progressbar"
+                    aria-valuenow={Math.round(budgetUsedFraction)}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`Budget usage: ${Math.round(budgetUsedFraction)} percent`}
+                    className="h-2 w-full bg-slate-100 rounded-full overflow-hidden"
+                  >
                     <div
                       className={`h-full rounded-full transition-all duration-300 ${
                         isOverBudget ? 'bg-red-500' : budgetUsedFraction > 85 ? 'bg-amber-500' : 'bg-indigo-600'
@@ -302,16 +352,16 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 <div className="flex items-center justify-between pt-2 text-xs text-slate-600">
                   <div className="flex items-center space-x-3">
                     <span className="flex items-center space-x-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500" aria-hidden="true" />
                       <span>{evt.metrics.tasksCompleted}/{evt.metrics.tasksTotal} tasks</span>
                     </span>
-                    <span className="text-slate-300">|</span>
+                    <span className="text-slate-300" aria-hidden="true">|</span>
                     <span>{evt.metrics.vendorsBooked} vendors</span>
                   </div>
 
                   <span className="font-bold text-indigo-600 flex items-center space-x-1 group-hover:translate-x-0.5 transition-transform">
                     <span>Manage</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                   </span>
                 </div>
               </div>

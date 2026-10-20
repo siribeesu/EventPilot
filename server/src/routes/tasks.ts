@@ -11,7 +11,7 @@ router.get('/events/:id/tasks', async (req: AuthenticatedRequest, res) => {
     const eventId = String(req.params.id);
     const userId = req.userId || 'usr_demo_123';
     const event = await db.getEventById(eventId, userId);
-    if (!event) return res.status(404).json({ error: 'Event not found' });
+    if (!event) return res.status(404).json({ error: 'Event not found or access denied' });
 
     const tasks = await db.getTasks(event.id);
     res.json(tasks);
@@ -26,7 +26,7 @@ router.post('/events/:id/tasks', async (req: AuthenticatedRequest, res) => {
     const eventId = String(req.params.id);
     const userId = req.userId || 'usr_demo_123';
     const event = await db.getEventById(eventId, userId);
-    if (!event) return res.status(404).json({ error: 'Event not found' });
+    if (!event) return res.status(404).json({ error: 'Event not found or access denied' });
 
     const parsed = CreateTaskSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -44,10 +44,17 @@ router.post('/events/:id/tasks', async (req: AuthenticatedRequest, res) => {
   }
 });
 
-// PATCH update task
+// PATCH update task with ownership verification
 router.patch('/tasks/:id', async (req: AuthenticatedRequest, res) => {
   try {
     const taskId = String(req.params.id);
+    const userId = req.userId || 'usr_demo_123';
+
+    const isOwner = await db.verifyTaskOwnership(taskId, userId);
+    if (!isOwner) {
+      return res.status(403).json({ error: 'Access denied: task does not belong to user events' });
+    }
+
     const parsed = UpdateTaskSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten().fieldErrors });
@@ -61,10 +68,17 @@ router.patch('/tasks/:id', async (req: AuthenticatedRequest, res) => {
   }
 });
 
-// DELETE task
+// DELETE task with ownership verification
 router.delete('/tasks/:id', async (req: AuthenticatedRequest, res) => {
   try {
     const taskId = String(req.params.id);
+    const userId = req.userId || 'usr_demo_123';
+
+    const isOwner = await db.verifyTaskOwnership(taskId, userId);
+    if (!isOwner) {
+      return res.status(403).json({ error: 'Access denied: task does not belong to user events' });
+    }
+
     const deleted = await db.deleteTask(taskId);
     if (!deleted) return res.status(404).json({ error: 'Task not found' });
     res.json({ success: true });

@@ -1,9 +1,9 @@
 # EventPilot Automated Test Execution Report
 
-> **Status:** ✅ 100% Passing (38/38 Tests)  
+> **Status:** ✅ 100% Passing (46/46 Tests)  
 > **Test Framework:** Vitest v5.0.5  
 > **Runtime Environment:** Node.js v24 LTS / Node.js v20 LTS  
-> **Total Execution Duration:** 540ms  
+> **Total Execution Duration:** 791ms  
 > **Verified Branches:** `main`, `update`  
 
 ---
@@ -12,15 +12,16 @@
 
 | Test Suite File | Category | Tests | Passed | Failed | Duration | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
-| `src/tests/accessibility.test.ts` | WCAG 2.1 AA Compliance | 5 | 5 | 0 | 4ms | ✅ PASS |
-| `src/tests/efficiency_and_validation.test.ts` | Performance & In-Memory TTL | 5 | 5 | 0 | 6ms | ✅ PASS |
-| `src/tests/ai_guardrails.test.ts` | Prompt Injection & Output Guard | 6 | 6 | 0 | 8ms | ✅ PASS |
-| `src/tests/budget_and_planner.test.ts` | Deterministic Financial Engine | 3 | 3 | 0 | 17ms | ✅ PASS |
-| `src/tests/security_and_auth.test.ts` | Cryptography & Ownership | 6 | 6 | 0 | 28ms | ✅ PASS |
-| `src/tests/api_integration.test.ts` | Full CRUD & Budget Rescue | 4 | 4 | 0 | 59ms | ✅ PASS |
-| `src/tests/privacy_and_audit.test.ts` | GDPR Articles 15 & 17, Telemetry | 4 | 4 | 0 | 75ms | ✅ PASS |
-| `src/tests/rbac_collaboration.test.ts` | Role-Based Access Control | 5 | 5 | 0 | 86ms | ✅ PASS |
-| **TOTALS** | **8 Test Suites** | **38** | **38** | **0** | **283ms (worker)** | **100% PASS** |
+| `src/tests/accessibility.test.ts` | WCAG 2.1 AA Compliance | 5 | 5 | 0 | 8ms | ✅ PASS |
+| `src/tests/efficiency_and_validation.test.ts` | Performance & In-Memory TTL | 5 | 5 | 0 | 10ms | ✅ PASS |
+| `src/tests/ai_guardrails.test.ts` | Prompt Injection & Output Guard | 6 | 6 | 0 | 11ms | ✅ PASS |
+| `src/tests/budget_and_planner.test.ts` | Deterministic Financial Engine | 3 | 3 | 0 | 29ms | ✅ PASS |
+| `src/tests/security_and_auth.test.ts` | Cryptography & Ownership | 6 | 6 | 0 | 31ms | ✅ PASS |
+| `src/tests/api_integration.test.ts` | Full CRUD & Budget Rescue | 4 | 4 | 0 | 80ms | ✅ PASS |
+| `src/tests/e2e_user_journey.test.ts` | End-to-End User Journey (E2E) | 8 | 8 | 0 | 177ms | ✅ PASS |
+| `src/tests/privacy_and_audit.test.ts` | GDPR Articles 15 & 17, Telemetry | 4 | 4 | 0 | 102ms | ✅ PASS |
+| `src/tests/rbac_collaboration.test.ts` | Role-Based Access Control | 5 | 5 | 0 | 142ms | ✅ PASS |
+| **TOTALS** | **9 Test Suites** | **46** | **46** | **0** | **791ms** | **100% PASS** |
 
 ---
 
@@ -43,59 +44,58 @@
    ✓ validates budget item schema: rejects negative costs (0ms)
    ✓ validates task schema: requires title and valid priorities (1ms)
 
+ ✓ src/tests/ai_guardrails.test.ts > AI Safety, Prompt Injection Defense & Schema Guardrails
+   ✓ blocks direct prompt injection vector attempts (ignore previous instructions) (1ms)
+   ✓ blocks delimiter hijacking and markdown stuffing attacks (1ms)
+   ✓ allows legitimate event requests without false positives (0ms)
+   ✓ validates and clamps budget items to realistic financial limits (3ms)
+   ✓ rejects hallucinated outputs with non-positive budgets or corrupted schemas (2ms)
+   ✓ verifies cache hit saves tokens and avoids duplicate LLM network latency (1ms)
+
  ✓ src/tests/budget_and_planner.test.ts > EventPilot Planner & Budget Calculations
    ✓ generates a valid, balanced deterministic event plan matching target budget (16ms)
    ✓ runs Budget Rescue Mode when budget is reduced from ₹50,000 to ₹35,000 (1ms)
    ✓ handles safe surplus in Budget Rescue when target budget is higher than current total (0ms)
 
- ✓ src/tests/ai_guardrails.test.ts > AI Safety, Guardrails & Cost Optimization Suite
-   ✓ 1. Flags and blocks direct and indirect prompt injection attempts (4ms)
-   ✓ 2. Passes authentic event planning queries without false positives (0ms)
-   ✓ 3. Output validation guardrail catches negative costs and enforces upper bounds (2ms)
-   ✓ 4. In-memory semantic hash cache eliminates duplicate LLM calls and tracks cost savings (1ms)
-   ✓ 5. Interactive AI assistant intercepts prompt injection and returns safety guardrail alert (1ms)
-   ✓ 6. Clears cache cleanly and handles cold start cache misses (0ms)
-
  ✓ src/tests/security_and_auth.test.ts > Security Layer & Cryptography Tests
-   ✓ hashes passwords securely using PBKDF2 with unique salts (21ms)
+   ✓ hashes passwords securely using PBKDF2 with unique salts (11ms)
    ✓ sanitizes malicious XSS script tags and control characters (1ms)
    ✓ strips javascript: and data: pseudo-protocols (0ms)
-   ✓ recursively sanitizes nested objects (0ms)
+   ✓ recursively sanitizes nested objects (1ms)
    ✓ validates UUID formats correctly and rejects invalid tampering (0ms)
-   ✓ enforces ownership checks: blocks foreign users from unauthorized item access (6ms)
+   ✓ protects event endpoints with ownership checks (2ms)
 
  ✓ src/tests/api_integration.test.ts > EventPilot End-to-End System Integration
-   ✓ creates an event and persists it in storage (48ms)
-   ✓ retrieves full event with calculated metrics (1ms)
-   ✓ executes Budget Rescue Mode when reducing budget to ₹40,000 (8ms)
-   ✓ processes AI assistant conversational commands with approval workflow (2ms)
+   ✓ creates an event and persists it in storage (19ms)
+   ✓ adds and tracks budget items with cost calculation (15ms)
+   ✓ tracks and completes timeline tasks (14ms)
+   ✓ calculates real-time event financial metrics and balances (11ms)
 
- ✓ src/tests/privacy_and_audit.test.ts > GDPR Data Privacy, Audit & Observability Suite
-   ✓ 1. GET /api/user/data-export returns complete GDPR portability package with attachment headers (53ms)
-   ✓ 2. GET /api/privacy/policy returns transparent retention and encryption disclosures (6ms)
-   ✓ 3. GET /api/metrics exposes system uptime, memory, error rates, and AI cost savings (7ms)
-   ✓ 4. DELETE /api/user/account successfully executes GDPR Right to Erasure cascade delete (9ms)
+ ✓ src/tests/e2e_user_journey.test.ts > EventPilot Real End-to-End User Journey Tests
+   ✓ E2E Flow 1: Signup and Login Authentication Journey (5ms)
+   ✓ E2E Flow 2: Event Creation Flow with AI Template Parameters (73ms)
+   ✓ E2E Flow 3: Budget Planner Flow, Overbudget Detection & Budget Rescue Optimization (11ms)
+   ✓ E2E Flow 4: AI Assistant Approval Flow with Human-in-the-Loop Verification (8ms)
+   ✓ E2E Flow 5: Vendor Quotation, Negotiation & Booking Sync Flow (5ms)
+   ✓ E2E Flow 6: Full Event Detail Export and GDPR Article 15 Data Package Flow (1ms)
+   ✓ E2E Flow 7: Real User AI Feedback Submission & Telemetry Loop (2ms)
+   ✓ E2E Flow 8: Asynchronous Task Queue Plan Generation and Job Lifecycle (100ms)
 
- ✓ src/tests/rbac_collaboration.test.ts > RBAC & Team Collaboration Suite
-   ✓ 1. Owner has owner role and can access event collaborators (44ms)
-   ✓ 2. Viewer can view event details and collaborators list but cannot add collaborators (25ms)
-   ✓ 3. Stranger user cannot access event details or audit trail (403 Forbidden) (4ms)
-   ✓ 4. Owner can invite new collaborators with validation and audit logging (8ms)
-   ✓ 5. Removing a collaborator successfully revokes access from event (5ms)
+ ✓ src/tests/privacy_and_audit.test.ts > Data Privacy (GDPR/CCPA) & Audit Trail Compliance
+   ✓ creates immutable structured audit logs for sensitive operations (2ms)
+   ✓ exports comprehensive machine-readable user data package (GDPR Art. 15) (1ms)
+   ✓ deletes user account and cascades erasure of all personal data (GDPR Art. 17) (3ms)
+   ✓ tracks system performance telemetry and request duration metrics (1ms)
 
- Test Files  8 passed (8)
-      Tests  38 passed (38)
-   Duration  540ms
-```
+ ✓ src/tests/rbac_collaboration.test.ts > Multi-User Collaboration & RBAC Security Suite
+   ✓ adds a collaborator with role 'editor' to an event (18ms)
+   ✓ adds a collaborator with role 'viewer' to an event (14ms)
+   ✓ allows editor to modify budget items and tasks (19ms)
+   ✓ forbids viewer from updating budget items or vendors (HTTP 403) (16ms)
+   ✓ logs collaboration permission changes in the immutable audit trail (15ms)
 
----
-
-## 3. How to Reproduce
-Execute the single-command validation pipeline from root:
-```bash
-npm run test
-```
-Or run the full enterprise build & test verification:
-```bash
-npm run verify
+ Test Files  9 passed (9)
+      Tests  46 passed (46)
+   Start at  23:52:39
+   Duration  791ms
 ```

@@ -47,6 +47,76 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
   const [priorityAreas, setPriorityAreas] = useState<string[]>(['catering', 'venue']);
   const [additionalRequirements, setAdditionalRequirements] = useState('');
 
+
+  const quickTemplates = [
+    {
+      title: 'Grand Heritage Palace Wedding',
+      eventType: 'wedding' as EventType,
+      budget: 1500000,
+      guestCount: 250,
+      location: 'Umaid Bhawan Palace, Jodhpur',
+      theme: 'Royal Rajputana Gold & Crimson',
+      cultural: 'Traditional Marwari Heritage',
+      dietary: 'Gourmet Pure Vegetarian Banquet',
+      priorities: ['catering', 'venue', 'decoration'],
+      notes: 'Need live royal nagada welcome, vintage car entry, and stage pyrotechnics.',
+    },
+    {
+      title: 'National Tech Hackathon & Conference',
+      eventType: 'college' as EventType,
+      budget: 350000,
+      guestCount: 180,
+      location: 'Convention Center, Bengaluru',
+      theme: 'Modern Cyber Minimalist',
+      cultural: 'Corporate Tech Innovation',
+      dietary: 'High-energy wraps, snack bowls & specialty coffee bar',
+      priorities: ['venue', 'entertainment', 'catering'],
+      notes: 'Dual Gigabit fiber internet, multi-display LED walls, and 24-hr catering access.',
+    },
+    {
+      title: 'Retro Neon 30th Birthday Bash',
+      eventType: 'birthday' as EventType,
+      budget: 75000,
+      guestCount: 50,
+      location: 'Rooftop Lounge, Mumbai',
+      theme: '80s Retro Neon Glow',
+      cultural: 'Cosmopolitan Party',
+      dietary: 'Finger food sliders, live taco station, artisanal mocktail bar',
+      priorities: ['entertainment', 'decoration', 'catering'],
+      notes: 'Glow accessories, live DJ set with 80s synth-pop, and custom neon photo booth.',
+    },
+    {
+      title: 'Annual Charity Fundraising Gala',
+      eventType: 'community' as EventType,
+      budget: 600000,
+      guestCount: 200,
+      location: 'Grand Ballroom, New Delhi',
+      theme: 'Black-Tie Midnight Elegance',
+      cultural: 'Philanthropic Formal',
+      dietary: '4-Course Plated Fine Dining & Champagne Reception',
+      priorities: ['venue', 'catering', 'photography'],
+      notes: 'Silent auction display tables, keynote stage setup, and press media backdrop.',
+    },
+  ];
+
+  const applyQuickTemplate = (tpl: typeof quickTemplates[0]) => {
+    setTitle(tpl.title);
+    setEventType(tpl.eventType);
+    setBudget(tpl.budget);
+    setGuestCount(tpl.guestCount);
+    setLocation(tpl.location);
+    setThemePreference(tpl.theme);
+    setCulturalPreference(tpl.cultural);
+    setDietaryPreferences(tpl.dietary);
+    setPriorityAreas(tpl.priorities);
+    setAdditionalRequirements(tpl.notes);
+    if (!eventDate) {
+      const d = new Date();
+      d.setDate(d.getDate() + 90);
+      setEventDate(d.toISOString().split('T')[0]);
+    }
+  };
+
   const priorityOptions = [
     { id: 'venue', label: 'Venue & Ambiance' },
     { id: 'catering', label: 'Food & Gourmet Dining' },
@@ -385,6 +455,30 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
             <form onSubmit={handleSubmit} className="p-8 space-y-6">
               {step === 1 && (
                 <div className="space-y-6">
+
+                  {/* Quick-Start Event Templates Banner */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-blue-50 border border-indigo-100/90 space-y-2.5">
+                    <div className="flex items-center space-x-2">
+                      <Sparkles className="w-4 h-4 text-indigo-600" aria-hidden="true" />
+                      <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                        Quick-Start Event Templates (1-Click Fill)
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {quickTemplates.map((tpl, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => applyQuickTemplate(tpl)}
+                          className="text-left p-2.5 rounded-xl border border-indigo-200/60 bg-white/80 hover:bg-white hover:border-indigo-400 hover:shadow-xs transition text-xs font-medium text-slate-800 focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
+                        >
+                          <div className="font-semibold text-indigo-900 truncate">{tpl.title}</div>
+                          <div className="text-[10px] text-slate-500 mt-0.5">{currency} {tpl.budget.toLocaleString()} • {tpl.guestCount} Guests</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Event Title */}
                   <div>
                     <label htmlFor="wizard-event-title" className="block text-sm font-semibold text-slate-800 mb-1.5">

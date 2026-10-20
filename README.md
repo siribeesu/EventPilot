@@ -6,7 +6,9 @@
 [![React 19](https://img.shields.io/badge/React-19.1-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-v20%20%7C%20v22%20%7C%20v24-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
-[![Tests Passing](https://img.shields.io/badge/Vitest-38%2F38%20Passed%20(100%25)-brightgreen?style=for-the-badge&logo=vitest)](docs/TEST_RESULTS.md)
+[![Tests Passing](https://img.shields.io/badge/Vitest-46%2F46%20Passed%20(100%25)-brightgreen?style=for-the-badge&logo=vitest)](docs/TEST_RESULTS.md)
+[![E2E Journey](https://img.shields.io/badge/E2E_Tests-8%20User%20Flows_Passing-teal?style=for-the-badge&logo=playwright)](docs/TEST_RESULTS.md)
+[![ADRs](https://img.shields.io/badge/Architecture-4%20ADRs_Accepted-blueviolet?style=for-the-badge)](docs/adr/001-hybrid-postgres-json-storage.md)
 [![Security & Guardrails](https://img.shields.io/badge/Security-Prompt_Guardrails_%2B_RBAC-indigo?style=for-the-badge&logo=shield)](docs/SECURITY_AUDIT.md)
 [![WCAG 2.1 AA](https://img.shields.io/badge/Accessibility-WCAG%20AA-purple?style=for-the-badge)](docs/ACCESSIBILITY_AUDIT.md)
 
@@ -14,7 +16,7 @@
 
 > 🌐 **Live Production App:** [eventpilot-ai.vercel.app](https://event-pilot-phi.vercel.app) *(or Vercel Preview)*  
 > 📊 **Live Telemetry & Health:** [`GET /api/metrics`](https://event-pilot-phi.vercel.app/api/metrics) • [`GET /api/health`](https://event-pilot-phi.vercel.app/api/health)  
-> 🧪 **CI/CD Evidence & Run Logs:** [GitHub Actions Run Log](docs/CI_RUN_LOG.md) • [Vitest Execution Log (38/38)](docs/TEST_RESULTS.md)
+> 🧪 **CI/CD Evidence & Run Logs:** [GitHub Actions Run Log](docs/CI_RUN_LOG.md) • [Vitest Execution Log (46/46 across 9 Suites)](docs/TEST_RESULTS.md) • [Architecture Decision Records (ADRs)](docs/adr/001-hybrid-postgres-json-storage.md)
 
 ---
 
@@ -239,14 +241,17 @@ EventPilot implements enterprise-grade defensive security:
 
 ### IV. Automated Testing Suite & CI/CD Verification
 
-EventPilot includes a battle-tested Vitest test suite with **38 passing tests** across **8 specialized suites** with continuous integration across Node.js 20.x and 22.x:
+EventPilot includes an enterprise-grade automated test matrix with **46 passing tests** across **9 specialized suites**, covering unit, integration, security, and full end-to-end user journeys:
 
 ```bash
-npm run test
+npm run test       # Run all 46 tests across 9 suites
+npm run test:e2e   # Run 8 end-to-end user journey flows
+npm run verify     # Full verification: compile + unit + integration + E2E
 ```
 
 | Test Suite | Tests | Category | Scope & Key Invariants Verified |
 | :--- | :---: | :---: | :--- |
+| `src/tests/e2e_user_journey.test.ts` | **8** | **Full E2E Journeys** | **Signup/login flow, event creation with templates, budget rescue execution, human-in-the-loop AI approval, vendor negotiation sync, PDF & GDPR export, AI feedback loop, and async background queue** |
 | `src/tests/ai_guardrails.test.ts` | 6 | AI Safety & Cost | Direct & indirect prompt injection detection, delimiter stuffing defense, Zod output validation, negative number clamp, in-memory SHA-256 cost cache |
 | `src/tests/rbac_collaboration.test.ts` | 5 | Authorization | Role-based access control (`owner`, `editor`, `viewer`), collaborator invitation, privilege escalation guards, collaborator revocation |
 | `src/tests/privacy_and_audit.test.ts` | 4 | Privacy & Compliance | GDPR Article 15 Data Portability JSON export, GDPR Article 17 Right to Erasure cascade delete, transparent retention policy disclosures, system telemetry metrics |
@@ -257,7 +262,10 @@ npm run test
 | `src/tests/api_integration.test.ts` | 4 | Integration | Event CRUD lifecycle, calculated metrics verification, Budget Rescue proposal application, AI Copilot approval workflow |
 
 > 📖 **In-Depth Evidence & Audit Reports:**
-> * 🧪 [Automated Vitest Test Run Log (38/38)](docs/TEST_RESULTS.md) — Sub-millisecond execution logs across 8 suites (100% pass rate)
+> * 🧪 [Automated Vitest Test Run Log (46/46)](docs/TEST_RESULTS.md) — Execution logs across 9 specialized suites and E2E journeys
+> * 🏛️ [Architecture Decision Records (ADRs)](docs/adr/001-hybrid-postgres-json-storage.md) — Formal records on storage, guardrails, RBAC, and client-side PDF export
+> * 📜 [Privacy Policy & Data Retention](docs/PRIVACY_POLICY.md) — Formal GDPR Article 15/17 compliance standards
+> * ⚖️ [Terms of Service](docs/TERMS_OF_SERVICE.md) — Acceptable use and AI advisory disclaimers
 > * 🚀 [GitHub Actions CI Pipeline Run Log](docs/CI_RUN_LOG.md) — Node 20.x & 22.x matrix verification step-by-step
 > * 🛡️ [Enterprise Security & Threat Model Audit](docs/SECURITY_AUDIT.md) — 10 prompt injection tests, PBKDF2 hash verification & RBAC matrix
 > * ♿ [Automated Accessibility (WCAG 2.1 AA) Report](docs/ACCESSIBILITY_AUDIT.md) — Mathematical contrast ratio proofs, skip link & focus trap tests

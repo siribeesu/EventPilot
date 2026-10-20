@@ -7,6 +7,7 @@ import {
   CreateEventSchema,
   UpdateEventSchema,
   AIAssistantMessageSchema,
+  AIFeedbackSchema,
 } from '../schemas/index.js';
 import {
   generateAIEventPlan,
@@ -14,8 +15,15 @@ import {
   processAssistantMessage,
 } from '../ai/planner.js';
 import { logAuditEvent } from '../services/auditService.js';
+import { taskQueue } from '../services/taskQueue.js';
 
 const router = Router();
+
+// Register async AI plan generation worker
+taskQueue.registerHandler('ai_plan_generation', async (payload: { event: any }) => {
+  return await generateAIEventPlan(payload.event);
+});
+
 
 // 1. GET all events for logged-in user with caching
 router.get('/', async (req: AuthenticatedRequest, res) => {
@@ -576,6 +584,77 @@ router.get('/:id/export', validateIdParam('id'), async (req: AuthenticatedReques
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
+});
+
+
+// 12. Submit Real User AI Feedback (Human-in-the-loop Learning Loop)
+router.post('/:id/ai/feedback', validateIdParam('id'), validateBody(AIFeedbackSchema), async (req: AuthenticatedRequest, res) => {
+  try {
+    const eventId = String(req.params.id);
+    const userId = req.userId || 'usr_demo_123';
+    const event = await db.getEventById(eventId, userId);
+    if (!event) return res.status(404).json({ error: 'Event not found' });
+
+    const feedback = await db.saveAIFeedback({
+      event_id: event.id,
+      user_id: userId,
+      suggestion_id: req.body.suggestionId,
+      suggestion_type: req.body.suggestionType,
+      rating: req.body.rating,
+      user_action: req.body.userAction,
+      feedback_comment: req.body.feedbackComment,
+      category: req.body.category,
+    });
+
+    await logAuditEvent(req, {
+      action: 'AI_FEEDBACK_SUBMITTED',
+      resource_type: 'ai',
+      resource_id: feedback.id,
+      status: 'success',
+      metadata: { rating: feedback.rating, action: feedback.user_action, suggestionType: feedback.suggestion_type },
+    });
+
+    res.status(201).json({ success: true, feedback });
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+// 13. Get AI Feedback entries for event
+router.get('/:id/ai/feedback', validateIdParam('id'), async (req: AuthenticatedRequest, res) => {
+  try {
+    const eventId = String(req.params.id);
+    const feedbackList = await db.getAIFeedback(eventId);
+    res.json(feedbackList);
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+// 14. Background / Asynchronous AI Plan Generation Job Queue
+router.post('/:id/ai/async-generate', validateIdParam('id'), async (req: AuthenticatedRequest, res) => {
+  try {
+    const eventId = String(req.params.id);
+    const userId = req.userId || 'usr_demo_123';
+    const event = await db.getEventById(eventId, userId);
+    if (!event) return res.status(404).json({ error: 'Event not found' });
+
+    const job = taskQueue.enqueue('ai_plan_generation', { event });
+    res.status(202).json({
+      message: 'AI plan generation job queued',
+      jobId: job.id,
+      status: job.status,
+    });
+  } catch (err) {
+    res.status(500).json({ error: (err as Error).message });
+  }
+});
+
+// 15. Poll Background Job Status
+router.get('/jobs/:jobId', (req, res) => {
+  const job = taskQueue.getJob(req.params.jobId);
+  if (!job) return res.status(404).json({ error: 'Job not found' });
+  res.json(job);
 });
 
 export default router;

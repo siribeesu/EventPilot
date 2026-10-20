@@ -360,6 +360,11 @@ export function generateDeterministicPlan(event: EventRecord): AIGeneratedPlan {
     `Request all vendor quotations in writing with clear cancellation and weather backup clauses.`,
   ];
 
+  const uncertaintyFlags: string[] = [];
+  if (guestCount > 300) uncertaintyFlags.push('High guest count: venue and catering capacity variance');
+  if (daysUntil < 14) uncertaintyFlags.push('Expedited timeline: vendor booking priority urgent');
+  if (budget / guestCount < 300 && currency === 'INR') uncertaintyFlags.push('Strict per-guest budget constraint');
+
   return {
     eventSummary: summary,
     themes: themeList,
@@ -371,6 +376,8 @@ export function generateDeterministicPlan(event: EventRecord): AIGeneratedPlan {
     menus: menuList,
     activities: activityList,
     recommendations,
+    confidenceScore: uncertaintyFlags.length > 0 ? 0.88 : 0.98,
+    uncertaintyFlags,
   };
 }
 
@@ -654,6 +661,8 @@ export async function processAssistantMessage(
     return {
       reply: '🛡️ EventPilot AI Safety Guardrail: Your input was flagged for potential prompt instruction override. For security, administrative directives and prompt injection syntax are blocked. Please enter your event request normally.',
       requiresUserApproval: false,
+      confidenceScore: 0.1,
+      uncertaintyFlags: ['Prompt injection vector flagged'],
     };
   }
 
@@ -683,6 +692,8 @@ export async function processAssistantMessage(
           updatedSummary: `Revised plan aligned with updated budget of ${currency} ${newBudget.toLocaleString()}.`,
         },
         requiresUserApproval: true,
+        confidenceScore: 0.96,
+        uncertaintyFlags: [],
       };
     }
   }
@@ -711,6 +722,8 @@ export async function processAssistantMessage(
         tasksToAdd: taskRecommendations,
       },
       requiresUserApproval: true,
+      confidenceScore: 0.94,
+      uncertaintyFlags: [],
     };
   }
 
@@ -730,6 +743,8 @@ export async function processAssistantMessage(
         ],
       },
       requiresUserApproval: true,
+      confidenceScore: 0.97,
+      uncertaintyFlags: [],
     };
   }
 
@@ -748,6 +763,8 @@ export async function processAssistantMessage(
         ],
       },
       requiresUserApproval: true,
+      confidenceScore: 0.95,
+      uncertaintyFlags: [],
     };
   }
 
@@ -759,5 +776,7 @@ export async function processAssistantMessage(
       'Do you prefer more elaborate decorations or an upgraded gourmet dining experience?',
     ],
     requiresUserApproval: false,
+    confidenceScore: 0.92,
+    uncertaintyFlags: [],
   };
 }

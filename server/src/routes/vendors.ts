@@ -11,7 +11,7 @@ router.get('/events/:id/vendors', async (req: AuthenticatedRequest, res) => {
     const eventId = String(req.params.id);
     const userId = req.userId || 'usr_demo_123';
     const event = await db.getEventById(eventId, userId);
-    if (!event) return res.status(404).json({ error: 'Event not found' });
+    if (!event) return res.status(404).json({ error: 'Event not found or access denied' });
 
     const vendors = await db.getVendors(event.id);
     res.json(vendors);
@@ -26,7 +26,7 @@ router.post('/events/:id/vendors', async (req: AuthenticatedRequest, res) => {
     const eventId = String(req.params.id);
     const userId = req.userId || 'usr_demo_123';
     const event = await db.getEventById(eventId, userId);
-    if (!event) return res.status(404).json({ error: 'Event not found' });
+    if (!event) return res.status(404).json({ error: 'Event not found or access denied' });
 
     const parsed = CreateVendorSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -44,10 +44,17 @@ router.post('/events/:id/vendors', async (req: AuthenticatedRequest, res) => {
   }
 });
 
-// PATCH update vendor
+// PATCH update vendor with ownership verification
 router.patch('/vendors/:id', async (req: AuthenticatedRequest, res) => {
   try {
     const vendorId = String(req.params.id);
+    const userId = req.userId || 'usr_demo_123';
+
+    const isOwner = await db.verifyVendorOwnership(vendorId, userId);
+    if (!isOwner) {
+      return res.status(403).json({ error: 'Access denied: vendor does not belong to user events' });
+    }
+
     const parsed = UpdateVendorSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten().fieldErrors });
@@ -61,10 +68,17 @@ router.patch('/vendors/:id', async (req: AuthenticatedRequest, res) => {
   }
 });
 
-// DELETE vendor
+// DELETE vendor with ownership verification
 router.delete('/vendors/:id', async (req: AuthenticatedRequest, res) => {
   try {
     const vendorId = String(req.params.id);
+    const userId = req.userId || 'usr_demo_123';
+
+    const isOwner = await db.verifyVendorOwnership(vendorId, userId);
+    if (!isOwner) {
+      return res.status(403).json({ error: 'Access denied: vendor does not belong to user events' });
+    }
+
     const deleted = await db.deleteVendor(vendorId);
     if (!deleted) return res.status(404).json({ error: 'Vendor not found' });
     res.json({ success: true });

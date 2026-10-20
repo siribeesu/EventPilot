@@ -34,7 +34,7 @@ router.get('/', async (req: AuthenticatedRequest, res) => {
   }
 });
 
-// 2. POST create new event
+// 2. POST create new event with optimized batch insertion
 router.post('/', async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.userId || 'usr_demo_123';
@@ -62,107 +62,97 @@ router.post('/', async (req: AuthenticatedRequest, res) => {
         ai_summary: plan.eventSummary,
       });
 
-      // Save budget items
-      for (const b of plan.budget) {
-        await db.createBudgetItem({
-          event_id: newEvent.id,
-          category: b.category,
-          name: b.name,
-          estimated_cost: b.estimatedCost,
-          actual_cost: 0,
-          paid_amount: 0,
-          notes: b.reason,
-          status: 'estimated',
-        });
-      }
+      // Batch save budget items
+      const budgetItemsToInsert = plan.budget.map(b => ({
+        event_id: newEvent.id,
+        category: b.category,
+        name: b.name,
+        estimated_cost: b.estimatedCost,
+        actual_cost: 0,
+        paid_amount: 0,
+        notes: b.reason,
+        status: 'estimated' as const,
+      }));
+      await db.createBudgetItemsBatch(budgetItemsToInsert);
 
-      // Save timeline tasks
-      for (const t of plan.timeline) {
-        const targetDate = new Date(newEvent.event_date);
-        targetDate.setDate(targetDate.getDate() - (t.daysBeforeEvent || 0));
-        await db.createTask({
-          event_id: newEvent.id,
-          title: t.task,
-          category: t.category || 'General',
-          due_date: targetDate.toISOString().split('T')[0],
-          days_before_event: t.daysBeforeEvent,
-          priority: t.priority,
-          status: 'pending',
-        });
-      }
-
-      // Save general tasks
-      for (const t of plan.tasks) {
-        await db.createTask({
+      // Batch save tasks
+      const tasksToInsert = [
+        ...plan.timeline.map(t => {
+          const targetDate = new Date(newEvent.event_date);
+          targetDate.setDate(targetDate.getDate() - (t.daysBeforeEvent || 0));
+          return {
+            event_id: newEvent.id,
+            title: t.task,
+            category: t.category || 'General',
+            due_date: targetDate.toISOString().split('T')[0],
+            days_before_event: t.daysBeforeEvent,
+            priority: t.priority,
+            status: 'pending' as const,
+          };
+        }),
+        ...plan.tasks.map(t => ({
           event_id: newEvent.id,
           title: t.title,
           category: t.category,
           priority: t.priority,
-          status: 'pending',
-        });
-      }
+          status: 'pending' as const,
+        })),
+      ];
+      await db.createTasksBatch(tasksToInsert);
 
-      // Save vendors
-      for (const v of plan.vendorCategories) {
-        await db.createVendor({
-          event_id: newEvent.id,
-          category: v.category,
-          name: `${v.category} Specialist (AI Estimated)`,
-          quoted_amount: 0,
-          estimated_budget: v.estimatedBudget,
-          booking_status: 'researching',
-          payment_status: 'unpaid',
-          notes: v.notes,
-          is_ai_estimate: true,
-        });
-      }
+      // Batch save vendors
+      const vendorsToInsert = plan.vendorCategories.map(v => ({
+        event_id: newEvent.id,
+        category: v.category,
+        name: `${v.category} Specialist (AI Estimated)`,
+        quoted_amount: 0,
+        estimated_budget: v.estimatedBudget,
+        booking_status: 'researching' as const,
+        payment_status: 'unpaid' as const,
+        notes: v.notes,
+        is_ai_estimate: true,
+      }));
+      await db.createVendorsBatch(vendorsToInsert);
 
-      // Save ideas
-      for (const theme of plan.themes) {
-        await db.createIdea({
+      // Batch save ideas
+      const ideasToInsert = [
+        ...plan.themes.map(t => ({
           event_id: newEvent.id,
-          type: 'theme',
-          title: theme.name,
-          description: theme.description,
-          estimated_cost: theme.estimatedCost,
-        });
-      }
-      for (const dec of plan.decorations) {
-        await db.createIdea({
+          type: 'theme' as const,
+          title: t.name,
+          description: t.description,
+          estimated_cost: t.estimatedCost,
+        })),
+        ...plan.decorations.map(d => ({
           event_id: newEvent.id,
-          type: 'decoration',
-          title: dec.title,
-          description: dec.description,
-          estimated_cost: dec.estimatedCost,
-        });
-      }
-      for (const menu of plan.menus) {
-        await db.createIdea({
+          type: 'decoration' as const,
+          title: d.title,
+          description: d.description,
+          estimated_cost: d.estimatedCost,
+        })),
+        ...plan.menus.map(m => ({
           event_id: newEvent.id,
-          type: 'menu',
-          title: menu.title,
-          description: menu.description,
-          estimated_cost: menu.estimatedCost,
-        });
-      }
-      for (const act of plan.activities) {
-        await db.createIdea({
+          type: 'menu' as const,
+          title: m.title,
+          description: m.description,
+          estimated_cost: m.estimatedCost,
+        })),
+        ...plan.activities.map(a => ({
           event_id: newEvent.id,
-          type: 'activity',
-          title: act.title,
-          description: act.description,
-          estimated_cost: act.estimatedCost,
-        });
-      }
-      for (const rec of plan.recommendations) {
-        await db.createIdea({
+          type: 'activity' as const,
+          title: a.title,
+          description: a.description,
+          estimated_cost: a.estimatedCost,
+        })),
+        ...plan.recommendations.map(r => ({
           event_id: newEvent.id,
-          type: 'recommendation',
+          type: 'recommendation' as const,
           title: 'Planning Recommendation',
-          description: rec,
+          description: r,
           estimated_cost: 0,
-        });
-      }
+        })),
+      ];
+      await db.createIdeasBatch(ideasToInsert);
     } catch (genErr) {
       console.error('Plan generation background error:', genErr);
     }
@@ -181,7 +171,7 @@ router.get('/:id', async (req: AuthenticatedRequest, res) => {
     const userId = req.userId || 'usr_demo_123';
     const full = await db.getFullEvent(eventId, userId);
     if (!full) {
-      return res.status(404).json({ error: 'Event not found' });
+      return res.status(404).json({ error: 'Event not found or access denied' });
     }
     res.json(full);
   } catch (err) {
@@ -229,7 +219,7 @@ router.delete('/:id', async (req: AuthenticatedRequest, res) => {
   }
 });
 
-// 6. POST regenerate AI plan
+// 6. POST regenerate AI plan with batch operations
 router.post('/:id/generate-plan', async (req: AuthenticatedRequest, res) => {
   try {
     const eventId = String(req.params.id);
@@ -239,7 +229,6 @@ router.post('/:id/generate-plan', async (req: AuthenticatedRequest, res) => {
       return res.status(404).json({ error: 'Event not found' });
     }
 
-    // Clear existing generated items
     await db.clearEventPlan(event.id);
 
     const plan = await generateAIEventPlan(event);
@@ -248,102 +237,93 @@ router.post('/:id/generate-plan', async (req: AuthenticatedRequest, res) => {
       ai_summary: plan.eventSummary,
     });
 
-    for (const b of plan.budget) {
-      await db.createBudgetItem({
-        event_id: event.id,
-        category: b.category,
-        name: b.name,
-        estimated_cost: b.estimatedCost,
-        actual_cost: 0,
-        paid_amount: 0,
-        notes: b.reason,
-        status: 'estimated',
-      });
-    }
+    const budgetItems = plan.budget.map(b => ({
+      event_id: event.id,
+      category: b.category,
+      name: b.name,
+      estimated_cost: b.estimatedCost,
+      actual_cost: 0,
+      paid_amount: 0,
+      notes: b.reason,
+      status: 'estimated' as const,
+    }));
+    await db.createBudgetItemsBatch(budgetItems);
 
-    for (const t of plan.timeline) {
-      const targetDate = new Date(event.event_date);
-      targetDate.setDate(targetDate.getDate() - (t.daysBeforeEvent || 0));
-      await db.createTask({
-        event_id: event.id,
-        title: t.task,
-        category: t.category || 'General',
-        due_date: targetDate.toISOString().split('T')[0],
-        days_before_event: t.daysBeforeEvent,
-        priority: t.priority,
-        status: 'pending',
-      });
-    }
-
-    for (const t of plan.tasks) {
-      await db.createTask({
+    const tasksToInsert = [
+      ...plan.timeline.map(t => {
+        const targetDate = new Date(event.event_date);
+        targetDate.setDate(targetDate.getDate() - (t.daysBeforeEvent || 0));
+        return {
+          event_id: event.id,
+          title: t.task,
+          category: t.category || 'General',
+          due_date: targetDate.toISOString().split('T')[0],
+          days_before_event: t.daysBeforeEvent,
+          priority: t.priority,
+          status: 'pending' as const,
+        };
+      }),
+      ...plan.tasks.map(t => ({
         event_id: event.id,
         title: t.title,
         category: t.category,
         priority: t.priority,
-        status: 'pending',
-      });
-    }
+        status: 'pending' as const,
+      })),
+    ];
+    await db.createTasksBatch(tasksToInsert);
 
-    for (const v of plan.vendorCategories) {
-      await db.createVendor({
-        event_id: event.id,
-        category: v.category,
-        name: `${v.category} Specialist (AI Estimated)`,
-        quoted_amount: 0,
-        estimated_budget: v.estimatedBudget,
-        booking_status: 'researching',
-        payment_status: 'unpaid',
-        notes: v.notes,
-        is_ai_estimate: true,
-      });
-    }
+    const vendorsToInsert = plan.vendorCategories.map(v => ({
+      event_id: event.id,
+      category: v.category,
+      name: `${v.category} Specialist (AI Estimated)`,
+      quoted_amount: 0,
+      estimated_budget: v.estimatedBudget,
+      booking_status: 'researching' as const,
+      payment_status: 'unpaid' as const,
+      notes: v.notes,
+      is_ai_estimate: true,
+    }));
+    await db.createVendorsBatch(vendorsToInsert);
 
-    for (const theme of plan.themes) {
-      await db.createIdea({
+    const ideasToInsert = [
+      ...plan.themes.map(t => ({
         event_id: event.id,
-        type: 'theme',
-        title: theme.name,
-        description: theme.description,
-        estimated_cost: theme.estimatedCost,
-      });
-    }
-    for (const dec of plan.decorations) {
-      await db.createIdea({
+        type: 'theme' as const,
+        title: t.name,
+        description: t.description,
+        estimated_cost: t.estimatedCost,
+      })),
+      ...plan.decorations.map(d => ({
         event_id: event.id,
-        type: 'decoration',
-        title: dec.title,
-        description: dec.description,
-        estimated_cost: dec.estimatedCost,
-      });
-    }
-    for (const menu of plan.menus) {
-      await db.createIdea({
+        type: 'decoration' as const,
+        title: d.title,
+        description: d.description,
+        estimated_cost: d.estimatedCost,
+      })),
+      ...plan.menus.map(m => ({
         event_id: event.id,
-        type: 'menu',
-        title: menu.title,
-        description: menu.description,
-        estimated_cost: menu.estimatedCost,
-      });
-    }
-    for (const act of plan.activities) {
-      await db.createIdea({
+        type: 'menu' as const,
+        title: m.title,
+        description: m.description,
+        estimated_cost: m.estimatedCost,
+      })),
+      ...plan.activities.map(a => ({
         event_id: event.id,
-        type: 'activity',
-        title: act.title,
-        description: act.description,
-        estimated_cost: act.estimatedCost,
-      });
-    }
-    for (const rec of plan.recommendations) {
-      await db.createIdea({
+        type: 'activity' as const,
+        title: a.title,
+        description: a.description,
+        estimated_cost: a.estimatedCost,
+      })),
+      ...plan.recommendations.map(r => ({
         event_id: event.id,
-        type: 'recommendation',
+        type: 'recommendation' as const,
         title: 'Planning Recommendation',
-        description: rec,
+        description: r,
         estimated_cost: 0,
-      });
-    }
+      })),
+    ];
+    await db.createIdeasBatch(ideasToInsert);
 
     const full = await db.getFullEvent(event.id, userId);
     res.json(full);
@@ -472,7 +452,6 @@ router.post('/:id/assistant/apply', async (req: AuthenticatedRequest, res) => {
     const changesApplied: any[] = [];
 
     if (proposedChanges) {
-      // 1. Budget adjustments
       if (proposedChanges.budgetAdjustments && Array.isArray(proposedChanges.budgetAdjustments)) {
         for (const adj of proposedChanges.budgetAdjustments) {
           if (adj.action === 'update' && adj.budgetItemId) {
@@ -496,7 +475,6 @@ router.post('/:id/assistant/apply', async (req: AuthenticatedRequest, res) => {
         }
       }
 
-      // 2. Tasks to add
       if (proposedChanges.tasksToAdd && Array.isArray(proposedChanges.tasksToAdd)) {
         for (const t of proposedChanges.tasksToAdd) {
           const targetDate = new Date(event.event_date);
@@ -516,7 +494,6 @@ router.post('/:id/assistant/apply', async (req: AuthenticatedRequest, res) => {
         }
       }
 
-      // 3. Ideas to add
       if (proposedChanges.ideasToAdd && Array.isArray(proposedChanges.ideasToAdd)) {
         for (const idea of proposedChanges.ideasToAdd) {
           await db.createIdea({
@@ -530,14 +507,12 @@ router.post('/:id/assistant/apply', async (req: AuthenticatedRequest, res) => {
         }
       }
 
-      // 4. Summary update
       if (proposedChanges.updatedSummary) {
         await db.updateEvent(event.id, userId, {
           ai_summary: proposedChanges.updatedSummary,
         });
       }
 
-      // Create revision record
       await db.createRevision({
         event_id: event.id,
         revision_note: revisionNote || 'AI Assistant proposed changes applied by user',

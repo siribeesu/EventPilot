@@ -3,17 +3,11 @@ import {
   Sparkles,
   ArrowRight,
   ShieldCheck,
-  Zap,
-  TrendingDown,
-  Calendar,
-  Users,
   CheckCircle,
   Clock,
-  DollarSign,
   Heart,
   Cake,
   Flame,
-  Award,
   ChevronRight,
   FileText,
 } from 'lucide-react';
@@ -106,7 +100,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center max-w-3xl mx-auto space-y-5">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-100/80 border border-indigo-200 text-indigo-800 text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+              <Sparkles className="w-3.5 h-3.5 text-indigo-600" aria-hidden="true" />
               <span>Next-Gen Generative AI Event Planner</span>
             </div>
 
@@ -124,15 +118,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
               <button
+                type="button"
                 onClick={onStartPlanning}
-                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl text-base font-bold bg-indigo-600 text-white hover:bg-indigo-700 active:scale-[0.98] transition shadow-md shadow-indigo-200 group"
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl text-base font-bold bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 active:scale-[0.98] transition shadow-md shadow-indigo-200 group"
               >
                 <span>Generate Your Event Plan</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
               </button>
               <button
+                type="button"
                 onClick={onOpenDashboard}
-                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl text-base font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 transition"
+                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl text-base font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-indigo-500 transition"
               >
                 <span>View Dashboard</span>
               </button>
@@ -141,15 +137,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             {/* Key trust indicators */}
             <div className="flex flex-wrap items-center justify-center gap-6 pt-6 text-xs text-slate-500 font-medium">
               <span className="flex items-center space-x-1.5">
-                <CheckCircle className="w-4 h-4 text-emerald-500" />
+                <CheckCircle className="w-4 h-4 text-emerald-500" aria-hidden="true" />
                 <span>Deterministic Calculations & Safeguards</span>
               </span>
               <span className="flex items-center space-x-1.5">
-                <ShieldCheck className="w-4 h-4 text-indigo-500" />
+                <ShieldCheck className="w-4 h-4 text-indigo-500" aria-hidden="true" />
                 <span>Budget Rescue Mode™ Protection</span>
               </span>
               <span className="flex items-center space-x-1.5">
-                <FileText className="w-4 h-4 text-purple-500" />
+                <FileText className="w-4 h-4 text-purple-500" aria-hidden="true" />
                 <span>One-Click Executive PDF Export</span>
               </span>
             </div>
@@ -170,38 +166,51 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
         {/* Tab switcher */}
         <div className="flex justify-center mb-8">
-          <div className="inline-flex p-1.5 bg-slate-100 rounded-2xl border border-slate-200 space-x-1">
+          <div
+            role="tablist"
+            aria-label="Event celebration use cases"
+            className="inline-flex p-1.5 bg-slate-100 rounded-2xl border border-slate-200 space-x-1"
+          >
             <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'wedding'}
               onClick={() => setActiveTab('wedding')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center space-x-2 ${
+              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center space-x-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
                 activeTab === 'wedding'
                   ? 'bg-white text-indigo-700 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Heart className="w-4 h-4 text-pink-500" />
+              <Heart className="w-4 h-4 text-pink-500" aria-hidden="true" />
               <span>Weddings & Receptions</span>
             </button>
             <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'birthday'}
               onClick={() => setActiveTab('birthday')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center space-x-2 ${
+              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center space-x-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
                 activeTab === 'birthday'
                   ? 'bg-white text-indigo-700 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Cake className="w-4 h-4 text-amber-500" />
+              <Cake className="w-4 h-4 text-amber-500" aria-hidden="true" />
               <span>Birthdays & Milestones</span>
             </button>
             <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'community'}
               onClick={() => setActiveTab('community')}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center space-x-2 ${
+              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center space-x-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
                 activeTab === 'community'
                   ? 'bg-white text-indigo-700 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Flame className="w-4 h-4 text-orange-500" />
+              <Flame className="w-4 h-4 text-orange-500" aria-hidden="true" />
               <span>College & Community</span>
             </button>
           </div>
@@ -221,7 +230,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <div className="pt-2 space-y-2.5">
                 {currentCase.features.map((feat, idx) => (
                   <div key={idx} className="flex items-start space-x-2.5 text-xs text-slate-700">
-                    <CheckCircle className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" />
+                    <CheckCircle className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
                     <span>{feat}</span>
                   </div>
                 ))}
@@ -230,11 +239,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
             <div className="pt-8">
               <button
+                type="button"
                 onClick={onStartPlanning}
-                className="inline-flex items-center space-x-2 text-sm font-bold text-indigo-600 hover:text-indigo-700 group"
+                className="inline-flex items-center space-x-2 text-sm font-bold text-indigo-600 hover:text-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-500 rounded p-1 group"
               >
                 <span>Plan this event now</span>
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -260,7 +270,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <span className="font-semibold text-slate-800">{cat.name}</span>
                     <span className="text-slate-500 font-medium">{cat.cost}</span>
                   </div>
-                  <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div
+                    role="progressbar"
+                    aria-valuenow={parseInt(cat.cost)}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`${cat.name}: ${cat.cost} of budget`}
+                    className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden"
+                  >
                     <div
                       className={`h-full ${cat.color} rounded-full transition-all duration-500`}
                       style={{ width: cat.cost }}
@@ -272,7 +289,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
             {/* AI Callout note */}
             <div className="p-4 rounded-xl bg-indigo-50/70 border border-indigo-100 flex items-start space-x-3 text-xs text-indigo-900">
-              <Sparkles className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" />
+              <Sparkles className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" aria-hidden="true" />
               <div>
                 <span className="font-bold">Autonomous Trade-off Engine: </span>
                 If you choose to reduce your overall budget later, EventPilot will preserve your highest priority areas and automatically offer lower-cost decor and menu alternatives without lowering quality.
@@ -295,7 +312,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-indigo-200 transition space-y-3">
-            <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center" aria-hidden="true">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-slate-900 text-lg">Budget Rescue Mode™</h3>
@@ -305,7 +322,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
 
           <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-indigo-200 transition space-y-3">
-            <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center" aria-hidden="true">
               <Clock className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-slate-900 text-lg">Adaptive Timeline</h3>
@@ -315,7 +332,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
 
           <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-indigo-200 transition space-y-3">
-            <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center" aria-hidden="true">
               <FileText className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-slate-900 text-lg">Executive PDF Export</h3>
@@ -337,11 +354,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </p>
           <div className="pt-2">
             <button
+              type="button"
               onClick={onStartPlanning}
-              className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl text-base font-bold bg-white text-indigo-700 hover:bg-slate-100 active:scale-[0.98] transition shadow-md"
+              className="inline-flex items-center space-x-2 px-6 py-3.5 rounded-xl text-base font-bold bg-white text-indigo-700 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 active:scale-[0.98] transition shadow-md"
             >
               <span>Launch Event Creator</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </button>
           </div>
         </div>

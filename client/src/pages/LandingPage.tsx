@@ -10,6 +10,10 @@ import {
   Flame,
   ChevronRight,
   FileText,
+  LayoutDashboard,
+  ShieldAlert,
+  DollarSign,
+  TrendingUp,
 } from 'lucide-react';
 
 interface LandingPageProps {
@@ -24,6 +28,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   currency,
 }) => {
   const [activeTab, setActiveTab] = useState<'wedding' | 'birthday' | 'community'>('wedding');
+  const [heroActiveDemo, setHeroActiveDemo] = useState<'normal' | 'rescued'>('normal');
 
   const useCases = {
     wedding: {
@@ -95,59 +100,158 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
   return (
     <div className="space-y-16 pb-20">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-16 bg-gradient-to-b from-indigo-50/60 via-white to-slate-50 border-b border-slate-200">
+      {/* Expansive 2-Column Hero Section */}
+      <section className="relative overflow-hidden pt-12 pb-16 bg-gradient-to-b from-indigo-50/70 via-white to-slate-50 border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="text-center max-w-3xl mx-auto space-y-5">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-indigo-100/80 border border-indigo-200 text-indigo-800 text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-600" aria-hidden="true" />
-              <span>Next-Gen Generative AI Event Planner</span>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            {/* Left Column: Value Proposition & CTAs */}
+            <div className="lg:col-span-7 space-y-6">
+              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-indigo-100/90 border border-indigo-200 text-indigo-900 text-xs font-semibold">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-600" aria-hidden="true" />
+                <span>Next-Gen Generative AI Event Planner</span>
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.12]">
+                Plan Flawless Events in Minutes,{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-600">
+                  Not Months.
+                </span>
+              </h1>
+
+              <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl">
+                EventPilot creates itemized budget breakdowns, adaptive milestone schedules, vendor procurement checklists, and bespoke menus for weddings, birthdays, and community gatherings. Powered by autonomous <strong>Budget Rescue Mode™</strong>.
+              </p>
+
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={onStartPlanning}
+                  className="inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl text-base font-bold bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 active:scale-[0.98] transition shadow-md shadow-indigo-200 group"
+                >
+                  <span>Launch Event Creator</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={onOpenDashboard}
+                  className="inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl text-base font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-2xs"
+                >
+                  <LayoutDashboard className="w-4 h-4 text-slate-500" aria-hidden="true" />
+                  <span>View Dashboard</span>
+                </button>
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="pt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-slate-200/80 text-xs text-slate-600">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" aria-hidden="true" />
+                  <span>Deterministic Ledger</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <ShieldCheck className="w-4 h-4 text-indigo-600 flex-shrink-0" aria-hidden="true" />
+                  <span>Budget Rescue Mode™</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <FileText className="w-4 h-4 text-purple-600 flex-shrink-0" aria-hidden="true" />
+                  <span>Executive PDF Export</span>
+                </div>
+              </div>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
-              Plan Flawless Events in Minutes,{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
-                Not Months.
-              </span>
-            </h1>
+            {/* Right Column: Hero Live Interactive AI Plan Showcase */}
+            <div className="lg:col-span-5">
+              <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl p-6 sm:p-7 space-y-5">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-red-400" />
+                    <div className="w-3 h-3 rounded-full bg-amber-400" />
+                    <div className="w-3 h-3 rounded-full bg-emerald-400" />
+                    <span className="text-xs font-bold text-slate-700 ml-1">EventPilot AI Engine</span>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Live Simulator
+                  </span>
+                </div>
 
-            <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              EventPilot generates tailored budgets, adaptive milestone timelines, vendor checklists, and bespoke menus for weddings, birthdays, and celebrations. Features automated <strong>Budget Rescue Mode™</strong>.
-            </p>
+                <div>
+                  <div className="flex items-center justify-between text-xs text-slate-500">
+                    <span>Celebration Blueprint</span>
+                    <span className="font-semibold text-slate-700">Aarav & Diya Wedding</span>
+                  </div>
+                  <div className="flex items-baseline justify-between mt-1">
+                    <span className="text-2xl font-extrabold text-slate-900">
+                      {currency === 'INR'
+                        ? heroActiveDemo === 'rescued'
+                          ? '₹5,25,000'
+                          : '₹7,50,000'
+                        : heroActiveDemo === 'rescued'
+                        ? '$10,500'
+                        : '$15,000'}
+                    </span>
+                    {heroActiveDemo === 'rescued' && (
+                      <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                        Saved 30% via AI
+                      </span>
+                    )}
+                  </div>
+                </div>
 
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-              <button
-                type="button"
-                onClick={onStartPlanning}
-                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl text-base font-bold bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 active:scale-[0.98] transition shadow-md shadow-indigo-200 group"
-              >
-                <span>Generate Your Event Plan</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                onClick={onOpenDashboard}
-                className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-6 py-3.5 rounded-xl text-base font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-indigo-500 transition"
-              >
-                <span>View Dashboard</span>
-              </button>
-            </div>
+                {/* Simulated Category Breakdown Bars */}
+                <div className="space-y-2.5 pt-1">
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between font-medium">
+                      <span className="text-slate-700">Royal Banquet & Lawn</span>
+                      <span className="text-slate-500 font-bold">{heroActiveDemo === 'rescued' ? '38%' : '35%'}</span>
+                    </div>
+                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-indigo-600 rounded-full transition-all duration-500" style={{ width: heroActiveDemo === 'rescued' ? '38%' : '35%' }} />
+                    </div>
+                  </div>
 
-            {/* Key trust indicators */}
-            <div className="flex flex-wrap items-center justify-center gap-6 pt-6 text-xs text-slate-500 font-medium">
-              <span className="flex items-center space-x-1.5">
-                <CheckCircle className="w-4 h-4 text-emerald-500" aria-hidden="true" />
-                <span>Deterministic Calculations & Safeguards</span>
-              </span>
-              <span className="flex items-center space-x-1.5">
-                <ShieldCheck className="w-4 h-4 text-indigo-500" aria-hidden="true" />
-                <span>Budget Rescue Mode™ Protection</span>
-              </span>
-              <span className="flex items-center space-x-1.5">
-                <FileText className="w-4 h-4 text-purple-500" aria-hidden="true" />
-                <span>One-Click Executive PDF Export</span>
-              </span>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between font-medium">
+                      <span className="text-slate-700">Gourmet Catering (Priority Protected)</span>
+                      <span className="text-slate-500 font-bold">{heroActiveDemo === 'rescued' ? '36%' : '30%'}</span>
+                    </div>
+                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-purple-600 rounded-full transition-all duration-500" style={{ width: heroActiveDemo === 'rescued' ? '36%' : '30%' }} />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between font-medium">
+                      <span className="text-slate-700">Floral & Stage Decor</span>
+                      <span className="text-slate-500 font-bold">{heroActiveDemo === 'rescued' ? '12%' : '20%'}</span>
+                    </div>
+                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-pink-500 rounded-full transition-all duration-500" style={{ width: heroActiveDemo === 'rescued' ? '12%' : '20%' }} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Interactive Simulation Switch */}
+                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-slate-800 flex items-center space-x-1.5">
+                      <ShieldAlert className="w-4 h-4 text-amber-600" aria-hidden="true" />
+                      <span>Simulate Budget Cut:</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setHeroActiveDemo(prev => (prev === 'normal' ? 'rescued' : 'normal'))}
+                      className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition"
+                    >
+                      {heroActiveDemo === 'normal' ? 'Apply -30% Rescue' : 'Reset to Full'}
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-slate-500 leading-snug">
+                    {heroActiveDemo === 'normal'
+                      ? 'Click to see how our autonomous engine cuts floral costs while strictly shielding food and venue.'
+                      : '✓ Rescue applied! Swapped exotic stage flowers for local marigolds. Saved ₹2,25,000 without sacrificing taste!'}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -343,8 +447,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
       </section>
 
-      {/* Bottom CTA */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Consistent Full-Width Bottom CTA */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="rounded-3xl bg-gradient-to-r from-indigo-700 via-indigo-600 to-purple-600 p-8 sm:p-12 text-white text-center space-y-5 shadow-xl shadow-indigo-200">
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
             Ready to plan your next memorable celebration?

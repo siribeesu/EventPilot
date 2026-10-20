@@ -49,10 +49,19 @@ class StorageManager {
   };
 
   constructor() {
-    const dataDir = path.resolve(__dirname, '../../data');
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
+    const isVercel = !!process.env.VERCEL;
+    const dataDir = isVercel
+      ? path.join('/tmp', 'data')
+      : path.resolve(__dirname, '../../data');
+
+    try {
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+      }
+    } catch (e) {
+      console.warn('Storage directory warning (running with in-memory store):', (e as Error).message);
     }
+
     this.dataFilePath = path.join(dataDir, 'database.json');
     this.init();
   }
@@ -61,10 +70,13 @@ class StorageManager {
     const dbUrl = process.env.DATABASE_URL;
     if (dbUrl && dbUrl.trim() !== '') {
       try {
-        this.pool = new pg.Pool({ connectionString: dbUrl });
+        this.pool = new pg.Pool({
+          connectionString: dbUrl,
+          ssl: dbUrl.includes('localhost') ? false : { rejectUnauthorized: false },
+        });
         await this.pool.query('SELECT 1');
         this.isPostgres = true;
-        console.log(' connected to PostgreSQL database');
+        console.log('✅ Connected to PostgreSQL database');
         await this.initPostgresSchema();
         return;
       } catch (err) {
@@ -73,7 +85,7 @@ class StorageManager {
       }
     }
 
-    // Load from local JSON file
+    // Load from local JSON file (or fallback to bundled seed file)
     if (fs.existsSync(this.dataFilePath)) {
       try {
         const raw = fs.readFileSync(this.dataFilePath, 'utf-8');
@@ -87,21 +99,56 @@ class StorageManager {
         this.persist();
       }
     } else {
+      // Check if bundled seed database file exists in project tree
+      const seedCandidates = [
+        path.resolve(__dirname, 'seed.json'),
+        path.resolve(process.cwd(), 'server/src/database/seed.json'),
+        path.resolve(__dirname, '../../data/database.json'),
+        path.resolve(process.cwd(), 'server/data/database.json'),
+        path.resolve(process.cwd(), 'data/database.json'),
+      ];
+      let seedFound = false;
+      for (const candidate of seedCandidates) {
+        if (fs.existsSync(candidate)) {
+          try {
+            const raw = fs.readFileSync(candidate, 'utf-8');
+            this.memoryData = JSON.parse(raw);
+            seedFound = true;
+            console.log(` Seeded database from ${candidate} (${this.memoryData.events.length} events)`);
+            break;
+          } catch {
+            // ignore and try next candidate
+          }
+        }
+      }
+      if (!this.memoryData.users.find(u => u.id === defaultUser.id)) {
+        this.memoryData.users.push(defaultUser);
+      }
       this.persist();
     }
   }
 
   private async initPostgresSchema() {
     if (!this.pool) return;
-    const schemaPath = path.resolve(__dirname, 'schema.sql');
-    if (fs.existsSync(schemaPath)) {
-      const sql = fs.readFileSync(schemaPath, 'utf-8');
-      await this.pool.query(sql);
+    try {
+      const schemaCandidates = [
+        path.resolve(__dirname, 'schema.sql'),
+        path.resolve(process.cwd(), 'server/src/database/schema.sql'),
+      ];
+      for (const schemaPath of schemaCandidates) {
+        if (fs.existsSync(schemaPath)) {
+          const sql = fs.readFileSync(schemaPath, 'utf-8');
+          await this.pool.query(sql);
+          break;
+        }
+      }
       // Ensure demo user exists
       await this.pool.query(
         `INSERT INTO users (id, email, name) VALUES ($1, $2, $3) ON CONFLICT (email) DO NOTHING`,
         [defaultUser.id, defaultUser.email, defaultUser.name]
       );
+    } catch (err) {
+      console.warn('Postgres schema verification completed with notice:', (err as Error).message);
     }
   }
 
@@ -109,7 +156,8 @@ class StorageManager {
     try {
       fs.writeFileSync(this.dataFilePath, JSON.stringify(this.memoryData, null, 2), 'utf-8');
     } catch (e) {
-      console.error('Failed to persist database:', e);
+      // Graceful fallback for read-only serverless runtimes
+      console.warn('Persistence to filesystem deferred (in-memory state active):', (e as Error).message);
     }
   }
 

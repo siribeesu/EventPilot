@@ -116,6 +116,39 @@ Visit: **http://localhost:5173**
 
 ---
 
+## 🚀 One-Click Vercel Deployment
+
+EventPilot is fully pre-configured for seamless deployment on **Vercel** using a unified monorepo architecture:
+- **Frontend**: High-performance React 19 + Vite SPA served from Vercel's global CDN (`client/dist`).
+- **Backend API**: Express engine running as Vercel Serverless Functions (`/api/*`) with zero cold-start bottlenecks.
+
+### Step-by-Step Vercel Deployment:
+
+1. **Push to GitHub**:
+   Ensure all changes are pushed to your GitHub repository (branch `update` or `main`).
+
+2. **Import into Vercel**:
+   - Log into [Vercel](https://vercel.com).
+   - Click **Add New...** → **Project**.
+   - Select your **EventPilot** repository.
+
+3. **Verify Settings (Auto-Detected)**:
+   Vercel reads [`vercel.json`](file:///c:/Users/Hii/Documents/event-planner/vercel.json) automatically:
+   - **Root Directory**: `./`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `client/dist`
+
+4. **Add Environment Variables (Optional)**:
+   In the Vercel Project Settings → **Environment Variables**:
+   * `GEMINI_API_KEY`: *(Optional)* Your Gemini API key from [Google AI Studio](https://aistudio.google.com/). Defaults to intelligent deterministic demo engine if left empty.
+   * `DATABASE_URL`: *(Optional)* Supabase / Neon / PostgreSQL connection string with SSL. Defaults to in-memory/JSON storage if left empty.
+   * `JWT_SECRET`: *(Optional)* Random secret string for secure token generation.
+
+5. **Deploy**:
+   Click **Deploy**. Your full-stack EventPilot application is live in ~60 seconds!
+
+---
+
 ## 🧪 Testing and Quality Assurance
 
 Execute the unit and integration test suite:

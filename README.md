@@ -1,14 +1,14 @@
 # EventPilot â€” GenAI-Powered Event Planning & Financial Optimization Platform
 
 [![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel)](https://vercel.com)
-[![CI/CD Pipeline](https://img.shields.io/badge/CI%2FCD-GitHub_Actions_Passing-success?style=for-the-badge&logo=github-actions)](https://github.com/siribeesu/EventPilot/actions)
+[![CI/CD Pipeline](https://img.shields.io/badge/CI%2FCD-GitHub_Actions_Passing-success?style=for-the-badge&logo=github-actions)](https://github.com/siribeesu/EventPilot/actions/workflows/ci.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![React 19](https://img.shields.io/badge/React-19.1-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-v20%20%7C%20v22%20%7C%20v24-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
-[![Tests Passing](https://img.shields.io/badge/Vitest-38%20Passed-green?style=for-the-badge&logo=vitest)](https://vitest.dev/)
-[![Security & Guardrails](https://img.shields.io/badge/Security-Prompt_Guardrails_%2B_RBAC-indigo?style=for-the-badge&logo=shield)](https://github.com/siribeesu/EventPilot)
-[![WCAG 2.1 AA](https://img.shields.io/badge/Accessibility-WCAG%20AA-purple?style=for-the-badge)](https://www.w3.org/WAI/standards-guidelines/wcag/)
+[![Tests Passing](https://img.shields.io/badge/Vitest-38%2F38%20Passed%20(100%25)-brightgreen?style=for-the-badge&logo=vitest)](docs/TEST_RESULTS.md)
+[![Security & Guardrails](https://img.shields.io/badge/Security-Prompt_Guardrails_%2B_RBAC-indigo?style=for-the-badge&logo=shield)](docs/SECURITY_AUDIT.md)
+[![WCAG 2.1 AA](https://img.shields.io/badge/Accessibility-WCAG%20AA-purple?style=for-the-badge)](docs/ACCESSIBILITY_AUDIT.md)
 
 > **EventPilot** is an enterprise-grade, full-stack Generative AI application designed to eliminate planning chaos and budget overruns for **weddings, milestone birthdays, anniversaries, college festivals, and community galas**. Built with a deterministic financial engine, real-time AI assistant copilot, and autonomous **Budget Rescue Modeâ„¢**.
 

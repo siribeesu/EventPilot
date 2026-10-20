@@ -12,7 +12,8 @@
     "build:client": "cd client && npm run build",
     "build:server": "cd server && npm run build",
     "build": "npm run build:client && npm run build:server",
-    "test": "cd server && npm test"
+    "test": "cd server && npm test",
+    "verify": "npm run build && npm run test"
   },
   "dependencies": {
     "compression": "^1.8.2",

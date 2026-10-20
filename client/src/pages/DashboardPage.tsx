@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import type { EventFullDetail } from '../types';
 import { api } from '../services/api';
+import { useDebounce } from '../hooks/useDebounce';
 
 interface DashboardPageProps {
   onSelectEvent: (eventId: string) => void;
@@ -29,6 +30,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   const [events, setEvents] = useState<EventFullDetail[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 250);
   const [filterType, setFilterType] = useState<string>('all');
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -86,9 +88,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
     };
   }, [events]);
 
-  // Code Optimality: Memoize filtered events
+  // Code Optimality: Memoize filtered events with debounced search
   const filteredEvents = useMemo(() => {
-    const q = searchQuery.toLowerCase().trim();
+    const q = debouncedSearchQuery.toLowerCase().trim();
     return events.filter(ev => {
       const matchesSearch = !q ||
         ev.title.toLowerCase().includes(q) ||
@@ -96,7 +98,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       const matchesType = filterType === 'all' || ev.event_type === filterType;
       return matchesSearch && matchesType;
     });
-  }, [events, searchQuery, filterType]);
+  }, [events, debouncedSearchQuery, filterType]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">

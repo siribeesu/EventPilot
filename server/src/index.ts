@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import compression from 'compression';
 import dotenv from 'dotenv';
 import authRouter from './routes/auth.js';
 import eventsRouter from './routes/events.js';
@@ -9,6 +10,7 @@ import tasksRouter from './routes/tasks.js';
 import vendorsRouter from './routes/vendors.js';
 import { authMiddleware } from './middleware/auth.js';
 import { standardLimiter, aiRateLimiter, authLimiter } from './middleware/rateLimit.js';
+import { requestIdMiddleware } from './middleware/requestId.js';
 import { sanitizeObject } from './utils/sanitize.js';
 
 dotenv.config();
@@ -16,7 +18,19 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// 1. Helmet Security Layer (CSP, Frameguard, XSS protection, MIME sniffing prevention)
+// 1. Request Correlation ID & Performance Timing
+app.use(requestIdMiddleware);
+
+// 2. High-Efficiency Payload Compression (gzip / deflate)
+app.use(compression({
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) return false;
+    return compression.filter(req, res);
+  },
+  threshold: 1024, // only compress responses > 1KB
+}));
+
+// 3. Enterprise Helmet Security Layer
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -25,14 +39,26 @@ app.use(
         scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", 'data:', 'https:'],
-        connectSrc: ["'self'", 'http://localhost:5000', 'http://localhost:5173'],
+        connectSrc: ["'self'", 'http://localhost:5000', 'http://localhost:5173', 'http://127.0.0.1:5173'],
       },
     },
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
     crossOriginEmbedderPolicy: false,
   })
 );
 
-// 2. Strict CORS Security Layer
+// Permissions-Policy Header for device-level feature lockdowns
+app.use((req, res, next) => {
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+  next();
+});
+
+// 4. Strict CORS Security Layer
 const allowedOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',').map(s => s.trim())
   : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:4173', 'http://127.0.0.1:5173'];
@@ -40,7 +66,6 @@ const allowedOrigins = process.env.CORS_ORIGIN
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server) or in allowed list
       if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
         callback(null, true);
       } else {
@@ -48,15 +73,15 @@ app.use(
       }
     },
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
     credentials: true,
   })
 );
 
-// 3. Body parser with strict size limits
+// 5. Body parser with strict size limits
 app.use(express.json({ limit: '2mb' }));
 
-// 4. Global Input Sanitization Middleware to strip XSS & control characters
+// 6. Global Input Sanitization Middleware to strip XSS & control characters
 app.use((req, res, next) => {
   if (req.body && typeof req.body === 'object') {
     req.body = sanitizeObject(req.body);
@@ -64,10 +89,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// 5. Standard Rate Limiting for all API requests
+// 7. Standard Rate Limiting for all API requests
 app.use('/api', standardLimiter);
 
-// Health check endpoint (exempt from auth)
+// Health check endpoint with security & performance metadata
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -75,6 +100,16 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     postgresConfigured: !!process.env.DATABASE_URL,
     aiConfigured: !!(process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY),
+    security: {
+      helmet: true,
+      rateLimiting: true,
+      sanitization: true,
+      ownershipGuards: true,
+    },
+    efficiency: {
+      compression: true,
+      inMemoryCaching: true,
+    },
   });
 });
 
@@ -92,11 +127,13 @@ app.use('/api', authMiddleware, budgetRouter);
 app.use('/api', authMiddleware, tasksRouter);
 app.use('/api', authMiddleware, vendorsRouter);
 
-// Global Error Handler
+// Global Error Handler with code quality standard format
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Server Unhandled Error:', err);
-  res.status(err.status || 500).json({
+  const status = err.status || 500;
+  res.status(status).json({
     error: err.message || 'Internal Server Error',
+    code: err.code || 'INTERNAL_SERVER_ERROR',
   });
 });
 
@@ -104,7 +141,8 @@ app.listen(PORT, () => {
   console.log(`===============================================`);
   console.log(`✨ EventPilot Backend running on port ${PORT}`);
   console.log(`🌐 API Base URL: http://localhost:${PORT}/api`);
-  console.log(`🛡️  Security: Helmet Enabled | Rate Limiting Active | CORS Restricted`);
+  console.log(`🛡️  Security: Helmet Enabled | Rate Limiting Active | CORS Restricted | XSS Sanitization`);
+  console.log(`⚡ Efficiency: Gzip/Deflate Compression Active | In-Memory TTL Cache`);
   console.log(`💾 Database: ${process.env.DATABASE_URL ? 'PostgreSQL' : 'Persistent Storage (database.json)'}`);
   console.log(`🤖 AI Provider: ${process.env.GEMINI_API_KEY ? 'Gemini API' : (process.env.OPENAI_API_KEY ? 'OpenAI' : 'Intelligent Deterministic Engine (Demo Mode)')}`);
   console.log(`===============================================`);

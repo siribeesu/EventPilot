@@ -37,7 +37,7 @@
     "@types/node": "^22.13.10",
     "@types/pg": "^8.11.11",
     "@types/uuid": "^10.0.0",
-    "typescript": "^5.8.2"
+    "typescript": "^7.0.2"
   },
   "optionalDependencies": {
     "@rolldown/binding-linux-x64-gnu": "^1.2.14",

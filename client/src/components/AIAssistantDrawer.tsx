@@ -149,24 +149,24 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
       className="fixed inset-y-0 right-0 z-50 w-full sm:w-[480px] bg-white shadow-2xl border-l border-slate-200 flex flex-col transition-all"
     >
       {/* Header */}
-      <div className="p-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white flex items-center justify-between">
+      <div className="p-4 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
         <div className="flex items-center space-x-2.5">
-          <div className="p-2 bg-white/10 rounded-xl backdrop-blur-xs" aria-hidden="true">
-            <Bot className="w-5 h-5 text-indigo-100" />
+          <div className="p-2 bg-indigo-500/20 text-indigo-300 rounded-xl border border-indigo-500/30" aria-hidden="true">
+            <Bot className="w-5 h-5" />
           </div>
           <div>
-            <h3 id="assistant-drawer-title" className="font-bold text-base leading-tight flex items-center space-x-1.5">
-              <span>EventPilot AI Assistant</span>
+            <h3 id="assistant-drawer-title" className="font-extrabold text-sm sm:text-base leading-tight flex items-center space-x-2">
+              <span>EventPilot AI Copilot</span>
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-label="Online" />
             </h3>
-            <p className="text-xs text-indigo-100/90">Contextual Co-Planner</p>
+            <p className="text-[11px] text-slate-400">Autonomous Contextual Co-Planner</p>
           </div>
         </div>
         <button
           type="button"
           onClick={onClose}
           aria-label="Close assistant panel"
-          className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition"
+          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition cursor-pointer"
         >
           <X className="w-5 h-5" aria-hidden="true" />
           <span className="sr-only">Close assistant panel</span>
@@ -174,9 +174,9 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
       </div>
 
       {/* Quick Prompts Bar */}
-      <div className="bg-indigo-50/70 border-b border-indigo-100 p-3 overflow-x-auto">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 block mb-1.5">
-          Suggested Prompts:
+      <div className="bg-slate-50 border-b border-slate-200/80 p-3 overflow-x-auto">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1.5">
+          Quick Prompts:
         </span>
         <div className="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar">
           {quickPrompts.map((prompt, i) => (

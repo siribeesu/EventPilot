@@ -318,18 +318,20 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
           </div>
 
           {/* Contextual AI Advisor Card */}
-          <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-5 text-white shadow-md space-y-3">
-            <div className="flex items-center space-x-2">
-              <Sparkles className="w-4 h-4 text-indigo-200" aria-hidden="true" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-100">
+          <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white border border-slate-800 shadow-md space-y-3.5">
+            <div className="flex items-center space-x-2.5">
+              <div className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                <Sparkles className="w-4 h-4" aria-hidden="true" />
+              </div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-200">
                 AI Planner Guidance
               </h3>
             </div>
-            <p className="text-xs leading-relaxed text-indigo-50">
+            <p className="text-xs leading-relaxed text-slate-300">
               {getAiTip()}
             </p>
-            <div className="pt-2 border-t border-white/10 flex items-center space-x-1.5 text-[11px] text-indigo-200">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" aria-hidden="true" />
+            <div className="pt-2 border-t border-slate-800 flex items-center space-x-2 text-[11px] text-indigo-300 font-semibold">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" aria-hidden="true" />
               <span>Budget Rescue Mode™ Protected</span>
             </div>
           </div>
@@ -337,19 +339,19 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
 
         {/* Right Column: Expansive Step Form Card (8 cols on desktop) */}
         <div className="lg:col-span-8">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
+          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">
             {/* Wizard Card Header */}
-            <div className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-600 px-8 py-6 text-white flex items-center justify-between">
+            <div className="bg-slate-900 border-b border-slate-800 px-8 py-6 text-white flex items-center justify-between">
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-white/20 text-white">
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                     Step {step} of 3
                   </span>
-                  <span className="text-xs text-indigo-100 font-medium">
+                  <span className="text-xs text-slate-400 font-medium">
                     {step === 1 ? 'Core Parameters' : step === 2 ? 'Scale & Financial Target' : 'Style, Dining & Priorities'}
                   </span>
                 </div>
-                <h2 className="text-2xl font-bold tracking-tight mt-1">
+                <h2 className="text-2xl font-extrabold tracking-tight mt-1.5">
                   {step === 1 && 'What are we planning?'}
                   {step === 2 && 'Set Your Venue Scale & Financial Target'}
                   {step === 3 && 'Personalize Aesthetics, Dining & Priorities'}
@@ -358,7 +360,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
               <button
                 type="button"
                 onClick={onCancel}
-                className="text-xs font-semibold text-white/80 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white transition"
+                className="text-xs font-semibold text-slate-400 hover:text-white px-3 py-1.5 rounded-xl hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-white transition cursor-pointer"
               >
                 Cancel
               </button>
@@ -751,25 +753,25 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold bg-indigo-600 text-white hover:bg-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-sm shadow-indigo-100"
+                    className="inline-flex items-center space-x-2 px-7 py-3 rounded-2xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-md cursor-pointer active:scale-95"
                   >
                     <span>Continue to Step {step + 1}</span>
-                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    <ArrowRight className="w-4 h-4 text-indigo-300" aria-hidden="true" />
                   </button>
                 ) : (
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="inline-flex items-center space-x-2 px-7 py-3 rounded-xl text-sm font-bold bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-600 text-white hover:opacity-95 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-lg shadow-indigo-200 disabled:opacity-50"
+                    className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-xl shadow-slate-900/20 disabled:opacity-50 cursor-pointer"
                   >
                     {isSubmitting ? (
                       <span className="flex items-center space-x-2">
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true" />
-                        <span>Generating AI Master Plan...</span>
+                        <span>Synthesizing Master Event Plan...</span>
                       </span>
                     ) : (
                       <>
-                        <Sparkles className="w-4 h-4" aria-hidden="true" />
+                        <Sparkles className="w-4 h-4 text-indigo-300" aria-hidden="true" />
                         <span>Generate Complete Event Plan</span>
                       </>
                     )}

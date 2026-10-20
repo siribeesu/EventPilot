@@ -129,20 +129,20 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
     >
       <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-700 via-indigo-600 to-purple-600 px-6 py-4 text-white flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-white/10 rounded-xl backdrop-blur-xs" aria-hidden="true">
-              <ShieldAlert className="w-6 h-6 text-amber-300" />
+        <div className="bg-slate-900 border-b border-slate-800 px-6 py-5 text-white flex items-center justify-between">
+          <div className="flex items-center space-x-3.5">
+            <div className="p-2.5 bg-amber-500/20 text-amber-400 rounded-2xl border border-amber-500/30" aria-hidden="true">
+              <ShieldAlert className="w-6 h-6" />
             </div>
             <div>
-              <h2 id="budget-rescue-title" className="text-xl font-bold tracking-tight flex items-center space-x-2">
+              <h2 id="budget-rescue-title" className="text-xl font-extrabold tracking-tight flex items-center space-x-2.5">
                 <span>Budget Rescue Mode™</span>
-                <span className="text-[11px] font-semibold uppercase tracking-wider bg-amber-400 text-slate-900 px-2 py-0.5 rounded-full">
-                  AI Optimization
+                <span className="text-[10px] font-extrabold uppercase tracking-widest bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full">
+                  Autonomous Protection
                 </span>
               </h2>
-              <p className="text-xs text-indigo-100">
-                Intelligently downscale costs to fit a reduced ceiling without sacrificing your core priorities.
+              <p className="text-xs text-slate-400 mt-0.5">
+                Intelligently downscale costs to fit a reduced budget without sacrificing your core priorities.
               </p>
             </div>
           </div>
@@ -150,7 +150,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors"
+            className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition cursor-pointer"
           >
             <X className="w-5 h-5" aria-hidden="true" />
             <span className="sr-only">Close dialog</span>

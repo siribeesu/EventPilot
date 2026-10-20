@@ -1,11 +1,13 @@
 import React from 'react';
-import { Sparkles, Plus, LayoutDashboard, Compass, Globe } from 'lucide-react';
+import { Sparkles, Plus, LayoutDashboard, Compass, Globe, Shield } from 'lucide-react';
+import { SystemHealthPill } from './SystemHealthPill';
 
 interface NavbarProps {
   currentView: 'landing' | 'dashboard' | 'wizard' | 'event';
   onNavigate: (view: 'landing' | 'dashboard' | 'wizard', eventId?: string) => void;
   currency: string;
   onCurrencyChange: (c: string) => void;
+  onOpenPrivacy?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -13,6 +15,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigate,
   currency,
   onCurrencyChange,
+  onOpenPrivacy,
 }) => {
   return (
     <header role="banner" className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200/70 shadow-[0_1px_3px_rgba(15,23,42,0.03)]">
@@ -72,7 +75,24 @@ export const Navbar: React.FC<NavbarProps> = ({
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          {/* Live System Observability Pill */}
+          <SystemHealthPill />
+
+          {/* Privacy & GDPR Portability Action */}
+          {onOpenPrivacy && (
+            <button
+              type="button"
+              onClick={onOpenPrivacy}
+              title="Data Privacy & GDPR Controls"
+              aria-label="Open Data Privacy & GDPR Portability dialog"
+              className="hidden lg:flex items-center space-x-1.5 bg-white px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 border border-slate-200 shadow-2xs hover:border-slate-300 hover:text-indigo-600 transition cursor-pointer"
+            >
+              <Shield className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
+              <span>Privacy</span>
+            </button>
+          )}
+
           {/* Accessible Currency Switcher Pill */}
           <div className="flex items-center space-x-1.5 bg-white px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 border border-slate-200 shadow-2xs hover:border-slate-300 transition">
             <Globe className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
@@ -86,10 +106,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               aria-label="Select application currency"
               className="bg-transparent font-bold text-slate-800 cursor-pointer focus-visible:outline-none rounded text-xs"
             >
-              <option value="INR">₹ INR</option>
+              <option value="INR">â‚¹ INR</option>
               <option value="USD">$ USD</option>
-              <option value="EUR">€ EUR</option>
-              <option value="GBP">£ GBP</option>
+              <option value="EUR">â‚¬ EUR</option>
+              <option value="GBP">Â£ GBP</option>
               <option value="AED">AED</option>
             </select>
           </div>

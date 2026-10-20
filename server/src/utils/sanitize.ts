@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Security input sanitizer:
  * Strips dangerous HTML tags, javascript: URIs, and control characters to prevent XSS.
  */

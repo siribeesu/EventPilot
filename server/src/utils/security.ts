@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+﻿import crypto from 'crypto';
 
 /**
  * Enterprise Password Hashing using PBKDF2 with Cryptographic Salt.

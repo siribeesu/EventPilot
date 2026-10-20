@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   Sparkles,
   ArrowRight,
@@ -161,7 +161,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
       }
       return 'AI Advisory: Accurate guest headcounts ensure our catering formulas scale correctly without over-ordering.';
     }
-    return 'AI Advisory: Your selected priority areas are strictly shielded by Budget Rescue Mode™—if you reduce your financial ceiling later, your highest priorities stay protected.';
+    return 'AI Advisory: Your selected priority areas are strictly shielded by Budget Rescue Modeâ„¢â€”if you reduce your financial ceiling later, your highest priorities stay protected.';
   };
 
   return (
@@ -332,7 +332,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
             </p>
             <div className="pt-2 border-t border-slate-800 flex items-center space-x-2 text-[11px] text-indigo-300 font-semibold">
               <ShieldCheck className="w-4 h-4 text-emerald-400" aria-hidden="true" />
-              <span>Budget Rescue Mode™ Protected</span>
+              <span>Budget Rescue Modeâ„¢ Protected</span>
             </div>
           </div>
         </div>
@@ -563,7 +563,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                       </label>
                       <div className="relative">
                         <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold" aria-hidden="true">
-                          {currency === 'INR' ? '₹' : currency}
+                          {currency === 'INR' ? 'â‚¹' : currency}
                         </span>
                         <input
                           id="wizard-budget"
@@ -597,10 +597,10 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                         onChange={(e) => setCurrency(e.target.value)}
                         className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                       >
-                        <option value="INR">INR (₹)</option>
+                        <option value="INR">INR (â‚¹)</option>
                         <option value="USD">USD ($)</option>
-                        <option value="EUR">EUR (€)</option>
-                        <option value="GBP">GBP (£)</option>
+                        <option value="EUR">EUR (â‚¬)</option>
+                        <option value="GBP">GBP (Â£)</option>
                         <option value="AED">AED</option>
                       </select>
                     </div>

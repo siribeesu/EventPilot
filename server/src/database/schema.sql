@@ -108,6 +108,35 @@ CREATE TABLE IF NOT EXISTS plan_revisions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 8. Event Collaborators & RBAC
+CREATE TABLE IF NOT EXISTS event_collaborators (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_email VARCHAR(255) NOT NULL,
+    user_name VARCHAR(255),
+    role VARCHAR(20) NOT NULL DEFAULT 'viewer', -- owner, editor, viewer
+    invited_by UUID NOT NULL REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(event_id, user_email)
+);
+
+-- 9. Comprehensive Audit Trail & Observability Logs
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    request_id VARCHAR(64),
+    actor_id VARCHAR(64) NOT NULL,
+    actor_email VARCHAR(255),
+    action VARCHAR(100) NOT NULL,
+    resource_type VARCHAR(50) NOT NULL,
+    resource_id VARCHAR(64),
+    status VARCHAR(20) NOT NULL DEFAULT 'success',
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    metadata JSONB DEFAULT '{}'::jsonb
+);
+
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_events_user_id ON events(user_id);
 CREATE INDEX IF NOT EXISTS idx_budget_items_event_id ON budget_items(event_id);
@@ -115,6 +144,10 @@ CREATE INDEX IF NOT EXISTS idx_tasks_event_id ON tasks(event_id);
 CREATE INDEX IF NOT EXISTS idx_vendors_event_id ON vendors(event_id);
 CREATE INDEX IF NOT EXISTS idx_event_ideas_event_id ON event_ideas(event_id);
 CREATE INDEX IF NOT EXISTS idx_plan_revisions_event_id ON plan_revisions(event_id);
+CREATE INDEX IF NOT EXISTS idx_collaborators_event_id ON event_collaborators(event_id);
+CREATE INDEX IF NOT EXISTS idx_collaborators_user_id ON event_collaborators(user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_actor ON audit_logs(actor_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_resource ON audit_logs(resource_id);
 
 -- Supabase Row Level Security (RLS) setup
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
@@ -123,6 +156,8 @@ ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vendors ENABLE ROW LEVEL SECURITY;
 ALTER TABLE event_ideas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE plan_revisions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE event_collaborators ENABLE ROW LEVEL SECURITY;
+ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
 -- Sample RLS policies (for Supabase auth integration):
 -- CREATE POLICY "Users can only view their own events" ON events FOR SELECT USING (auth.uid() = user_id);

@@ -1,4 +1,4 @@
-export type EventType = 'wedding' | 'birthday' | 'anniversary' | 'college' | 'community' | 'other';
+﻿export type EventType = 'wedding' | 'birthday' | 'anniversary' | 'college' | 'community' | 'other';
 export type IndoorOutdoor = 'indoor' | 'outdoor' | 'both';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 export type TaskStatus = 'pending' | 'in_progress' | 'completed';
@@ -110,6 +110,8 @@ export interface EventFullDetail extends EventRecord {
   vendors: VendorItem[];
   ideas: EventIdea[];
   revisions: PlanRevision[];
+  collaborators?: Collaborator[];
+  user_role?: CollaboratorRole;
   metrics: {
     totalBudget: number;
     totalEstimated: number;
@@ -121,3 +123,40 @@ export interface EventFullDetail extends EventRecord {
     vendorsTotal: number;
   };
 }
+
+export type CollaboratorRole = 'owner' | 'editor' | 'viewer';
+
+export interface Collaborator {
+  id: string;
+  event_id: string;
+  user_id: string;
+  user_email: string;
+  user_name?: string;
+  role: CollaboratorRole;
+  invited_by: string;
+  created_at: string;
+}
+
+export interface AuditLog {
+  id: string;
+  timestamp: string;
+  request_id?: string;
+  actor_id: string;
+  actor_email?: string;
+  action: string;
+  resource_type: 'event' | 'budget_item' | 'task' | 'vendor' | 'collaborator' | 'user' | 'ai';
+  resource_id?: string;
+  status: 'success' | 'denied' | 'failed';
+  ip_address?: string;
+  user_agent?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface AIUsageMetrics {
+  totalRequests: number;
+  cacheHits: number;
+  promptInjectionsBlocked: number;
+  estimatedTokensSaved: number;
+  costSavedUSD: number;
+}
+

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import type { EventFullDetail, BudgetRescueResponse } from '../types';
 import { api } from '../services/api';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface BudgetRescueModalProps {
   event: EventFullDetail;
@@ -38,6 +39,9 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
   const [selectedProposalIds, setSelectedProposalIds] = useState<Set<string>>(new Set());
   const [step, setStep] = useState<'input' | 'review'>('input');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Focus trap for WCAG 2.1 modal compliance
+  const modalContainerRef = useFocusTrap(isOpen);
 
   // Accessibility: Close on Escape key
   useEffect(() => {
@@ -117,6 +121,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
 
   return (
     <div
+      ref={modalContainerRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="budget-rescue-title"

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import type { EventFullDetail, AIAssistantAction } from '../types';
 import { api } from '../services/api';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface AIAssistantDrawerProps {
   event: EventFullDetail;
@@ -48,6 +49,9 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [applyingChangeId, setApplyingChangeId] = useState<string | null>(null);
+
+  // Focus trap for drawer accessibility
+  const drawerContainerRef = useFocusTrap(isOpen);
 
   // Accessibility: Close drawer on Escape key
   useEffect(() => {
@@ -138,6 +142,7 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
 
   return (
     <div
+      ref={drawerContainerRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="assistant-drawer-title"

@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { db } from '../database/db.js';
 import { AuthenticatedRequest } from '../middleware/auth.js';
+import { validateBody, validateIdParam } from '../middleware/validate.js';
+import { memoryCache } from '../utils/cache.js';
 import {
   CreateEventSchema,
   UpdateEventSchema,
@@ -14,13 +16,17 @@ import {
 
 const router = Router();
 
-// 1. GET all events for logged-in user
+// 1. GET all events for logged-in user with caching
 router.get('/', async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.userId || 'usr_demo_123';
-    const events = await db.getEvents(userId);
+    const cacheKey = `events:${userId}`;
+    const cached = memoryCache.get<any[]>(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
 
-    // Enrich each event with calculated quick metrics
+    const events = await db.getEvents(userId);
     const enriched = await Promise.all(
       events.map(async (e) => {
         const full = await db.getFullEvent(e.id, userId);
@@ -28,30 +34,25 @@ router.get('/', async (req: AuthenticatedRequest, res) => {
       })
     );
 
+    memoryCache.set(cacheKey, enriched, 30);
     res.json(enriched);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// 2. POST create new event with optimized batch insertion
-router.post('/', async (req: AuthenticatedRequest, res) => {
+// 2. POST create new event with validation & cache invalidation
+router.post('/', validateBody(CreateEventSchema), async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.userId || 'usr_demo_123';
-    const parsed = CreateEventSchema.safeParse(req.body);
-
-    if (!parsed.success) {
-      return res.status(400).json({
-        error: 'Validation failed',
-        details: parsed.error.flatten().fieldErrors,
-      });
-    }
-
     const newEvent = await db.createEvent({
-      ...parsed.data,
+      ...req.body,
       user_id: userId,
       ai_summary: '',
     });
+
+    // Invalidate user events cache
+    memoryCache.invalidate(`events:${userId}`);
 
     // Automatically generate initial AI event plan
     try {
@@ -164,39 +165,44 @@ router.post('/', async (req: AuthenticatedRequest, res) => {
   }
 });
 
-// 3. GET full event by ID
-router.get('/:id', async (req: AuthenticatedRequest, res) => {
+// 3. GET full event by ID with caching & param validation
+router.get('/:id', validateIdParam('id'), async (req: AuthenticatedRequest, res) => {
   try {
     const eventId = String(req.params.id);
     const userId = req.userId || 'usr_demo_123';
+    const cacheKey = `event:${eventId}`;
+
+    const cached = memoryCache.get(cacheKey);
+    if (cached) {
+      return res.json(cached);
+    }
+
     const full = await db.getFullEvent(eventId, userId);
     if (!full) {
-      return res.status(404).json({ error: 'Event not found or access denied' });
+      return res.status(404).json({ error: 'Event not found or access denied', code: 'EVENT_NOT_FOUND' });
     }
+
+    memoryCache.set(cacheKey, full, 30);
     res.json(full);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// 4. PATCH update event
-router.patch('/:id', async (req: AuthenticatedRequest, res) => {
+// 4. PATCH update event with validation & cache invalidation
+router.patch('/:id', validateIdParam('id'), validateBody(UpdateEventSchema), async (req: AuthenticatedRequest, res) => {
   try {
     const eventId = String(req.params.id);
     const userId = req.userId || 'usr_demo_123';
-    const parsed = UpdateEventSchema.safeParse(req.body);
-    if (!parsed.success) {
-      return res.status(400).json({
-        error: 'Validation failed',
-        details: parsed.error.flatten().fieldErrors,
-      });
-    }
 
-    const updated = await db.updateEvent(eventId, userId, parsed.data);
+    const updated = await db.updateEvent(eventId, userId, req.body);
     if (!updated) {
       return res.status(404).json({ error: 'Event not found or unauthorized' });
     }
 
+    memoryCache.invalidate(`event:${eventId}`);
+    memoryCache.invalidate(`events:${userId}`);
+
     const full = await db.getFullEvent(eventId, userId);
     res.json(full);
   } catch (err) {
@@ -204,8 +210,8 @@ router.patch('/:id', async (req: AuthenticatedRequest, res) => {
   }
 });
 
-// 5. DELETE event
-router.delete('/:id', async (req: AuthenticatedRequest, res) => {
+// 5. DELETE event with cache invalidation
+router.delete('/:id', validateIdParam('id'), async (req: AuthenticatedRequest, res) => {
   try {
     const eventId = String(req.params.id);
     const userId = req.userId || 'usr_demo_123';
@@ -213,14 +219,18 @@ router.delete('/:id', async (req: AuthenticatedRequest, res) => {
     if (!deleted) {
       return res.status(404).json({ error: 'Event not found or unauthorized' });
     }
+
+    memoryCache.invalidate(`event:${eventId}`);
+    memoryCache.invalidate(`events:${userId}`);
+
     res.json({ success: true, message: 'Event successfully deleted' });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// 6. POST regenerate AI plan with batch operations
-router.post('/:id/generate-plan', async (req: AuthenticatedRequest, res) => {
+// 6. POST regenerate AI plan with batch operations & cache invalidation
+router.post('/:id/generate-plan', validateIdParam('id'), async (req: AuthenticatedRequest, res) => {
   try {
     const eventId = String(req.params.id);
     const userId = req.userId || 'usr_demo_123';
@@ -325,6 +335,9 @@ router.post('/:id/generate-plan', async (req: AuthenticatedRequest, res) => {
     ];
     await db.createIdeasBatch(ideasToInsert);
 
+    memoryCache.invalidate(`event:${eventId}`);
+    memoryCache.invalidate(`events:${userId}`);
+
     const full = await db.getFullEvent(event.id, userId);
     res.json(full);
   } catch (err) {
@@ -333,7 +346,7 @@ router.post('/:id/generate-plan', async (req: AuthenticatedRequest, res) => {
 });
 
 // 7. BUDGET RESCUE: Preview proposals
-router.post('/:id/budget-rescue/preview', async (req: AuthenticatedRequest, res) => {
+router.post('/:id/budget-rescue/preview', validateIdParam('id'), async (req: AuthenticatedRequest, res) => {
   try {
     const eventId = String(req.params.id);
     const userId = req.userId || 'usr_demo_123';
@@ -354,8 +367,8 @@ router.post('/:id/budget-rescue/preview', async (req: AuthenticatedRequest, res)
   }
 });
 
-// 8. BUDGET RESCUE: Apply accepted proposals
-router.post('/:id/budget-rescue/apply', async (req: AuthenticatedRequest, res) => {
+// 8. BUDGET RESCUE: Apply accepted proposals with cache invalidation
+router.post('/:id/budget-rescue/apply', validateIdParam('id'), async (req: AuthenticatedRequest, res) => {
   try {
     const eventId = String(req.params.id);
     const userId = req.userId || 'usr_demo_123';
@@ -390,14 +403,12 @@ router.post('/:id/budget-rescue/apply', async (req: AuthenticatedRequest, res) =
       }
     }
 
-    // Update event budget target if provided
     if (newTargetBudget && Number(newTargetBudget) > 0) {
       await db.updateEvent(event.id, userId, {
         budget: Number(newTargetBudget),
       });
     }
 
-    // Save revision history
     await db.createRevision({
       event_id: event.id,
       revision_note: `Budget Rescue applied: ${changesApplied.length} optimizations accepted. Total savings: ${changesApplied.reduce((a, b) => a + b.savings, 0)}`,
@@ -405,6 +416,9 @@ router.post('/:id/budget-rescue/apply', async (req: AuthenticatedRequest, res) =
       new_budget: Number(newTargetBudget || event.budget),
       changes_applied: changesApplied,
     });
+
+    memoryCache.invalidate(`event:${eventId}`);
+    memoryCache.invalidate(`events:${userId}`);
 
     const full = await db.getFullEvent(event.id, userId);
     res.json({
@@ -418,30 +432,25 @@ router.post('/:id/budget-rescue/apply', async (req: AuthenticatedRequest, res) =
 });
 
 // 9. AI Assistant interactive conversation
-router.post('/:id/assistant', async (req: AuthenticatedRequest, res) => {
+router.post('/:id/assistant', validateIdParam('id'), validateBody(AIAssistantMessageSchema), async (req: AuthenticatedRequest, res) => {
   try {
     const eventId = String(req.params.id);
     const userId = req.userId || 'usr_demo_123';
     const event = await db.getEventById(eventId, userId);
     if (!event) return res.status(404).json({ error: 'Event not found' });
 
-    const parsed = AIAssistantMessageSchema.safeParse(req.body);
-    if (!parsed.success) {
-      return res.status(400).json({ error: 'Invalid message request', details: parsed.error });
-    }
-
     const budgetItems = await db.getBudgetItems(event.id);
     const tasks = await db.getTasks(event.id);
 
-    const action = await processAssistantMessage(event, budgetItems, tasks, parsed.data.message);
+    const action = await processAssistantMessage(event, budgetItems, tasks, req.body.message);
     res.json(action);
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
   }
 });
 
-// 10. AI Assistant: Apply approved changes
-router.post('/:id/assistant/apply', async (req: AuthenticatedRequest, res) => {
+// 10. AI Assistant: Apply approved changes with cache invalidation
+router.post('/:id/assistant/apply', validateIdParam('id'), async (req: AuthenticatedRequest, res) => {
   try {
     const eventId = String(req.params.id);
     const userId = req.userId || 'usr_demo_123';
@@ -522,6 +531,9 @@ router.post('/:id/assistant/apply', async (req: AuthenticatedRequest, res) => {
       });
     }
 
+    memoryCache.invalidate(`event:${eventId}`);
+    memoryCache.invalidate(`events:${userId}`);
+
     const full = await db.getFullEvent(event.id, userId);
     res.json({ success: true, changesApplied, event: full });
   } catch (err) {
@@ -530,7 +542,7 @@ router.post('/:id/assistant/apply', async (req: AuthenticatedRequest, res) => {
 });
 
 // 11. Full Export Package
-router.get('/:id/export', async (req: AuthenticatedRequest, res) => {
+router.get('/:id/export', validateIdParam('id'), async (req: AuthenticatedRequest, res) => {
   try {
     const eventId = String(req.params.id);
     const userId = req.userId || 'usr_demo_123';

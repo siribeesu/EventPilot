@@ -1,4 +1,4 @@
-import { Router } from 'express';
+﻿import { Router } from 'express';
 import { db } from '../database/db.js';
 import { generateToken, AuthenticatedRequest } from '../middleware/auth.js';
 import { hashPassword, verifyPassword } from '../utils/security.js';

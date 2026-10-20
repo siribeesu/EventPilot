@@ -12,6 +12,9 @@ import {
   EventIdea,
   PlanRevision,
   EventFullDetail,
+  Collaborator,
+  CollaboratorRole,
+  AuditLog,
 } from '../types/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +28,8 @@ interface DbData {
   vendors: VendorItem[];
   event_ideas: EventIdea[];
   plan_revisions: PlanRevision[];
+  collaborators: Collaborator[];
+  audit_logs: AuditLog[];
 }
 
 const defaultUser: User = {
@@ -46,6 +51,8 @@ class StorageManager {
     vendors: [],
     event_ideas: [],
     plan_revisions: [],
+    collaborators: [],
+    audit_logs: [],
   };
 
   constructor() {
@@ -76,11 +83,11 @@ class StorageManager {
         });
         await this.pool.query('SELECT 1');
         this.isPostgres = true;
-        console.log('✅ Connected to PostgreSQL database');
+        console.log('âœ… Connected to PostgreSQL database');
         await this.initPostgresSchema();
         return;
       } catch (err) {
-        console.warn('⚠️ PostgreSQL connection failed, falling back to local persistent storage:', (err as Error).message);
+        console.warn('âš ï¸ PostgreSQL connection failed, falling back to local persistent storage:', (err as Error).message);
         this.isPostgres = false;
       }
     }
@@ -90,6 +97,9 @@ class StorageManager {
       try {
         const raw = fs.readFileSync(this.dataFilePath, 'utf-8');
         this.memoryData = JSON.parse(raw);
+        if (!this.memoryData.users) this.memoryData.users = [defaultUser];
+        if (!this.memoryData.collaborators) this.memoryData.collaborators = [];
+        if (!this.memoryData.audit_logs) this.memoryData.audit_logs = [];
         if (!this.memoryData.users.find(u => u.id === defaultUser.id)) {
           this.memoryData.users.push(defaultUser);
         }
@@ -121,6 +131,9 @@ class StorageManager {
           }
         }
       }
+      if (!this.memoryData.users) this.memoryData.users = [defaultUser];
+      if (!this.memoryData.collaborators) this.memoryData.collaborators = [];
+      if (!this.memoryData.audit_logs) this.memoryData.audit_logs = [];
       if (!this.memoryData.users.find(u => u.id === defaultUser.id)) {
         this.memoryData.users.push(defaultUser);
       }
@@ -202,8 +215,13 @@ class StorageManager {
       const res = await this.pool.query('SELECT * FROM events WHERE user_id = $1 ORDER BY event_date ASC', [userId]);
       return res.rows;
     }
+    const collabEventIds = new Set(
+      (this.memoryData.collaborators || [])
+        .filter(c => c.user_id === userId)
+        .map(c => c.event_id)
+    );
     return this.memoryData.events
-      .filter(e => e.user_id === userId)
+      .filter(e => e.user_id === userId || collabEventIds.has(e.id))
       .sort((a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime());
   }
 
@@ -218,8 +236,9 @@ class StorageManager {
     }
     const evt = this.memoryData.events.find(e => e.id === id);
     if (!evt) return null;
-    if (userId && evt.user_id !== userId) return null;
-    return evt;
+    if (!userId || evt.user_id === userId) return evt;
+    const isCollab = (this.memoryData.collaborators || []).some(c => c.event_id === id && c.user_id === userId);
+    return isCollab ? evt : null;
   }
 
   async createEvent(eventData: Omit<EventRecord, 'id' | 'created_at' | 'updated_at'>): Promise<EventRecord> {
@@ -700,6 +719,8 @@ class StorageManager {
 
     const tasksCompleted = tasks.filter(t => t.status === 'completed').length;
     const vendorsBooked = vendors.filter(v => v.booking_status === 'booked').length;
+    const collaborators = await this.getCollaborators(eventId);
+    const user_role = userId ? (await this.getUserRole(eventId, userId)) || 'viewer' : 'owner';
 
     return {
       ...evt,
@@ -708,6 +729,8 @@ class StorageManager {
       vendors,
       ideas,
       revisions,
+      collaborators,
+      user_role,
       metrics: {
         totalBudget,
         totalEstimated,
@@ -719,6 +742,154 @@ class StorageManager {
         vendorsTotal: vendors.length,
       },
     };
+  }
+
+  // --- Collaborators & RBAC ---
+  async getCollaborators(eventId: string): Promise<Collaborator[]> {
+    if (this.isPostgres && this.pool) {
+      const res = await this.pool.query('SELECT * FROM event_collaborators WHERE event_id = $1 ORDER BY created_at ASC', [eventId]);
+      return res.rows;
+    }
+    return (this.memoryData.collaborators || []).filter(c => c.event_id === eventId);
+  }
+
+  async addCollaborator(collab: Omit<Collaborator, 'id' | 'created_at'>): Promise<Collaborator> {
+    const existing = (this.memoryData.collaborators || []).find(
+      c => c.event_id === collab.event_id && (c.user_id === collab.user_id || c.user_email.toLowerCase() === collab.user_email.toLowerCase())
+    );
+    if (existing) {
+      existing.role = collab.role;
+      this.persist();
+      return existing;
+    }
+
+    const newCollab: Collaborator = {
+      id: uuidv4(),
+      ...collab,
+      created_at: new Date().toISOString(),
+    };
+
+    if (this.isPostgres && this.pool) {
+      const res = await this.pool.query(
+        `INSERT INTO event_collaborators (id, event_id, user_id, user_email, user_name, role, invited_by, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+        [newCollab.id, newCollab.event_id, newCollab.user_id, newCollab.user_email, newCollab.user_name || null, newCollab.role, newCollab.invited_by, newCollab.created_at]
+      );
+      return res.rows[0];
+    }
+
+    if (!this.memoryData.collaborators) this.memoryData.collaborators = [];
+    this.memoryData.collaborators.push(newCollab);
+    this.persist();
+    return newCollab;
+  }
+
+  async removeCollaborator(eventId: string, collaboratorId: string): Promise<boolean> {
+    if (this.isPostgres && this.pool) {
+      const res = await this.pool.query('DELETE FROM event_collaborators WHERE event_id = $1 AND id = $2', [eventId, collaboratorId]);
+      return (res.rowCount ?? 0) > 0;
+    }
+    const beforeLen = (this.memoryData.collaborators || []).length;
+    this.memoryData.collaborators = (this.memoryData.collaborators || []).filter(
+      c => !(c.event_id === eventId && (c.id === collaboratorId || c.user_id === collaboratorId))
+    );
+    this.persist();
+    return this.memoryData.collaborators.length < beforeLen;
+  }
+
+  async getUserRole(eventId: string, userId: string): Promise<CollaboratorRole | null> {
+    const evt = this.memoryData.events.find(e => e.id === eventId);
+    if (!evt) return null;
+    if (evt.user_id === userId) return 'owner';
+    const collab = (this.memoryData.collaborators || []).find(c => c.event_id === eventId && c.user_id === userId);
+    return collab ? collab.role : null;
+  }
+
+  // --- Audit Logging System ---
+  async createAuditLog(log: Omit<AuditLog, 'id' | 'timestamp'>): Promise<AuditLog> {
+    const newLog: AuditLog = {
+      id: uuidv4(),
+      timestamp: new Date().toISOString(),
+      ...log,
+    };
+    if (this.isPostgres && this.pool) {
+      try {
+        await this.pool.query(
+          `INSERT INTO audit_logs (id, timestamp, request_id, actor_id, actor_email, action, resource_type, resource_id, status, ip_address, user_agent, metadata)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+          [newLog.id, newLog.timestamp, newLog.request_id || null, newLog.actor_id, newLog.actor_email || null, newLog.action, newLog.resource_type, newLog.resource_id || null, newLog.status, newLog.ip_address || null, newLog.user_agent || null, JSON.stringify(newLog.metadata || {})]
+        );
+      } catch (e) {
+        console.warn('Audit log write to postgres skipped:', (e as Error).message);
+      }
+    }
+    if (!this.memoryData.audit_logs) this.memoryData.audit_logs = [];
+    this.memoryData.audit_logs.push(newLog);
+    if (this.memoryData.audit_logs.length > 2000) {
+      this.memoryData.audit_logs = this.memoryData.audit_logs.slice(-2000);
+    }
+    this.persist();
+    return newLog;
+  }
+
+  async getAuditLogs(filter?: { eventId?: string; actorId?: string; limit?: number }): Promise<AuditLog[]> {
+    let logs = [...(this.memoryData.audit_logs || [])];
+    if (filter?.eventId) {
+      logs = logs.filter(l => l.resource_id === filter.eventId || l.metadata?.eventId === filter.eventId);
+    }
+    if (filter?.actorId) {
+      logs = logs.filter(l => l.actor_id === filter.actorId);
+    }
+    logs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    return logs.slice(0, filter?.limit || 50);
+  }
+
+  // --- Data Privacy & GDPR Portability / Deletion ---
+  async exportUserData(userId: string) {
+    const user = await this.getUserById(userId);
+    const ownedEvents = this.memoryData.events.filter(e => e.user_id === userId);
+    const eventIds = new Set(ownedEvents.map(e => e.id));
+    const budgetItems = this.memoryData.budget_items.filter(b => eventIds.has(b.event_id));
+    const tasks = this.memoryData.tasks.filter(t => eventIds.has(t.event_id));
+    const vendors = this.memoryData.vendors.filter(v => eventIds.has(v.event_id));
+    const ideas = this.memoryData.event_ideas.filter(i => eventIds.has(i.event_id));
+    const revisions = this.memoryData.plan_revisions.filter(r => eventIds.has(r.event_id));
+    const collaborations = (this.memoryData.collaborators || []).filter(c => c.user_id === userId);
+    const auditLogs = (this.memoryData.audit_logs || []).filter(a => a.actor_id === userId);
+
+    return {
+      exportDate: new Date().toISOString(),
+      compliance: 'GDPR Article 15 (Right of Access) & CCPA Portability',
+      user: {
+        id: user?.id,
+        email: user?.email,
+        name: user?.name,
+        createdAt: user?.created_at,
+      },
+      eventsSummary: {
+        totalOwned: ownedEvents.length,
+        totalCollaborations: collaborations.length,
+      },
+      events: ownedEvents,
+      budgetItems,
+      tasks,
+      vendors,
+      ideas,
+      revisions,
+      collaborations,
+      auditLogs,
+    };
+  }
+
+  async deleteUserAccount(userId: string): Promise<boolean> {
+    const ownedEvents = this.memoryData.events.filter(e => e.user_id === userId);
+    for (const evt of ownedEvents) {
+      await this.deleteEvent(evt.id, userId);
+    }
+    this.memoryData.collaborators = (this.memoryData.collaborators || []).filter(c => c.user_id !== userId);
+    this.memoryData.users = this.memoryData.users.filter(u => u.id !== userId);
+    this.persist();
+    return true;
   }
 
   async clearEventPlan(eventId: string): Promise<void> {

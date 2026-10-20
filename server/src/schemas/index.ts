@@ -1,4 +1,4 @@
-import { z } from 'zod';
+﻿import { z } from 'zod';
 
 // Event input schema
 export const CreateEventSchema = z.object({

@@ -34,6 +34,7 @@ import { api } from '../services/api';
 import { exportEventToPDF } from '../services/pdfExport';
 import { BudgetRescueModal } from '../components/BudgetRescueModal';
 import { AIAssistantDrawer } from '../components/AIAssistantDrawer';
+import { CollaboratorsModal } from '../components/CollaboratorsModal';
 
 interface EventDetailPageProps {
   eventId: string;
@@ -53,6 +54,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [showRescueModal, setShowRescueModal] = useState(false);
   const [showAssistantDrawer, setShowAssistantDrawer] = useState(false);
+  const [showCollaboratorsModal, setShowCollaboratorsModal] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
 
   // Modal / Inline Add state
@@ -268,7 +270,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
               onClick={onBack}
               className="text-xs font-bold text-indigo-600 hover:text-indigo-800 focus-visible:ring-2 focus-visible:ring-indigo-500 rounded transition mb-1 inline-flex items-center space-x-1 cursor-pointer"
             >
-              <span>← Back to Command Center</span>
+              <span>â† Back to Command Center</span>
             </button>
             <div className="flex flex-wrap items-center gap-2.5">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -283,12 +285,12 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
                 <Calendar className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
                 <span>{event.event_date} {event.start_time ? `(${event.start_time} - ${event.end_time || ''})` : ''}</span>
               </span>
-              <span aria-hidden="true" className="text-slate-300">•</span>
+              <span aria-hidden="true" className="text-slate-300">â€¢</span>
               <span className="flex items-center space-x-1.5">
                 <MapPin className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
                 <span>{event.location} ({event.indoor_outdoor})</span>
               </span>
-              <span aria-hidden="true" className="text-slate-300">•</span>
+              <span aria-hidden="true" className="text-slate-300">â€¢</span>
               <span className="flex items-center space-x-1.5">
                 <Users className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
                 <span>{event.guest_count} Confirmed Guests</span>
@@ -305,7 +307,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
               className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-amber-50/90 border border-amber-300 text-amber-950 hover:bg-amber-100 focus-visible:ring-2 focus-visible:ring-amber-500 transition shadow-2xs cursor-pointer active:scale-95"
             >
               <ShieldAlert className="w-4 h-4 text-amber-600" aria-hidden="true" />
-              <span>Budget Rescue Mode™</span>
+              <span>Budget Rescue Modeâ„¢</span>
             </button>
 
             {/* AI Assistant Drawer Trigger */}
@@ -316,6 +318,17 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
             >
               <Bot className="w-4 h-4 text-indigo-300" aria-hidden="true" />
               <span>AI Copilot</span>
+            </button>
+
+            {/* Team Collaborators Trigger */}
+            <button
+              type="button"
+              onClick={() => setShowCollaboratorsModal(true)}
+              className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-2xs cursor-pointer"
+              title="Manage Team Collaborators & Permissions"
+            >
+              <Users className="w-4 h-4 text-indigo-600" aria-hidden="true" />
+              <span>Team ({event.collaborators?.length || 0})</span>
             </button>
 
             {/* PDF Export */}
@@ -391,7 +404,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
               onClick={() => setShowRescueModal(true)}
               className="text-xs font-bold text-rose-700 underline hover:text-rose-900 ml-3 whitespace-nowrap focus-visible:ring-2 focus-visible:ring-rose-500 rounded cursor-pointer"
             >
-              Launch Budget Rescue →
+              Launch Budget Rescue â†’
             </button>
           </div>
         )}
@@ -596,7 +609,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
                         {currency} {Number(b.estimated_cost).toLocaleString()}
                       </td>
                       <td className="py-3.5 px-4 text-right text-slate-600">
-                        {Number(b.actual_cost) > 0 ? `${currency} ${Number(b.actual_cost).toLocaleString()}` : '—'}
+                        {Number(b.actual_cost) > 0 ? `${currency} ${Number(b.actual_cost).toLocaleString()}` : 'â€”'}
                       </td>
                       <td className="py-3.5 px-4">
                         <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
@@ -702,7 +715,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
                       </div>
                       <div className="flex items-center space-x-2 text-xs text-slate-400 mt-0.5">
                         <span className="font-medium text-slate-600">{task.category}</span>
-                        <span aria-hidden="true">•</span>
+                        <span aria-hidden="true">â€¢</span>
                         <span>
                           {task.due_date
                             ? `Due: ${task.due_date}`
@@ -1202,6 +1215,17 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
         onRescueApplied={(updated) => {
           setEvent(updated);
         }}
+      />
+
+      {/* Team Collaborators Modal (RBAC) */}
+      <CollaboratorsModal
+        eventId={event.id}
+        isOpen={showCollaboratorsModal}
+        onClose={() => {
+          setShowCollaboratorsModal(false);
+          fetchEvent();
+        }}
+        isOwner={event.user_role !== 'viewer'}
       />
 
       {/* AI Assistant Drawer */}

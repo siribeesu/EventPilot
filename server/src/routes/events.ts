@@ -13,6 +13,7 @@ import {
   calculateBudgetRescue,
   processAssistantMessage,
 } from '../ai/planner.js';
+import { logAuditEvent } from '../services/auditService.js';
 
 const router = Router();
 
@@ -53,6 +54,14 @@ router.post('/', validateBody(CreateEventSchema), async (req: AuthenticatedReque
 
     // Invalidate user events cache
     memoryCache.invalidate(`events:${userId}`);
+
+    await logAuditEvent(req, {
+      action: 'EVENT_CREATED',
+      resource_type: 'event',
+      resource_id: newEvent.id,
+      status: 'success',
+      metadata: { title: newEvent.title, budget: newEvent.budget, type: newEvent.event_type },
+    });
 
     // Automatically generate initial AI event plan
     try {
@@ -203,6 +212,14 @@ router.patch('/:id', validateIdParam('id'), validateBody(UpdateEventSchema), asy
     memoryCache.invalidate(`event:${eventId}`);
     memoryCache.invalidate(`events:${userId}`);
 
+    await logAuditEvent(req, {
+      action: 'EVENT_UPDATED',
+      resource_type: 'event',
+      resource_id: eventId,
+      status: 'success',
+      metadata: { fields: Object.keys(req.body) },
+    });
+
     const full = await db.getFullEvent(eventId, userId);
     res.json(full);
   } catch (err) {
@@ -222,6 +239,13 @@ router.delete('/:id', validateIdParam('id'), async (req: AuthenticatedRequest, r
 
     memoryCache.invalidate(`event:${eventId}`);
     memoryCache.invalidate(`events:${userId}`);
+
+    await logAuditEvent(req, {
+      action: 'EVENT_DELETED',
+      resource_type: 'event',
+      resource_id: eventId,
+      status: 'success',
+    });
 
     res.json({ success: true, message: 'Event successfully deleted' });
   } catch (err) {

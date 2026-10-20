@@ -7,6 +7,7 @@ import {
   AIAssistantActionSchema,
 } from '../schemas/index.js';
 import { EventRecord, BudgetItem, TaskItem, VendorItem, EventIdea } from '../types/index.js';
+import { inspectPromptSafety, validateAndSanitizeAIPlan, aiCache } from './guardrails.js';
 
 /**
  * Intelligent deterministic AI generator fallback for demo mode or when no LLM API key is provided.
@@ -380,9 +381,36 @@ export async function generateAIEventPlan(event: EventRecord): Promise<AIGenerat
   const geminiKey = process.env.GEMINI_API_KEY;
   const openaiKey = process.env.OPENAI_API_KEY;
 
+  // 1. Guardrail: Check cache first to eliminate unnecessary LLM cost and latency
+  const cacheKey = aiCache.createKey({
+    eventId: event.id,
+    budget: Number(event.budget),
+    guestCount: Number(event.guest_count),
+    eventType: event.event_type,
+    location: event.location,
+    priorities: event.priority_areas || [],
+  });
+
+  const cached = aiCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  // 2. Guardrail: Inspect inputs for prompt injection attempts
+  const reqCheck = inspectPromptSafety(event.additional_requirements || '');
+  const themeCheck = inspectPromptSafety(event.theme_preference || '');
+  if (!reqCheck.isSafe || !themeCheck.isSafe) {
+    aiCache.recordBlockedInjection();
+    console.warn('🛡️ Flagged potential prompt injection in event parameters; sanitizing before processing.');
+  }
+
+  const safeRequirements = reqCheck.sanitized || 'None';
+  const safeTheme = themeCheck.sanitized || 'Standard / Modern';
+
   if (!geminiKey && !openaiKey) {
-    console.log('🤖 Running in AI Demo Mode (no API key configured): Generating deterministic structured event plan');
-    return generateDeterministicPlan(event);
+    const plan = generateDeterministicPlan(event);
+    aiCache.set(cacheKey, plan);
+    return plan;
   }
 
   const prompt = `
@@ -396,11 +424,11 @@ Event Details:
 - Location: ${event.location} (${event.indoor_outdoor})
 - Total Budget: ${event.currency} ${event.budget}
 - Guest Count: ${event.guest_count}
-- Theme Preference: ${event.theme_preference || 'Standard / Modern'}
+- Theme Preference: ${safeTheme}
 - Cultural Preference: ${event.cultural_preference || 'General'}
 - Dietary Preferences: ${event.dietary_preferences || 'None specified'}
 - Priority Areas: ${event.priority_areas.join(', ') || 'Balanced across venue and catering'}
-- Additional Requirements: ${event.additional_requirements || 'None'}
+- Additional Requirements: ${safeRequirements}
 
 Return ONLY a valid JSON object matching this schema:
 {
@@ -468,10 +496,14 @@ Important Rules:
     // Clean JSON markdown if any
     const jsonStr = rawContent.replace(/```json/g, '').replace(/```/g, '').trim();
     const parsed = JSON.parse(jsonStr);
-    const validated = AIGeneratedPlanSchema.parse(parsed);
-    return validated;
+    const guardrailResult = validateAndSanitizeAIPlan(parsed, Number(event.budget) || 50000);
+    if (guardrailResult.valid && guardrailResult.plan) {
+      aiCache.set(cacheKey, guardrailResult.plan);
+      return guardrailResult.plan;
+    }
+    throw new Error(guardrailResult.error || 'AI response failed guardrails validation');
   } catch (err) {
-    console.warn('⚠️ GenAI API call or validation failed, using deterministic high-quality plan:', (err as Error).message);
+    console.warn('âš ï¸ GenAI API call or validation failed, using deterministic high-quality plan:', (err as Error).message);
     return generateDeterministicPlan(event);
   }
 }
@@ -615,13 +647,23 @@ export async function processAssistantMessage(
   tasks: TaskItem[],
   userMessage: string
 ): Promise<AIAssistantAction> {
+  // Inspect user message for adversarial injection or prompt hijacking
+  const safetyCheck = inspectPromptSafety(userMessage);
+  if (!safetyCheck.isSafe) {
+    aiCache.recordBlockedInjection();
+    return {
+      reply: '🛡️ EventPilot AI Safety Guardrail: Your input was flagged for potential prompt instruction override. For security, administrative directives and prompt injection syntax are blocked. Please enter your event request normally.',
+      requiresUserApproval: false,
+    };
+  }
+
   const lowerMsg = userMessage.toLowerCase();
   const currency = event.currency || 'INR';
 
   // Check if user is asking to reduce budget e.g. "reduce my budget to 35000"
-  const budgetMatch = lowerMsg.match(/(?:reduce|change|cut|set)\s+(?:my\s+)?budget\s+to\s+([₹$€£]?\s*[\d,]+)/i);
+  const budgetMatch = lowerMsg.match(/(?:reduce|change|cut|set)\s+(?:my\s+)?budget\s+to\s+([â‚¹$â‚¬Â£]?\s*[\d,]+)/i);
   if (budgetMatch) {
-    const rawVal = budgetMatch[1].replace(/[₹$€£,\s]/g, '');
+    const rawVal = budgetMatch[1].replace(/[â‚¹$â‚¬Â£,\s]/g, '');
     const newBudget = Number(rawVal);
     if (!isNaN(newBudget) && newBudget > 0) {
       const rescue = calculateBudgetRescue(event, budgetItems, newBudget);
@@ -676,7 +718,7 @@ export async function processAssistantMessage(
   if (lowerMsg.includes('vegetarian') || lowerMsg.includes('vegan') || lowerMsg.includes('menu')) {
     const guestCount = event.guest_count || 50;
     return {
-      reply: `Here is a curated vegetarian banquet menu concept for ${guestCount} guests designed to delight all attendees:\n\n• Welcome Drinks: Spiced Pomegranate Spritzer & Fresh Mango Basil Cooler\n• Live Starters: Tandoori Stuffed Mushrooms, Paneer Malai Tikka, Crispy Lotus Stem Honey Chilli\n• Main Courses: Paneer Lababdar, Dal Bukhara (18-hour slow cooked), Vegetable Dum Biryani with Burani Raita, Assorted Clay-Oven Kulchas & Naans\n• Desserts: Saffron Angoori Rasmalai & Warm Moong Dal Halwa\n\nWould you like me to save this menu idea to your event plan?`,
+      reply: `Here is a curated vegetarian banquet menu concept for ${guestCount} guests designed to delight all attendees:\n\nâ€¢ Welcome Drinks: Spiced Pomegranate Spritzer & Fresh Mango Basil Cooler\nâ€¢ Live Starters: Tandoori Stuffed Mushrooms, Paneer Malai Tikka, Crispy Lotus Stem Honey Chilli\nâ€¢ Main Courses: Paneer Lababdar, Dal Bukhara (18-hour slow cooked), Vegetable Dum Biryani with Burani Raita, Assorted Clay-Oven Kulchas & Naans\nâ€¢ Desserts: Saffron Angoori Rasmalai & Warm Moong Dal Halwa\n\nWould you like me to save this menu idea to your event plan?`,
       proposedChanges: {
         ideasToAdd: [
           {
@@ -694,7 +736,7 @@ export async function processAssistantMessage(
   // Check if asking for traditional themes
   if (lowerMsg.includes('traditional') || lowerMsg.includes('cultural') || lowerMsg.includes('heritage')) {
     return {
-      reply: `To infuse authentic traditional elegance into your ${event.event_type}, I recommend adopting a 'Royal Marigold & Brass Heritage' theme:\n\n• Decor: Floral cascades of fresh yellow & orange marigolds, antique brass urlis with floating petals and diyas, and authentic raw silk backdrop drapes.\n• Music: Live Shenai / Flute instrumental welcome for the guest arrival.\n• Attire Palette: Warm sunset hues, ivory, and deep crimson.\n\nShall I add these ideas and decorative concepts to your event plan?`,
+      reply: `To infuse authentic traditional elegance into your ${event.event_type}, I recommend adopting a 'Royal Marigold & Brass Heritage' theme:\n\nâ€¢ Decor: Floral cascades of fresh yellow & orange marigolds, antique brass urlis with floating petals and diyas, and authentic raw silk backdrop drapes.\nâ€¢ Music: Live Shenai / Flute instrumental welcome for the guest arrival.\nâ€¢ Attire Palette: Warm sunset hues, ivory, and deep crimson.\n\nShall I add these ideas and decorative concepts to your event plan?`,
       proposedChanges: {
         ideasToAdd: [
           {

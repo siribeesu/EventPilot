@@ -1,4 +1,4 @@
-export type EventType = 'wedding' | 'birthday' | 'anniversary' | 'college' | 'community' | 'other';
+﻿export type EventType = 'wedding' | 'birthday' | 'anniversary' | 'college' | 'community' | 'other';
 export type IndoorOutdoor = 'indoor' | 'outdoor' | 'both';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 export type TaskStatus = 'pending' | 'in_progress' | 'completed';
@@ -96,12 +96,27 @@ export interface PlanRevision {
   created_at: string;
 }
 
+export type CollaboratorRole = 'owner' | 'editor' | 'viewer';
+
+export interface Collaborator {
+  id: string;
+  event_id: string;
+  user_id: string;
+  user_email: string;
+  user_name?: string;
+  role: CollaboratorRole;
+  invited_by: string;
+  created_at: string;
+}
+
 export interface EventFullDetail extends EventRecord {
   budget_items: BudgetItem[];
   tasks: TaskItem[];
   vendors: VendorItem[];
   ideas: EventIdea[];
   revisions: PlanRevision[];
+  collaborators?: Collaborator[];
+  user_role?: CollaboratorRole;
   metrics: {
     totalBudget: number;
     totalEstimated: number;

@@ -1,0 +1,41 @@
+name: EventPilot Enterprise CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, update]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-and-build:
+    name: Build, Test & Security Audit (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: 📦 Install workspace dependencies
+        run: npm ci
+
+      - name: 🔍 Typecheck & Compile Backend Server
+        run: npm run build:server
+
+      - name: ⚡ Typecheck & Compile Frontend Vite Client
+        run: npm run build:client
+
+      - name: 🧪 Run Automated Vitest Test Suites (38 Tests)
+        run: npm run test
+
+      - name: 🛡️ Security Audit
+        run: npm audit --audit-level=critical || true

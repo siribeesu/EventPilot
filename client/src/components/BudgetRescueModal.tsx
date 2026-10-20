@@ -239,7 +239,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
                 <div className="flex items-start space-x-2 text-xs text-slate-600 bg-white p-3 rounded-xl border border-slate-200">
                   <Info className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" />
                   <span>
-                    Planora will run an optimization pass across all expense categories. High-cost discretionary items will be substituted with smart, tasteful alternatives, while your core priorities are shielded.
+                    EventPilot will run an optimization pass across all expense categories. High-cost discretionary items will be substituted with smart, tasteful alternatives, while your core priorities are shielded.
                   </span>
                 </div>
               </div>
@@ -252,7 +252,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-xs font-bold text-indigo-700 uppercase tracking-wide flex items-center space-x-1.5">
                     <Sparkles className="w-4 h-4" />
-                    <span>Planora AI Optimization Analysis</span>
+                    <span>EventPilot AI Optimization Analysis</span>
                   </span>
                   <div className="flex items-center space-x-3 text-xs">
                     <button

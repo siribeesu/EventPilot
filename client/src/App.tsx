@@ -76,7 +76,7 @@ export function App() {
       {/* Global Footer */}
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-400">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p>© 2026 Planora AI — GenAI-Powered Event Planning & Financial Optimization Platform.</p>
+          <p>© 2026 EventPilot — GenAI-Powered Event Planning & Financial Optimization Platform.</p>
           <div className="flex items-center space-x-3 text-slate-500">
             <span>Powered by Gemini & Deterministic Rules Engine</span>
             <span>•</span>

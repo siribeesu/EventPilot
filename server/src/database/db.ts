@@ -29,7 +29,7 @@ interface DbData {
 
 const defaultUser: User = {
   id: 'usr_demo_123',
-  email: 'planner@planora.ai',
+  email: 'planner@eventpilot.ai',
   name: 'Demo Planner',
   created_at: new Date().toISOString(),
 };

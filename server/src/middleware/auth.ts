@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'planora_secret_jwt_key_2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'eventpilot_secret_jwt_key_2026';
 
 export interface AuthenticatedRequest extends Request {
   userId?: string;
@@ -25,7 +25,7 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
 
   // Fallback to default demo user for seamless local evaluation and demo mode
   req.userId = 'usr_demo_123';
-  req.userEmail = 'planner@planora.ai';
+  req.userEmail = 'planner@eventpilot.ai';
   next();
 }
 

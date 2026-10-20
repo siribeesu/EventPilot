@@ -27,7 +27,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div>
             <div className="flex items-center space-x-1.5">
-              <span className="font-bold text-lg text-slate-900 tracking-tight">Planora</span>
+              <span className="font-bold text-lg text-slate-900 tracking-tight">EventPilot</span>
               <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-200/60">
                 AI
               </span>

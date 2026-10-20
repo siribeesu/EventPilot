@@ -44,7 +44,7 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
     {
       id: 'm-init',
       sender: 'assistant',
-      text: `Hello! I'm your Planora AI Copilot. I'm actively monitoring your event plan for "${event.title}" (${currency} ${Number(event.budget).toLocaleString()}). How can I help you adjust your budget, menu, timeline, or vendors today?`,
+      text: `Hello! I'm your EventPilot AI Copilot. I'm actively monitoring your event plan for "${event.title}" (${currency} ${Number(event.budget).toLocaleString()}). How can I help you adjust your budget, menu, timeline, or vendors today?`,
     },
   ];
 
@@ -114,7 +114,7 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
       const res = await api.applyAssistantChanges(
         event.id,
         action.proposedChanges,
-        'Applied suggestions from Planora AI Assistant conversation'
+        'Applied suggestions from EventPilot AI Assistant conversation'
       );
       onPlanUpdated(res.event);
 
@@ -138,7 +138,7 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
           </div>
           <div>
             <h3 className="font-bold text-base leading-tight flex items-center space-x-1.5">
-              <span>Planora AI Assistant</span>
+              <span>EventPilot AI Assistant</span>
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             </h3>
             <p className="text-xs text-indigo-100/90">Contextual Co-Planner</p>
@@ -311,7 +311,7 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
         {loading && (
           <div className="flex items-center space-x-2 text-slate-500 text-xs italic p-2 bg-slate-50 rounded-xl w-fit">
             <Sparkles className="w-4 h-4 text-indigo-500 animate-spin" />
-            <span>Planora AI is analyzing your event and calculating adjustments...</span>
+            <span>EventPilot AI is analyzing your event and calculating adjustments...</span>
           </div>
         )}
       </div>

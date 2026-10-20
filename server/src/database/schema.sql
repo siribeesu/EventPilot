@@ -1,4 +1,4 @@
--- Planora AI PostgreSQL / Supabase Database Schema
+-- EventPilot PostgreSQL / Supabase Database Schema
 -- Compatible with Supabase SQL Editor and standard PostgreSQL 14+
 
 -- Enable UUID extension

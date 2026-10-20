@@ -1,7 +1,7 @@
 {
-  "name": "planora-ai-server",
+  "name": "eventpilot-server",
   "version": "1.0.0",
-  "description": "Planora AI Backend Service",
+  "description": "EventPilot Backend Service",
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",

@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { calculateBudgetRescue, generateDeterministicPlan } from '../ai/planner.js';
 import { EventRecord, BudgetItem } from '../types/index.js';
 
-describe('Planora AI Planner & Budget Calculations', () => {
+describe('EventPilot Planner & Budget Calculations', () => {
   const mockEvent: EventRecord = {
     id: 'test-event-1',
     user_id: 'usr_demo_123',

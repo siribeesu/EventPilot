@@ -252,6 +252,11 @@ npm run test
 | `src/tests/security_and_auth.test.ts` | 6 | Core Security | PBKDF2 SHA-512 password hashing with 10k iterations, salt uniqueness, JWT authentication, user registration/login, resource ownership isolation |
 | `src/tests/api_integration.test.ts` | 4 | Integration | Event CRUD lifecycle, calculated metrics verification, Budget Rescue proposal application, AI Copilot approval workflow |
 
+> 📖 **In-Depth Evidence & Audit Reports:**
+> * 🛡️ [Enterprise Security & Threat Model Audit](docs/SECURITY_AUDIT.md) — 10 prompt injection tests, PBKDF2 hash verification & RBAC matrix
+> * ♿ [Automated Accessibility (WCAG 2.1 AA) Report](docs/ACCESSIBILITY_AUDIT.md) — Mathematical contrast ratio proofs, skip link & focus trap tests
+> * 📊 [Production Observability & Telemetry Reference](docs/OBSERVABILITY.md) — Live metrics, memory stats & request correlation architecture
+
 ---
 
 ### V. Enterprise Security, AI Safety & Data Privacy

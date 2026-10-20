@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Sparkles,
   Send,
@@ -171,6 +171,17 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
           <X className="w-5 h-5" aria-hidden="true" />
           <span className="sr-only">Close assistant panel</span>
         </button>
+      </div>
+
+      {/* AI Safety & Guardrail Security Status */}
+      <div className="bg-slate-950 px-4 py-2 text-[11px] text-slate-300 border-b border-slate-800 flex items-center justify-between">
+        <span className="flex items-center gap-1.5 font-medium text-emerald-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          <span>Prompt Guardrails Active</span>
+        </span>
+        <span className="text-[10px] text-slate-400 font-mono">
+          SHA-256 Cache • Zod Bounded
+        </span>
       </div>
 
       {/* Quick Prompts Bar */}

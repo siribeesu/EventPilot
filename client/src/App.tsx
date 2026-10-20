@@ -1,6 +1,7 @@
 import React, { useState, lazy, Suspense } from 'react';
 import { Navbar } from './components/Navbar';
 import { PrivacyDataModal } from './components/PrivacyDataModal';
+import { ConsentBanner } from './components/ConsentBanner';
 import type { EventFullDetail } from './types';
 
 // Code-split pages for optimal bundle loading & performance
@@ -128,6 +129,9 @@ export function App() {
         isOpen={privacyModalOpen}
         onClose={() => setPrivacyModalOpen(false)}
       />
+
+      {/* GDPR & Privacy Consent Floating Banner */}
+      <ConsentBanner onOpenPrivacy={() => setPrivacyModalOpen(true)} />
     </div>
   );
 }

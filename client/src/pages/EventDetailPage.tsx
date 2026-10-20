@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Calendar,
   Sparkles,
+  Shield,
   ShieldAlert,
   Download,
   Plus,
@@ -35,6 +36,7 @@ import { exportEventToPDF } from '../services/pdfExport';
 import { BudgetRescueModal } from '../components/BudgetRescueModal';
 import { AIAssistantDrawer } from '../components/AIAssistantDrawer';
 import { CollaboratorsModal } from '../components/CollaboratorsModal';
+import { AuditTrailModal } from '../components/AuditTrailModal';
 
 interface EventDetailPageProps {
   eventId: string;
@@ -55,6 +57,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
   const [showRescueModal, setShowRescueModal] = useState(false);
   const [showAssistantDrawer, setShowAssistantDrawer] = useState(false);
   const [showCollaboratorsModal, setShowCollaboratorsModal] = useState(false);
+  const [showAuditTrailModal, setShowAuditTrailModal] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
 
   // Modal / Inline Add state
@@ -324,11 +327,22 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
             <button
               type="button"
               onClick={() => setShowCollaboratorsModal(true)}
-              className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-2xs cursor-pointer"
+              className="inline-flex items-center space-x-2 px-3 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-2xs cursor-pointer"
               title="Manage Team Collaborators & Permissions"
             >
               <Users className="w-4 h-4 text-indigo-600" aria-hidden="true" />
               <span>Team ({event.collaborators?.length || 0})</span>
+            </button>
+
+            {/* Forensic Audit Trail Trigger */}
+            <button
+              type="button"
+              onClick={() => setShowAuditTrailModal(true)}
+              className="inline-flex items-center space-x-1.5 px-3 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-2xs cursor-pointer"
+              title="View Real-Time Forensic Security Ledger"
+            >
+              <Shield className="w-4 h-4 text-emerald-600" aria-hidden="true" />
+              <span>Audit Trail</span>
             </button>
 
             {/* PDF Export */}
@@ -1226,6 +1240,13 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
           fetchEvent();
         }}
         isOwner={event.user_role !== 'viewer'}
+      />
+
+      {/* Forensic Audit Trail Modal */}
+      <AuditTrailModal
+        eventId={event.id}
+        isOpen={showAuditTrailModal}
+        onClose={() => setShowAuditTrailModal(false)}
       />
 
       {/* AI Assistant Drawer */}

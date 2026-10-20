@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { db } from '../database/db.js';
 import { calculateBudgetRescue, generateDeterministicPlan, processAssistantMessage } from '../ai/planner.js';
 
-describe('Planora AI End-to-End System Integration', () => {
+describe('EventPilot End-to-End System Integration', () => {
   let createdEventId: string;
 
   it('creates an event and persists it in storage', async () => {

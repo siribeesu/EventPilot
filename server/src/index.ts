@@ -25,7 +25,7 @@ app.use(express.json({ limit: '10mb' }));
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'Planora AI Backend',
+    service: 'EventPilot Backend',
     timestamp: new Date().toISOString(),
     postgresConfigured: !!process.env.DATABASE_URL,
     aiConfigured: !!(process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY),
@@ -51,7 +51,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 
 app.listen(PORT, () => {
   console.log(`===============================================`);
-  console.log(`✨ Planora AI Backend running on port ${PORT}`);
+  console.log(`✨ EventPilot Backend running on port ${PORT}`);
   console.log(`🌐 API Base URL: http://localhost:${PORT}/api`);
   console.log(`💾 Database: ${process.env.DATABASE_URL ? 'PostgreSQL' : 'Persistent Storage (database.json)'}`);
   console.log(`🤖 AI Provider: ${process.env.GEMINI_API_KEY ? 'Gemini API' : (process.env.OPENAI_API_KEY ? 'OpenAI' : 'Intelligent Deterministic Engine (Demo Mode)')}`);

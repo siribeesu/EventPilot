@@ -18,7 +18,7 @@ export function exportEventToPDF(event: EventFullDetail) {
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(22);
   doc.setFont('helvetica', 'bold');
-  doc.text('PLANORA AI', 14, 16);
+  doc.text('EVENTPILOT AI', 14, 16);
 
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
@@ -214,6 +214,6 @@ export function exportEventToPDF(event: EventFullDetail) {
   }
 
   // Save the PDF file
-  const filename = `${event.title.replace(/[^a-zA-Z0-9]/g, '_')}_Planora_Plan.pdf`;
+  const filename = `${event.title.replace(/[^a-zA-Z0-9]/g, '_')}_EventPilot_Plan.pdf`;
   doc.save(filename);
 }

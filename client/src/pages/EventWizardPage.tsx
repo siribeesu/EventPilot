@@ -144,7 +144,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                 {step === 1 ? 'Core Details' : step === 2 ? 'Scale & Budget' : 'Style & Priorities'}
               </span>
             </div>
-            <h2 className="text-2xl font-bold tracking-tight mt-1">Planora Event Creation Wizard</h2>
+            <h2 className="text-2xl font-bold tracking-tight mt-1">EventPilot Event Creation Wizard</h2>
           </div>
           <button
             onClick={onCancel}

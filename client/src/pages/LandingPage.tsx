@@ -118,7 +118,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </h1>
 
             <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-              Planora AI generates tailored budgets, adaptive milestone timelines, vendor checklists, and bespoke menus for weddings, birthdays, and celebrations. Features automated <strong>Budget Rescue Mode™</strong>.
+              EventPilot generates tailored budgets, adaptive milestone timelines, vendor checklists, and bespoke menus for weddings, birthdays, and celebrations. Features automated <strong>Budget Rescue Mode™</strong>.
             </p>
 
             {/* CTAs */}
@@ -164,7 +164,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             Tailored Intelligence for Every Occasion
           </h2>
           <p className="text-sm text-slate-600">
-            See how Planora AI dynamically structures logistics, funds, and experiences according to your event type.
+            See how EventPilot dynamically structures logistics, funds, and experiences according to your event type.
           </p>
         </div>
 
@@ -275,7 +275,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <Sparkles className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" />
               <div>
                 <span className="font-bold">Autonomous Trade-off Engine: </span>
-                If you choose to reduce your overall budget later, Planora will preserve your highest priority areas and automatically offer lower-cost decor and menu alternatives without lowering quality.
+                If you choose to reduce your overall budget later, EventPilot will preserve your highest priority areas and automatically offer lower-cost decor and menu alternatives without lowering quality.
               </div>
             </div>
           </div>

@@ -386,7 +386,7 @@ export async function generateAIEventPlan(event: EventRecord): Promise<AIGenerat
   }
 
   const prompt = `
-You are Planora AI, an elite event planner and financial optimizer.
+You are EventPilot, an elite event planner and financial optimizer.
 Create a comprehensive, personalized event plan in valid JSON format according to the specification.
 
 Event Details:
@@ -451,7 +451,7 @@ Important Rules:
         body: JSON.stringify({
           model: 'gpt-4o-mini',
           messages: [
-            { role: 'system', content: 'You are Planora AI, an expert event planner that always outputs strict JSON.' },
+            { role: 'system', content: 'You are EventPilot, an expert event planner that always outputs strict JSON.' },
             { role: 'user', content: prompt },
           ],
           response_format: { type: 'json_object' },
@@ -593,7 +593,7 @@ export function calculateBudgetRescue(
   ];
 
   return {
-    analysis: `To reach your new budget of ${currency} ${targetBudget.toLocaleString()} from your current plan of ${currency} ${currentTotal.toLocaleString()}, Planora identified ${currency} ${achievedSavings.toLocaleString()} in smart optimizations across ${proposals.length} budget categories while safeguarding your core event priorities.`,
+    analysis: `To reach your new budget of ${currency} ${targetBudget.toLocaleString()} from your current plan of ${currency} ${currentTotal.toLocaleString()}, EventPilot identified ${currency} ${achievedSavings.toLocaleString()} in smart optimizations across ${proposals.length} budget categories while safeguarding your core event priorities.`,
     targetBudget,
     currentTotalEstimated: currentTotal,
     proposedTotalEstimated: proposedTotal,
@@ -711,7 +711,7 @@ export async function processAssistantMessage(
 
   // Default thoughtful contextual assistance
   return {
-    reply: `I understand you want to optimize your plan regarding "${userMessage}". Planora AI is ready to help you adjust your budget items, suggest tailored menu items, refine timeline milestones, or negotiate vendor quotations.\n\nCould you specify if you would like me to adjust your budget allocations, add specific timeline tasks, or explore alternative themes?`,
+    reply: `I understand you want to optimize your plan regarding "${userMessage}". EventPilot is ready to help you adjust your budget items, suggest tailored menu items, refine timeline milestones, or negotiate vendor quotations.\n\nCould you specify if you would like me to adjust your budget allocations, add specific timeline tasks, or explore alternative themes?`,
     clarifyingQuestions: [
       'Would you like to decrease your total budget target or reallocate existing funds between categories?',
       'Do you prefer more elaborate decorations or an upgraded gourmet dining experience?',

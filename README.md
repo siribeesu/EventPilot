@@ -1,6 +1,6 @@
-# Planora AI — GenAI-Powered Event Planning Assistant
+# EventPilot — GenAI-Powered Event Planning Assistant
 
-**Planora AI** is a complete, modern, production-grade web application designed to help users plan **weddings, birthdays, anniversaries, college fests, and community gatherings** using Generative AI.
+**EventPilot** is a complete, modern, production-grade web application designed to help users plan **weddings, birthdays, anniversaries, college fests, and community gatherings** using Generative AI.
 
 ---
 
@@ -11,7 +11,7 @@
    - Tailors themes, gourmet banquet menus, decor styling, and entertainment concepts to cultural, dietary, and headcount requirements.
 
 2. **Signature Feature: Budget Rescue Mode™**:
-   - When budgets drop (e.g., from ₹50,000 to ₹35,000), Planora recalculates target ceilings without violating user priorities.
+   - When budgets drop (e.g., from ₹50,000 to ₹35,000), EventPilot recalculates target ceilings without violating user priorities.
    - Side-by-side comparison displays original vs proposed costs, exact savings, and tradeoff rationales.
    - Individual checkboxes let the user accept or reject each proposed saving with live shortfall recalculation.
    - Explicit user approval required before plan overwrites.
@@ -97,27 +97,11 @@ Copy `.env.example` to `server/.env`:
 ```bash
 cp .env.example server/.env
 ```
-Default configuration:
-```env
-PORT=5000
-
-# Optional PostgreSQL / Supabase connection URL
-# e.g.: postgresql://postgres:password@localhost:5432/planora_db
-# If left blank, Planora automatically uses the high-performance local persistent JSON store!
-DATABASE_URL=
-
-# Optional Gemini or OpenAI API Key
-# If omitted, Planora runs in AI Demo Mode with high-quality deterministic generation
-GEMINI_API_KEY=
-OPENAI_API_KEY=
-
-JWT_SECRET=planora_super_secret_jwt_key_2026
-```
 
 ### 3. Database Setup
-Planora AI is designed with dual-mode storage:
+EventPilot is designed with dual-mode storage:
 - **Zero-Config Persistent Mode**: If `DATABASE_URL` is omitted, data is persistently stored in `server/data/database.json`.
-- **PostgreSQL / Supabase Mode**: Set `DATABASE_URL=postgresql://...`. Planora automatically applies `server/src/database/schema.sql` on startup with full indexes and tables.
+- **PostgreSQL / Supabase Mode**: Set `DATABASE_URL=postgresql://...`. EventPilot automatically applies `server/src/database/schema.sql` on startup with full indexes and tables.
 
 ### 4. Run the Application
 In separate terminal sessions or concurrently:
@@ -149,12 +133,3 @@ npm run test
   - ✅ Retrieves full event with calculated financial metrics
   - ✅ Executes Budget Rescue Mode when reducing budget to ₹40,000 and applies accepted proposals
   - ✅ Processes AI Assistant conversational commands with human-in-the-loop approval workflow
-
----
-
-## 🔒 Security & Data Integrity
-
-- **Financial Validation**: Totals, remaining balances, and category shares are computed and validated authoritatively in server application code.
-- **Zod Schema Guards**: All incoming request bodies and AI-generated structured JSON responses are strictly validated.
-- **Human-in-the-Loop**: Neither AI suggestions nor Budget Rescue optimizations overwrite plans without explicit user approval.
-- **Ownership Scoping**: All operations are scoped by user authorization.

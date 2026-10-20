@@ -430,7 +430,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
                 <div className="p-1.5 rounded-lg bg-indigo-50 text-indigo-600">
                   <Sparkles className="w-4 h-4" />
                 </div>
-                <h3 className="font-bold text-slate-900 text-base">Planora AI Executive Strategy</h3>
+                <h3 className="font-bold text-slate-900 text-base">EventPilot AI Executive Strategy</h3>
               </div>
               <p className="text-sm text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-200/70">
                 {event.ai_summary}

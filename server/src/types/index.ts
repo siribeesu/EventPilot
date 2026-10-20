@@ -1,4 +1,4 @@
-﻿export type EventType = 'wedding' | 'birthday' | 'anniversary' | 'college' | 'community' | 'other';
+export type EventType = 'wedding' | 'birthday' | 'anniversary' | 'college' | 'community' | 'other';
 export type IndoorOutdoor = 'indoor' | 'outdoor' | 'both';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 export type TaskStatus = 'pending' | 'in_progress' | 'completed';
@@ -160,3 +160,15 @@ export interface AIUsageMetrics {
   costSavedUSD: number;
 }
 
+export interface AIFeedbackRecord {
+  id: string;
+  event_id: string;
+  user_id: string;
+  suggestion_id?: string;
+  suggestion_type: 'plan_generation' | 'budget_rescue' | 'assistant_chat' | 'vendor_recommendation';
+  rating: 'positive' | 'negative' | 'neutral';
+  user_action: 'accepted' | 'rejected' | 'modified' | 'viewed_only';
+  feedback_comment?: string;
+  category?: string;
+  created_at: string;
+}

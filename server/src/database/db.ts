@@ -15,6 +15,7 @@ import {
   Collaborator,
   CollaboratorRole,
   AuditLog,
+  AIFeedbackRecord,
 } from '../types/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -30,6 +31,7 @@ interface DbData {
   plan_revisions: PlanRevision[];
   collaborators: Collaborator[];
   audit_logs: AuditLog[];
+  ai_feedback?: AIFeedbackRecord[];
 }
 
 const defaultUser: User = {
@@ -53,6 +55,7 @@ class StorageManager {
     plan_revisions: [],
     collaborators: [],
     audit_logs: [],
+    ai_feedback: [],
   };
 
   constructor() {
@@ -906,6 +909,64 @@ class StorageManager {
     this.memoryData.event_ideas = this.memoryData.event_ideas.filter(i => i.event_id !== eventId);
     this.persist();
   }
+
+  async saveAIFeedback(feedback: Omit<AIFeedbackRecord, 'id' | 'created_at'>): Promise<AIFeedbackRecord> {
+    const record: AIFeedbackRecord = {
+      id: `fbk_${uuidv4()}`,
+      created_at: new Date().toISOString(),
+      ...feedback,
+    };
+    if (this.isPostgres && this.pool) {
+      try {
+        await this.pool.query(
+          `INSERT INTO ai_feedback (id, event_id, user_id, suggestion_id, suggestion_type, rating, user_action, feedback_comment, category, created_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+          [
+            record.id,
+            record.event_id,
+            record.user_id,
+            record.suggestion_id || null,
+            record.suggestion_type,
+            record.rating,
+            record.user_action,
+            record.feedback_comment || null,
+            record.category || null,
+            record.created_at,
+          ]
+        );
+        return record;
+      } catch (err) {
+        console.warn('Postgres saveAIFeedback error, falling back to memory:', err);
+      }
+    }
+    if (!this.memoryData.ai_feedback) {
+      this.memoryData.ai_feedback = [];
+    }
+    this.memoryData.ai_feedback.push(record);
+    this.persist();
+    return record;
+  }
+
+  async getAIFeedback(eventId?: string): Promise<AIFeedbackRecord[]> {
+    if (this.isPostgres && this.pool) {
+      try {
+        if (eventId) {
+          const res = await this.pool.query('SELECT * FROM ai_feedback WHERE event_id = $1 ORDER BY created_at DESC', [eventId]);
+          return res.rows;
+        }
+        const res = await this.pool.query('SELECT * FROM ai_feedback ORDER BY created_at DESC LIMIT 100');
+        return res.rows;
+      } catch (err) {
+        console.warn('Postgres getAIFeedback error, falling back to memory:', err);
+      }
+    }
+    const list = this.memoryData.ai_feedback || [];
+    if (eventId) {
+      return list.filter(f => f.event_id === eventId);
+    }
+    return list;
+  }
+
 }
 
 export const db = new StorageManager();

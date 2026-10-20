@@ -203,6 +203,32 @@ export const api = {
     return res.json();
   },
 
+
+  // AI Feedback Loop
+  async submitAIFeedback(
+    eventId: string,
+    feedback: {
+      suggestionId?: string;
+      suggestionType?: string;
+      rating: 'positive' | 'negative' | 'neutral';
+      userAction?: 'accepted' | 'rejected' | 'modified' | 'viewed_only';
+      feedbackComment?: string;
+      category?: string;
+    }
+  ): Promise<any> {
+    const res = await fetch(`${API_BASE}/events/${eventId}/ai/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        suggestionType: 'assistant_chat',
+        userAction: 'viewed_only',
+        ...feedback,
+      }),
+    });
+    if (!res.ok) throw new Error('Failed to submit feedback');
+    return res.json();
+  },
+
   // Team Collaboration & RBAC
   async getCollaborators(eventId: string): Promise<any[]> {
     const res = await fetch(`${API_BASE}/events/${eventId}/collaborators`);

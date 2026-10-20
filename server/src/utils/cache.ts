@@ -1,4 +1,4 @@
-interface CacheEntry<T> {
+﻿interface CacheEntry<T> {
   value: T;
   expiresAt: number;
 }

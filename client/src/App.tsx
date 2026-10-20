@@ -1,5 +1,7 @@
 import React, { useState, lazy, Suspense } from 'react';
 import { Navbar } from './components/Navbar';
+import { PrivacyDataModal } from './components/PrivacyDataModal';
+import { ConsentBanner } from './components/ConsentBanner';
 import type { EventFullDetail } from './types';
 
 // Code-split pages for optimal bundle loading & performance
@@ -12,6 +14,7 @@ export function App() {
   const [currentView, setCurrentView] = useState<'landing' | 'dashboard' | 'wizard' | 'event'>('landing');
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [currency, setCurrency] = useState<string>('INR');
+  const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
 
   const handleNavigate = (view: 'landing' | 'dashboard' | 'wizard', eventId?: string) => {
     setCurrentView(view);
@@ -46,6 +49,7 @@ export function App() {
         onNavigate={handleNavigate}
         currency={currency}
         onCurrencyChange={setCurrency}
+        onOpenPrivacy={() => setPrivacyModalOpen(true)}
       />
 
       {/* Main Content Area with Landmark and tabIndex for focus management */}
@@ -106,12 +110,28 @@ export function App() {
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p>© 2026 EventPilot — GenAI-Powered Event Planning & Financial Optimization Platform.</p>
           <div className="flex items-center space-x-3 text-slate-500">
-            <span>Powered by Gemini & Deterministic Rules Engine</span>
+            <button
+              onClick={() => setPrivacyModalOpen(true)}
+              className="hover:text-indigo-600 transition underline underline-offset-2"
+            >
+              GDPR & Privacy Disclosures
+            </button>
+            <span aria-hidden="true">•</span>
+            <span>Gemini & Rules Engine</span>
             <span aria-hidden="true">•</span>
             <span>PostgreSQL & Supabase Ready</span>
           </div>
         </div>
       </footer>
+
+      {/* GDPR Data Portability & Privacy Modal */}
+      <PrivacyDataModal
+        isOpen={privacyModalOpen}
+        onClose={() => setPrivacyModalOpen(false)}
+      />
+
+      {/* GDPR & Privacy Consent Floating Banner */}
+      <ConsentBanner onOpenPrivacy={() => setPrivacyModalOpen(true)} />
     </div>
   );
 }

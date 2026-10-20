@@ -68,7 +68,7 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
   if (!isOpen) return null;
 
   const quickPrompts = [
-    `Reduce my budget to ${currency === 'INR' ? '₹' : currency}35,000`,
+    `Reduce my budget to ${currency === 'INR' ? 'â‚¹' : currency}35,000`,
     'Make the wedding more traditional',
     'Suggest a vegetarian menu for 100 guests',
     'The event is in 7 days. What should I prioritize?',
@@ -112,7 +112,7 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
         {
           id: `err_${Date.now()}`,
           sender: 'assistant',
-          text: `⚠️ Error processing request: ${(err as Error).message}`,
+          text: `âš ï¸ Error processing request: ${(err as Error).message}`,
         },
       ]);
     } finally {
@@ -171,6 +171,17 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
           <X className="w-5 h-5" aria-hidden="true" />
           <span className="sr-only">Close assistant panel</span>
         </button>
+      </div>
+
+      {/* AI Safety & Guardrail Security Status */}
+      <div className="bg-slate-950 px-4 py-2 text-[11px] text-slate-300 border-b border-slate-800 flex items-center justify-between">
+        <span className="flex items-center gap-1.5 font-medium text-emerald-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          <span>Prompt Guardrails Active</span>
+        </span>
+        <span className="text-[10px] text-slate-400 font-mono">
+          SHA-256 Cache • Zod Bounded
+        </span>
       </div>
 
       {/* Quick Prompts Bar */}
@@ -326,7 +337,7 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
                       </button>
                     ) : (
                       <div className="p-2 bg-emerald-50 text-emerald-800 text-xs rounded-lg text-center font-medium">
-                        ✓ All proposed updates have been merged into your active plan.
+                        âœ“ All proposed updates have been merged into your active plan.
                       </div>
                     )}
                   </div>

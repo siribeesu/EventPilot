@@ -17,6 +17,7 @@ import {
 import type { EventFullDetail } from '../types';
 import { api } from '../services/api';
 import { useDebounce } from '../hooks/useDebounce';
+import { OnboardingChecklist } from '../components/OnboardingChecklist';
 
 interface DashboardPageProps {
   onSelectEvent: (eventId: string) => void;
@@ -109,7 +110,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <span className="text-[11px] font-bold tracking-widest uppercase text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">
               Command Center
             </span>
-            <span className="text-xs text-slate-400">•</span>
+            <span className="text-xs text-slate-400">â€¢</span>
             <span className="text-xs text-slate-500 font-medium">Real-Time Portfolio</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
@@ -129,6 +130,13 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           <span>New Event Plan</span>
         </button>
       </div>
+
+      {/* Guided Quickstart Onboarding */}
+      <OnboardingChecklist
+        eventsCount={events.length}
+        hasBudgetItems={events.some(e => (e.budget_items?.length || 0) > 0)}
+        onNewEvent={onCreateNew}
+      />
 
       {/* Aggregate Stats Cards: Bento 4-Column Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -162,11 +170,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           <div className="text-xs font-medium">
             {totalBudgetAcross >= totalPlannedSpending ? (
               <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                ✓ Remaining Buffer: {currency} {(totalBudgetAcross - totalPlannedSpending).toLocaleString()}
+                âœ“ Remaining Buffer: {currency} {(totalBudgetAcross - totalPlannedSpending).toLocaleString()}
               </span>
             ) : (
               <span className="text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200 font-bold">
-                ⚠ Over Limit: {currency} {(totalPlannedSpending - totalBudgetAcross).toLocaleString()}
+                âš  Over Limit: {currency} {(totalPlannedSpending - totalBudgetAcross).toLocaleString()}
               </span>
             )}
           </div>
@@ -327,7 +335,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     </h3>
                     <p className="text-xs text-slate-500 mt-1 flex items-center space-x-1.5 font-medium">
                       <span>{evt.location}</span>
-                      <span aria-hidden="true">•</span>
+                      <span aria-hidden="true">â€¢</span>
                       <span>{evt.guest_count} attendees</span>
                     </p>
                   </div>

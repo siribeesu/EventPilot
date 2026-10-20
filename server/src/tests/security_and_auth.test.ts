@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+﻿import { describe, it, expect } from 'vitest';
 import { hashPassword, verifyPassword, isValidUUID } from '../utils/security.js';
 import { sanitizeString, sanitizeObject } from '../utils/sanitize.js';
 import { db } from '../database/db.js';

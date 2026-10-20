@@ -1,4 +1,4 @@
-import {
+﻿import {
   EventRecord,
   EventFullDetail,
   BudgetItem,
@@ -200,6 +200,62 @@ export const api = {
       body: JSON.stringify({ proposedChanges, revisionNote }),
     });
     if (!res.ok) throw new Error('Failed to apply assistant changes');
+    return res.json();
+  },
+
+  // Team Collaboration & RBAC
+  async getCollaborators(eventId: string): Promise<any[]> {
+    const res = await fetch(`${API_BASE}/events/${eventId}/collaborators`);
+    if (!res.ok) throw new Error('Failed to fetch collaborators');
+    const data = await res.json();
+    return data.collaborators || [];
+  },
+
+  async addCollaborator(eventId: string, email: string, role: string, name?: string): Promise<any> {
+    const res = await fetch(`${API_BASE}/events/${eventId}/collaborators`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, role, name }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to add collaborator');
+    }
+    return res.json();
+  },
+
+  async removeCollaborator(eventId: string, collaboratorId: string): Promise<void> {
+    const res = await fetch(`${API_BASE}/events/${eventId}/collaborators/${collaboratorId}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) throw new Error('Failed to remove collaborator');
+  },
+
+  // Privacy & GDPR
+  async exportUserData(): Promise<void> {
+    const res = await fetch(`${API_BASE}/user/data-export`);
+    if (!res.ok) throw new Error('Failed to export user data');
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `eventpilot-gdpr-export-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  },
+
+  async getPrivacyPolicy(): Promise<any> {
+    const res = await fetch(`${API_BASE}/privacy/policy`);
+    if (!res.ok) throw new Error('Failed to fetch privacy policy');
+    return res.json();
+  },
+
+  // Observability & Metrics
+  async getMetrics(): Promise<any> {
+    const res = await fetch(`${API_BASE}/metrics`);
+    if (!res.ok) throw new Error('Failed to fetch system metrics');
     return res.json();
   },
 };

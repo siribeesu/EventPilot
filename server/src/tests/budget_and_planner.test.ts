@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+﻿import { describe, it, expect } from 'vitest';
 import { calculateBudgetRescue, generateDeterministicPlan } from '../ai/planner.js';
 import { EventRecord, BudgetItem } from '../types/index.js';
 
@@ -46,7 +46,7 @@ describe('EventPilot Planner & Budget Calculations', () => {
     }
   });
 
-  it('runs Budget Rescue Mode when budget is reduced from ₹50,000 to ₹35,000', () => {
+  it('runs Budget Rescue Mode when budget is reduced from â‚¹50,000 to â‚¹35,000', () => {
     const mockBudgetItems: BudgetItem[] = [
       {
         id: 'b-1',

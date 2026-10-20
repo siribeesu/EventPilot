@@ -8,6 +8,9 @@ import eventsRouter from './routes/events.js';
 import budgetRouter from './routes/budget.js';
 import tasksRouter from './routes/tasks.js';
 import vendorsRouter from './routes/vendors.js';
+import collaboratorsRouter from './routes/collaborators.js';
+import privacyRouter from './routes/privacy.js';
+import metricsRouter, { recordMetricRequest } from './routes/metrics.js';
 import { authMiddleware } from './middleware/auth.js';
 import { standardLimiter, aiRateLimiter, authLimiter } from './middleware/rateLimit.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
@@ -104,6 +107,12 @@ app.use((req, res, next) => {
 // Create Core API Router
 const apiRouter = express.Router();
 
+// Telemetry & metrics request counting
+apiRouter.use((req, res, next) => {
+  recordMetricRequest();
+  next();
+});
+
 // Rate limiting
 apiRouter.use(standardLimiter);
 
@@ -111,7 +120,7 @@ apiRouter.use(standardLimiter);
 apiRouter.get('/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'EventPilot Backend',
+    service: 'EventPilot Enterprise Core',
     timestamp: new Date().toISOString(),
     environment: process.env.VERCEL ? 'vercel-serverless' : (process.env.NODE_ENV || 'development'),
     postgresConfigured: !!process.env.DATABASE_URL,
@@ -121,13 +130,27 @@ apiRouter.get('/health', (req, res) => {
       rateLimiting: true,
       sanitization: true,
       ownershipGuards: true,
+      rbac: true,
+      promptInjectionDefense: true,
+      auditLogging: true,
+    },
+    privacy: {
+      gdprRightOfAccess: true,
+      gdprRightToErasure: true,
     },
     efficiency: {
       compression: true,
       inMemoryCaching: true,
+      aiSemanticHashCaching: true,
     },
   });
 });
+
+// System Observability Metrics
+apiRouter.use('/', metricsRouter);
+
+// Privacy & GDPR Routes (supports token auth + demo mode)
+apiRouter.use('/', authMiddleware, privacyRouter);
 
 // Mount Public Auth Routes with Auth-specific Rate Limiting
 apiRouter.use('/auth', authLimiter, authRouter);
@@ -139,6 +162,7 @@ apiRouter.use('/events/:id/budget-rescue/preview', aiRateLimiter);
 
 // Protected routes (falls back cleanly to demo user if no token provided)
 apiRouter.use('/events', authMiddleware, eventsRouter);
+apiRouter.use('/', authMiddleware, collaboratorsRouter);
 apiRouter.use('/', authMiddleware, budgetRouter);
 apiRouter.use('/', authMiddleware, tasksRouter);
 apiRouter.use('/', authMiddleware, vendorsRouter);

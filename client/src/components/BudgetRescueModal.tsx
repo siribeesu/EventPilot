@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   ShieldAlert,
   Sparkles,
@@ -136,7 +136,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
             </div>
             <div>
               <h2 id="budget-rescue-title" className="text-xl font-extrabold tracking-tight flex items-center space-x-2.5">
-                <span>Budget Rescue Mode™</span>
+                <span>Budget Rescue Modeâ„¢</span>
                 <span className="text-[10px] font-extrabold uppercase tracking-widest bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full">
                   Autonomous Protection
                 </span>
@@ -212,7 +212,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
                       Target Reduced Budget ({currency})
                     </label>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Specify the lower financial limit you wish to enforce (e.g. ₹35,000).
+                      Specify the lower financial limit you wish to enforce (e.g. â‚¹35,000).
                     </p>
                   </div>
                   {currentTotal > targetBudget && (
@@ -226,7 +226,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
                 <div className="flex items-center space-x-4">
                   <div className="relative flex-1">
                     <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold" aria-hidden="true">
-                      {currency === 'INR' ? '₹' : currency}
+                      {currency === 'INR' ? 'â‚¹' : currency}
                     </span>
                     <input
                       id="target-budget-input"
@@ -339,7 +339,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
                     {dynamicRemainingShortfall === 0 ? 'Goal Achieved' : 'Remaining Gap'}
                   </span>
                   <span className={`text-base font-bold mt-0.5 block ${dynamicRemainingShortfall === 0 ? 'text-emerald-700' : 'text-amber-800'}`}>
-                    {dynamicRemainingShortfall === 0 ? '✓ On Budget' : `${currency} ${dynamicRemainingShortfall.toLocaleString()}`}
+                    {dynamicRemainingShortfall === 0 ? 'âœ“ On Budget' : `${currency} ${dynamicRemainingShortfall.toLocaleString()}`}
                   </span>
                 </div>
               </div>
@@ -452,7 +452,7 @@ export const BudgetRescueModal: React.FC<BudgetRescueModalProps> = ({
               onClick={() => setStep('input')}
               className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-200/60 focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-xl transition"
             >
-              ← Back to Budget Target
+              â† Back to Budget Target
             </button>
           ) : (
             <button

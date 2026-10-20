@@ -10,7 +10,11 @@
 [![Security & Guardrails](https://img.shields.io/badge/Security-Prompt_Guardrails_%2B_RBAC-indigo?style=for-the-badge&logo=shield)](docs/SECURITY_AUDIT.md)
 [![WCAG 2.1 AA](https://img.shields.io/badge/Accessibility-WCAG%20AA-purple?style=for-the-badge)](docs/ACCESSIBILITY_AUDIT.md)
 
-> **EventPilot** is an enterprise-grade, full-stack Generative AI application designed to eliminate planning chaos and budget overruns for **weddings, milestone birthdays, anniversaries, college festivals, and community galas**. Built with a deterministic financial engine, real-time AI assistant copilot, and autonomous **Budget Rescue Modeâ„¢**.
+> **EventPilot** is an enterprise-grade, full-stack Generative AI application designed to eliminate planning chaos and budget overruns for **weddings, milestone birthdays, anniversaries, college festivals, and community galas**. Built with a deterministic financial engine, real-time AI assistant copilot, and autonomous **Budget Rescue Mode™**.
+
+> 🌐 **Live Production App:** [eventpilot-ai.vercel.app](https://event-pilot-phi.vercel.app) *(or Vercel Preview)*  
+> 📊 **Live Telemetry & Health:** [`GET /api/metrics`](https://event-pilot-phi.vercel.app/api/metrics) • [`GET /api/health`](https://event-pilot-phi.vercel.app/api/health)  
+> 🧪 **CI/CD Evidence & Run Logs:** [GitHub Actions Run Log](docs/CI_RUN_LOG.md) • [Vitest Execution Log (38/38)](docs/TEST_RESULTS.md)
 
 ---
 
@@ -253,6 +257,8 @@ npm run test
 | `src/tests/api_integration.test.ts` | 4 | Integration | Event CRUD lifecycle, calculated metrics verification, Budget Rescue proposal application, AI Copilot approval workflow |
 
 > 📖 **In-Depth Evidence & Audit Reports:**
+> * 🧪 [Automated Vitest Test Run Log (38/38)](docs/TEST_RESULTS.md) — Sub-millisecond execution logs across 8 suites (100% pass rate)
+> * 🚀 [GitHub Actions CI Pipeline Run Log](docs/CI_RUN_LOG.md) — Node 20.x & 22.x matrix verification step-by-step
 > * 🛡️ [Enterprise Security & Threat Model Audit](docs/SECURITY_AUDIT.md) — 10 prompt injection tests, PBKDF2 hash verification & RBAC matrix
 > * ♿ [Automated Accessibility (WCAG 2.1 AA) Report](docs/ACCESSIBILITY_AUDIT.md) — Mathematical contrast ratio proofs, skip link & focus trap tests
 > * 📊 [Production Observability & Telemetry Reference](docs/OBSERVABILITY.md) — Live metrics, memory stats & request correlation architecture
@@ -309,6 +315,43 @@ npm run test
   * Status Accents: Emerald (`#10b981`), Amber (`#f59e0b`), Rose (`#f43f5e`)
 * **Layout Grid**: Consistent 1280px (`max-w-7xl`) container across all pages (Navbar, Dashboard, Wizard, Event Studio, and Footer).
 * **Responsive Breakpoints**: Optimized for Mobile (360px+), Tablet (768px+), Laptop (1024px+), and Desktop (1440px+).
+
+### Visual Interface Architecture & Production Workflows
+
+#### 1. Executive Command Center (Dashboard & Portfolio Management)
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│  EventPilot AI Suite   • Systems: Operational (99.9%)  • Privacy  • ₹ INR  • [New Event]│
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  ✨ Quickstart Onboarding: [████████████████████░░░░] 75% Completed                     │
+│  [✓ Event Initialized]  [✓ Budget Breakdown]  [→ Invite Collaborator]  [✓ GDPR Policy] │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  PLANNED SPENDING       TOTAL BUDGET LIMIT     TASKS COMPLETED        VENDORS LOCKED   │
+│  ₹ 2,45,000             ₹ 2,50,000             18 / 24 Tasks (75%)    5 Booked         │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  ACTIVE CELEBRATION STUDIO                                                             │
+│  • Ananya & Kabir Grand Wedding — Dec 15, 2026 (Taj West End, 150 Guests)             │
+│    Budget: ₹ 2,50,000 | Spent: ₹ 1,90,000 | Surplus: ₹ 60,000 [Open Studio →]         │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 2. Event Studio with Live AI Copilot & Active Safety Guardrails
+```
+┌────────────────────────────────────────────────────────────────┬───────────────────────┐
+│ Event: Ananya & Kabir Wedding  [Rescue Mode™] [Team (3)] [PDF] │ 🤖 AI COPILOT         │
+├────────────────────────────────────────────────────────────────┤ 🛡️ Prompt Guardrails  │
+│ OVERVIEW   • BUDGET (Itemized)   • TIMELINE   • VENDORS        │ SHA-256 Cache Active  │
+├────────────────────────────────────────────────────────────────┼───────────────────────┤
+│ Category Allocation (Deterministic Financial Engine):          │ "I noticed your decor │
+│ • Catering:   ₹ 85,000 (34%) [===================>            ] │ quote is 15% above    │
+│ • Venue:      ₹ 70,000 (28%) [===============>                ] │ plan. Would you like  │
+│ • Decor:      ₹ 40,000 (16%) [========>                       ] │ me to run Budget      │
+│ • Photography:₹ 25,000 (10%) [=====>                          ] │ Rescue Mode to find   │
+│ • Music & DJ: ₹ 15,000 (6%)  [===>                            ] │ substitutions?"       │
+│ • Contingency:₹ 15,000 (6%)  [===>                            ] │                       │
+│                                                                │ [Apply Proposal ✓]    │
+└────────────────────────────────────────────────────────────────┴───────────────────────┘
+```
 
 ---
 

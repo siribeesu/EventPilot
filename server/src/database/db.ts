@@ -22,7 +22,7 @@ import {
 const getCurrentDir = () => {
   try {
     return path.dirname(fileURLToPath(import.meta.url));
-  } catch (_err) { return process.cwd(); }
+  } catch { return process.cwd(); }
 };
 const currentDir = getCurrentDir();
 

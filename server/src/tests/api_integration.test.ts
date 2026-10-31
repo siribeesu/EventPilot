@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { db } from '../database/db.js';
 import { calculateBudgetRescue, generateDeterministicPlan, processAssistantMessage } from '../ai/planner.js';
 
@@ -94,7 +94,6 @@ describe('EventPilot End-to-End System Integration', () => {
     expect(rescue.totalSavingsAchieved).toBeGreaterThanOrEqual(15000);
 
     // Apply first 3 proposals
-    const acceptedIds = rescue.proposals.slice(0, 3).map(p => p.id);
     for (const p of rescue.proposals.slice(0, 3)) {
       await db.updateBudgetItem(p.id, {
         estimated_cost: p.proposedEstimatedCost,

@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { calculateBudgetRescue, generateDeterministicPlan } from '../ai/planner.js';
 import { EventRecord, BudgetItem } from '../types/index.js';
 

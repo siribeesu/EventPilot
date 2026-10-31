@@ -113,7 +113,7 @@ export class TaskQueueService {
 
       this.isProcessing = false;
       this.processNext();
-    } catch (_queueErr) {
+    } catch {
       this.isProcessing = false;
     }
   }

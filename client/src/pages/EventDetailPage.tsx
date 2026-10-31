@@ -103,6 +103,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
 
   useEffect(() => {
     fetchEvent();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventId]);
 
   // Code Optimality: Memoize category groups and chart data
@@ -116,7 +117,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
       name: cat,
       amount: categoryGroups[cat],
     }));
-  }, [event?.budget_items]);
+  }, [event]);
 
   if (loading || !event) {
     return (

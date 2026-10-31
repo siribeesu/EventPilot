@@ -99,6 +99,13 @@ describe('RBAC & Team Collaboration Suite', () => {
     expect(body.collaborators.length).toBe(2);
   });
 
+  it('1b. Editor can read event collaborators list', async () => {
+    const res = await fetch(`${baseUrl}/api/events/${testEventId}/collaborators`, {
+      headers: { Authorization: `Bearer ${editorToken}` },
+    });
+    expect(res.status).toBe(200);
+  });
+
   it('2. Viewer can view event details and collaborators list but cannot add collaborators', async () => {
     // Read: OK
     const readRes = await fetch(`${baseUrl}/api/events/${testEventId}/collaborators`, {

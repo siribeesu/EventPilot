@@ -6,7 +6,7 @@
 [![React 19](https://img.shields.io/badge/React-19.1-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-v20%20%7C%20v22%20%7C%20v24-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
-[![Tests Passing](https://img.shields.io/badge/Vitest-98%2F98%20Passed%20(100%25)-brightgreen?style=for-the-badge&logo=vitest)](docs/TEST_RESULTS.md)
+[![Tests Passing](https://img.shields.io/badge/Vitest-99%2F99%20Passed%20(100%25)-brightgreen?style=for-the-badge&logo=vitest)](docs/TEST_RESULTS.md)
 [![E2E Journey](https://img.shields.io/badge/E2E_Tests-8%20User%20Flows_Passing-teal?style=for-the-badge&logo=playwright)](docs/TEST_RESULTS.md)
 [![ADRs](https://img.shields.io/badge/Architecture-4%20ADRs_Accepted-blueviolet?style=for-the-badge)](docs/adr/001-hybrid-postgres-json-storage.md)
 [![Security & Guardrails](https://img.shields.io/badge/Security-Prompt_Guardrails_%2B_RBAC-indigo?style=for-the-badge&logo=shield)](docs/SECURITY_AUDIT.md)
@@ -16,7 +16,32 @@
 
 > 🌐 **Live Production App:** [eventpilot-ai.vercel.app](https://event-pilot-phi.vercel.app) *(or Vercel Preview)*  
 > 📊 **Live Telemetry & Health:** [`GET /api/metrics`](https://event-pilot-phi.vercel.app/api/metrics) • [`GET /api/health`](https://event-pilot-phi.vercel.app/api/health)  
-> 🧪 **CI/CD Evidence & Run Logs:** [Quality Verification Evidence](docs/VERIFICATION.md) • [GitHub Actions Run Log](docs/CI_RUN_LOG.md) • [Vitest Execution Log (98/98 across 11 Suites)](docs/TEST_RESULTS.md) • [Architecture Decision Records (ADRs)](docs/adr/001-hybrid-postgres-json-storage.md)
+> 🧪 **CI/CD Evidence & Run Logs:** [Quality Verification Evidence](docs/VERIFICATION.md) • [GitHub Actions Run Log](docs/CI_RUN_LOG.md) • [Vitest Execution Log (99/99 across 11 Suites)](docs/TEST_RESULTS.md) • [Architecture Decision Records (ADRs)](docs/adr/001-hybrid-postgres-json-storage.md)
+
+---
+
+## ⚡ Quick Start & Verification in 60s
+
+Verify the entire repository (linting, compilation, critical path, test coverage, and end-to-end user journeys) in a single command:
+
+```bash
+# 1. Install dependencies across workspaces
+npm install
+
+# 2. Run complete quality, build, and test verification suite
+npm run verify
+```
+
+| Verification Gate | Command | Scope & Expectation | Result |
+|---|---|---|---|
+| **Linter & Type Check** | `npm run lint` | Oxlint (63 files, 114 rules) + TypeScript compile | 🟢 **0 errors, 0 warnings** |
+| **Monorepo Build** | `npm run build` | Client Vite bundle + Server TypeScript dist | 🟢 **Build success** |
+| **Critical Path Suite** | `npm run test:critical` | Edge cases, budget overflow, auth failures, prompt injection | 🟢 **23/23 tests pass** |
+| **Full Test Suite** | `npm run test` | 99 automated unit, integration, and security tests | 🟢 **99/99 tests pass** |
+| **Coverage Threshold** | `npm run test:coverage` | Enforces &ge;65% lines, &ge;70% functions, &ge;65% statements | 🟢 **Gate satisfied** |
+| **End-to-End Journey** | `npm run test:e2e` | 8 multi-step user lifecycle flows | 🟢 **8/8 flows pass** |
+
+👉 *Full command reference and CI evidence logs available in [`docs/VERIFICATION.md`](docs/VERIFICATION.md).*
 
 ---
 

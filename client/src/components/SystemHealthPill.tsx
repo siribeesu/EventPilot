@@ -14,7 +14,7 @@ export const SystemHealthPill: React.FC = () => {
     try {
       const data = await api.getMetrics();
       setMetrics(data);
-    } catch (err) {
+    } catch {
       logger.warn('Could not load telemetry metrics');
     } finally {
       setLoading(false);

@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { CreateEventSchema, CreateBudgetItemSchema } from '../schemas/index.js';
-import { generateAIEventPlan, calculateBudgetRescue, processAssistantMessage } from '../ai/planner.js';
-import { inspectPromptSafety, validateAndSanitizeAIPlan } from '../ai/guardrails.js';
-import { generateToken, authMiddleware, AuthenticatedRequest } from '../middleware/auth.js';
+import { generateAIEventPlan, calculateBudgetRescue } from '../ai/planner.js';
+import { inspectPromptSafety } from '../ai/guardrails.js';
+import { authMiddleware, AuthenticatedRequest } from '../middleware/auth.js';
 import { db } from '../database/db.js';
 import { Response } from 'express';
 

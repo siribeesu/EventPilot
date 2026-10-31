@@ -6,7 +6,6 @@ import { taskQueue } from '../services/taskQueue.js';
 
 describe('EventPilot Real End-to-End User Journey Tests', () => {
   let testUserId: string;
-  let testUserToken: string;
   let testEventId: string;
   let createdBudgetItemId: string;
   let createdVendorId: string;
@@ -14,8 +13,6 @@ describe('EventPilot Real End-to-End User Journey Tests', () => {
   // 1. User Signup & Authentication Flow
   it('E2E Flow 1: Signup and Login Authentication Journey', async () => {
     const signupEmail = `e2e_organizer_${Date.now()}@eventpilot.ai`;
-    const signupPassword = 'SecurePassword2026!';
-
     // Register user
     const newUser = await db.createUser({
       email: signupEmail,
@@ -249,6 +246,7 @@ describe('EventPilot Real End-to-End User Journey Tests', () => {
     expect(completedJob).toBeDefined();
     expect(completedJob?.status).toBe('completed');
     expect(completedJob?.result).toBeDefined();
-    expect((completedJob?.result as { budget: unknown[] }).budget.length).toBeGreaterThan(0);
+    const jobResult = completedJob?.result as { budget: unknown[] } | undefined;
+    expect(jobResult?.budget?.length).toBeGreaterThan(0);
   });
 });

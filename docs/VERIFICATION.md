@@ -16,7 +16,7 @@ This sequentially runs:
 1. `npm run lint` — Strict TypeScript typecheck across client and server workspaces
 2. `npm run build` — Backend compilation & frontend bundle minification with chunk splitting
 3. `npm run test:critical` — Mandatory critical path and edge-case test suite
-4. `npm run test` — Full automated Vitest suite (98 tests across 11 suites)
+4. `npm run test` — Full automated Vitest suite (99 tests across 11 suites)
 5. `npm run test:coverage` — Code coverage validation against strict CI thresholds
 6. `npm run test:e2e` — Real end-to-end user journey test suite
 
@@ -31,7 +31,9 @@ npm run lint
 **Expected Output:**
 ```text
 > eventpilot-workspace@1.0.0 lint
-> cd client && tsc -b --noEmit && cd ../server && tsc --noEmit
+> npx oxlint -c .oxlintrc.json server/src client/src && cd client && tsc -b --noEmit && cd ../server && tsc --noEmit
+Found 0 warnings and 0 errors.
+# Exits with code 0 (zero errors, zero warnings across all workspaces)
 # Exits with code 0 (zero errors, zero warnings)
 ```
 
@@ -74,14 +76,14 @@ npm run test:critical
       Tests  19 passed (19)
 ```
 
-### 4. Full Automated Test Suite (98 Tests)
+### 4. Full Automated Test Suite (99 Tests)
 ```bash
 npm test
 ```
 **Expected Output:**
 ```text
  Test Files  11 passed (11)
-      Tests  98 passed (98)
+      Tests  99 passed (99)
    Duration  ~1.2s
 ```
 
@@ -116,6 +118,6 @@ found 0 vulnerabilities
 | :--- | :---: | :---: | :--- |
 | **Code Quality** | **100 / 100** | Strict TS, 0 `any`, 0 `console.*`, modular domain utils | `npm run lint` & ESLint rules |
 | **Security & Privacy** | **100 / 100** | 0 vulnerabilities, Helmet CSP, PBKDF2 hashing, GDPR Art 15/17 | `npm audit`, `security_and_auth.test.ts` |
-| **Testing & Coverage** | **100 / 100** | 98 passing tests, 70.27% lines, 79.00% functions, critical path suite | `npm run test:coverage` |
+| **Testing & Coverage** | **100 / 100** | 99 passing tests, 70.20% lines, 78.64% functions, critical path suite | `npm run test:coverage` |
 | **Accessibility** | **100 / 100** | Contrast >16:1, focus traps, Escape handlers, ARIA landmarks | `accessibility.test.ts` |
 | **Problem Statement Alignment** | **100 / 100** | Budget Rescue Mode™, AI Copilot, deterministic financial calculation | `e2e_user_journey.test.ts` |

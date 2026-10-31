@@ -36,12 +36,6 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  useEffect(() => {
-    if (isOpen) {
-      loadCollaborators();
-    }
-  }, [isOpen, eventId]);
-
   const loadCollaborators = async () => {
     setLoading(true);
     try {
@@ -53,6 +47,13 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      loadCollaborators();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, eventId]);
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();

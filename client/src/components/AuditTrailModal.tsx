@@ -32,7 +32,7 @@ export const AuditTrailModal: React.FC<AuditTrailModalProps> = ({ eventId, isOpe
         const data = await res.json();
         setLogs(data.logs || []);
       }
-    } catch (err) {
+    } catch {
       logger.warn('Could not fetch audit trail');
     } finally {
       setLoading(false);
@@ -43,6 +43,7 @@ export const AuditTrailModal: React.FC<AuditTrailModalProps> = ({ eventId, isOpe
     if (isOpen) {
       fetchLogs();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, eventId]);
 
   if (!isOpen) return null;

@@ -47,7 +47,7 @@ async function handleResponse<T>(res: Response, fallbackError: string): Promise<
       const parsed = JSON.parse(text);
       if (parsed.error) errMsg = parsed.error;
       else if (parsed.message) errMsg = parsed.message;
-    } catch (_parseErr) {
+    } catch {
       if (text && text.trim().length > 0 && text.trim().length < 250) {
         errMsg = text.trim();
       } else {

@@ -37,7 +37,7 @@ router.post(
       const currentUserId = req.user?.id || req.userId || 'usr_demo_123';
 
       // Check if user exists or create placeholder
-      let targetUser = await db.getUserByEmail(email);
+      const targetUser = await db.getUserByEmail(email);
       let targetUserId = targetUser?.id;
 
       if (!targetUserId) {

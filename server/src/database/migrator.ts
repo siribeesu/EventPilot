@@ -7,7 +7,7 @@ import pg from 'pg';
 const getCurrentDir = () => {
   try {
     return path.dirname(fileURLToPath(import.meta.url));
-  } catch (_err) {
+  } catch {
     return process.cwd();
   }
 };

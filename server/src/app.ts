@@ -15,6 +15,8 @@ import { authMiddleware } from './middleware/auth.js';
 import { standardLimiter, aiRateLimiter, authLimiter } from './middleware/rateLimit.js';
 import { requestIdMiddleware } from './middleware/requestId.js';
 import { sanitizeObject } from './utils/sanitize.js';
+import { AppError } from './utils/errors.js';
+import { logger } from './utils/logger.js';
 
 dotenv.config();
 
@@ -195,12 +197,17 @@ export interface AppHttpError extends Error {
 }
 
 // Global Error Handler with code quality standard format
-app.use((err: AppHttpError, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Server Unhandled Error:', err);
-  const status = err.status || err.statusCode || 500;
+app.use((err: AppError | AppHttpError, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  const status = ('statusCode' in err && typeof err.statusCode === 'number' && err.statusCode) || ('status' in err && typeof err.status === 'number' && err.status) || 500;
+  const code = ('code' in err && typeof err.code === 'string' && err.code) || 'INTERNAL_SERVER_ERROR';
+
+  if (status >= 500) {
+    logger.error(`Server Unhandled Error [${req.method} ${req.originalUrl || req.url}]`, err);
+  }
+
   res.status(status).json({
     error: err.message || 'Internal Server Error',
-    code: err.code || 'INTERNAL_SERVER_ERROR',
+    code,
   });
 });
 

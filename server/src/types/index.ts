@@ -169,7 +169,7 @@ export interface AuditLog {
   status: 'success' | 'denied' | 'failed';
   ip_address?: string;
   user_agent?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface AIUsageMetrics {

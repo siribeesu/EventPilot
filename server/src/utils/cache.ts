@@ -1,10 +1,10 @@
-﻿interface CacheEntry<T> {
+interface CacheEntry<T> {
   value: T;
   expiresAt: number;
 }
 
 class CacheManager {
-  private cache: Map<string, CacheEntry<any>> = new Map();
+  private cache: Map<string, CacheEntry<unknown>> = new Map();
 
   get<T>(key: string): T | null {
     const entry = this.cache.get(key);

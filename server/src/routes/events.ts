@@ -31,7 +31,7 @@ router.get('/', async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.userId || 'usr_demo_123';
     const cacheKey = `events:${userId}`;
-    const cached = memoryCache.get<any[]>(cacheKey);
+    const cached = memoryCache.get<EventRecord[]>(cacheKey);
     if (cached) {
       return res.json(cached);
     }

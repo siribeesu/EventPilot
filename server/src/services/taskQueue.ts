@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 export type JobStatus = 'pending' | 'processing' | 'completed' | 'failed';
 export type JobType = 'ai_plan_generation' | 'budget_rescue_reindex' | 'pdf_export_batch' | 'telemetry_flush';
 
-export interface BackgroundJob<T = any, R = any> {
+export interface BackgroundJob<T = unknown, R = unknown> {
   id: string;
   type: JobType;
   payload: T;

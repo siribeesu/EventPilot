@@ -212,6 +212,50 @@ export const getCurrencySymbol = (currency?: string): string => {
   return currency;
 };
 
+export interface SystemMetrics {
+  timestamp: string;
+  status: string;
+  uptime?: {
+    seconds: number;
+    formatted: string;
+  };
+  performance?: {
+    totalRequestsServed: number;
+    errorCount: number;
+    errorRate: string;
+  };
+  memory?: {
+    rssMB: string;
+    heapTotalMB: string;
+    heapUsedMB: string;
+  };
+  aiOptimization?: {
+    totalRequests: number;
+    cacheHits: number;
+    cacheHitRatio: string;
+    estimatedTokensSaved: number;
+    costSavedUSD: string;
+    promptInjectionsBlocked: number;
+  };
+  securityControls?: {
+    helmetHSTS: boolean;
+    ipRateLimiter: boolean;
+    pbkdf2PasswordHashing: boolean;
+    inputSanitization: boolean;
+    rbac: boolean;
+    promptInjectionDefense: boolean;
+  };
+}
+
+export interface PrivacyPolicyResponse {
+  version: string;
+  lastUpdated: string;
+  controller: string;
+  complianceStandards: string[];
+  dataCollected: string[];
+  dataSubjectRights: string[];
+}
+
 export interface AuditLog {
   id: string;
   timestamp: string;

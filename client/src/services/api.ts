@@ -6,6 +6,9 @@ import {
   VendorItem,
   BudgetRescueResponse,
   AIAssistantAction,
+  Collaborator,
+  SystemMetrics,
+  PrivacyPolicyResponse,
 } from '../types';
 
 const API_BASE = '/api';
@@ -269,7 +272,7 @@ export const api = {
       feedbackComment?: string;
       category?: string;
     }
-  ): Promise<any> {
+  ): Promise<{ success: boolean; id?: string }> {
     const res = await fetch(`${API_BASE}/events/${eventId}/ai/feedback`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -284,14 +287,14 @@ export const api = {
   },
 
   // Team Collaboration & RBAC
-  async getCollaborators(eventId: string): Promise<any[]> {
+  async getCollaborators(eventId: string): Promise<Collaborator[]> {
     const res = await fetch(`${API_BASE}/events/${eventId}/collaborators`);
     if (!res.ok) throw new Error('Failed to fetch collaborators');
     const data = await res.json();
     return data.collaborators || [];
   },
 
-  async addCollaborator(eventId: string, email: string, role: string, name?: string): Promise<any> {
+  async addCollaborator(eventId: string, email: string, role: string, name?: string): Promise<Collaborator> {
     const res = await fetch(`${API_BASE}/events/${eventId}/collaborators`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -326,14 +329,14 @@ export const api = {
     window.URL.revokeObjectURL(url);
   },
 
-  async getPrivacyPolicy(): Promise<any> {
+  async getPrivacyPolicy(): Promise<PrivacyPolicyResponse> {
     const res = await fetch(`${API_BASE}/privacy/policy`);
     if (!res.ok) throw new Error('Failed to fetch privacy policy');
     return res.json();
   },
 
   // Observability & Metrics
-  async getMetrics(): Promise<any> {
+  async getMetrics(): Promise<SystemMetrics> {
     const res = await fetch(`${API_BASE}/metrics`);
     if (!res.ok) throw new Error('Failed to fetch system metrics');
     return res.json();

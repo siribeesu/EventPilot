@@ -249,6 +249,6 @@ describe('EventPilot Real End-to-End User Journey Tests', () => {
     expect(completedJob).toBeDefined();
     expect(completedJob?.status).toBe('completed');
     expect(completedJob?.result).toBeDefined();
-    expect(completedJob?.result.budget.length).toBeGreaterThan(0);
+    expect((completedJob?.result as { budget: unknown[] }).budget.length).toBeGreaterThan(0);
   });
 });

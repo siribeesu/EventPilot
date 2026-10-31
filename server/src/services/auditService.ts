@@ -9,7 +9,7 @@ export async function logAuditEvent(
     resource_type: AuditLog['resource_type'];
     resource_id?: string;
     status: 'success' | 'denied' | 'failed';
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
   }
 ): Promise<AuditLog> {
   const actorId = req.user?.id || req.userId || 'usr_demo_123';

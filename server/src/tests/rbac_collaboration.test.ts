@@ -4,6 +4,19 @@ import { db } from '../database/db.js';
 import { generateToken } from '../middleware/auth.js';
 import { Server } from 'http';
 
+interface CollaboratorsListResponse {
+  collaborators: Array<{ id: string; user_email: string; role: string }>;
+}
+interface CollaboratorActionResponse {
+  code?: string;
+  collaborator: { role: string; user_email: string };
+  success?: boolean;
+}
+interface SimpleActionResponse {
+  code?: string;
+  success?: boolean;
+}
+
 describe('RBAC & Team Collaboration Suite', () => {
   let server: Server;
   let baseUrl: string;
@@ -81,7 +94,7 @@ describe('RBAC & Team Collaboration Suite', () => {
     });
 
     expect(res.status).toBe(200);
-    const body = (await res.json()) as Record<string, any>;
+    const body = (await res.json()) as CollaboratorsListResponse;
     expect(body.collaborators).toBeDefined();
     expect(body.collaborators.length).toBe(2);
   });
@@ -103,7 +116,7 @@ describe('RBAC & Team Collaboration Suite', () => {
       body: JSON.stringify({ email: 'newbie@eventpilot.ai', role: 'viewer' }),
     });
     expect(writeRes.status).toBe(403);
-    const writeBody = (await writeRes.json()) as Record<string, any>;
+    const writeBody = (await writeRes.json()) as SimpleActionResponse;
     expect(writeBody.code).toBe('INSUFFICIENT_ROLE');
   });
 
@@ -113,7 +126,7 @@ describe('RBAC & Team Collaboration Suite', () => {
     });
 
     expect(res.status).toBe(403);
-    const body = (await res.json()) as Record<string, any>;
+    const body = (await res.json()) as SimpleActionResponse;
     expect(body.code).toBe('FORBIDDEN_EVENT_ACCESS');
   });
 
@@ -128,7 +141,7 @@ describe('RBAC & Team Collaboration Suite', () => {
     });
 
     expect(res.status).toBe(201);
-    const body = (await res.json()) as Record<string, any>;
+    const body = (await res.json()) as CollaboratorActionResponse;
     expect(body.collaborator.role).toBe('editor');
     expect(body.collaborator.user_email).toBe('coordinator@eventpilot.ai');
   });
@@ -144,7 +157,7 @@ describe('RBAC & Team Collaboration Suite', () => {
     });
 
     expect(deleteRes.status).toBe(200);
-    const body = (await deleteRes.json()) as Record<string, any>;
+    const body = (await deleteRes.json()) as SimpleActionResponse;
     expect(body.success).toBe(true);
 
     const remaining = await db.getCollaborators(testEventId);

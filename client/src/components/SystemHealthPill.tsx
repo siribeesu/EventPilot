@@ -1,10 +1,11 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Activity, ShieldCheck, Cpu, X, Zap, Loader2 } from 'lucide-react';
 import { api } from '../services/api';
+import { SystemMetrics } from '../types';
 
 export const SystemHealthPill: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [metrics, setMetrics] = useState<any>(null);
+  const [metrics, setMetrics] = useState<SystemMetrics | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchMetrics = async () => {

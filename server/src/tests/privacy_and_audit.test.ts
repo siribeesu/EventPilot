@@ -4,6 +4,30 @@ import { db } from '../database/db.js';
 import { generateToken } from '../middleware/auth.js';
 import { Server } from 'http';
 
+interface PrivacyExportResponse {
+  compliance: string;
+  user: { email: string };
+  events: unknown[];
+  budgetItems: unknown[];
+}
+
+interface PolicyResponse {
+  compliance: string;
+  retentionPolicy: { aiInteractionData: string };
+  securityGuards: { encryptionInTransit: string };
+}
+
+interface MetricsResponse {
+  status: string;
+  uptime: unknown;
+  memory: { heapUsedMB: string };
+  aiOptimization: unknown;
+}
+
+interface UserDeleteResponse {
+  success: boolean;
+}
+
 describe('GDPR Data Privacy, Audit & Observability Suite', () => {
   let server: Server;
   let baseUrl: string;
@@ -67,7 +91,7 @@ describe('GDPR Data Privacy, Audit & Observability Suite', () => {
     expect(res.status).toBe(200);
     const contentDisposition = res.headers.get('content-disposition') || '';
     expect(contentDisposition).toContain('attachment');
-    const body = (await res.json()) as Record<string, any>;
+    const body = (await res.json()) as PrivacyExportResponse;
     expect(body.compliance).toContain('GDPR Article 15');
     expect(body.user.email).toBe('privacy_champion@eventpilot.ai');
     expect(body.events.length).toBeGreaterThan(0);
@@ -78,7 +102,7 @@ describe('GDPR Data Privacy, Audit & Observability Suite', () => {
     const res = await fetch(`${baseUrl}/api/privacy/policy`);
 
     expect(res.status).toBe(200);
-    const body = (await res.json()) as Record<string, any>;
+    const body = (await res.json()) as PolicyResponse;
     expect(body.compliance).toContain('GDPR');
     expect(body.retentionPolicy.aiInteractionData).toContain('Zero data retention');
     expect(body.securityGuards.encryptionInTransit).toContain('TLS 1.3');
@@ -88,7 +112,7 @@ describe('GDPR Data Privacy, Audit & Observability Suite', () => {
     const res = await fetch(`${baseUrl}/api/metrics`);
 
     expect(res.status).toBe(200);
-    const body = (await res.json()) as Record<string, any>;
+    const body = (await res.json()) as MetricsResponse;
     expect(body.status).toBe('operational');
     expect(body.uptime).toBeDefined();
     expect(body.memory.heapUsedMB).toBeDefined();
@@ -102,7 +126,7 @@ describe('GDPR Data Privacy, Audit & Observability Suite', () => {
     });
 
     expect(deleteRes.status).toBe(200);
-    const body = (await deleteRes.json()) as Record<string, any>;
+    const body = (await deleteRes.json()) as UserDeleteResponse;
     expect(body.success).toBe(true);
 
     // Verify user no longer exists

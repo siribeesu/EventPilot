@@ -84,7 +84,7 @@ describe('Efficiency, Caching & Validation Tests', () => {
     const sanitized = sanitizeObject(payload);
     expect(sanitized.matrix[0][0]).toBe('Clean');
     expect(sanitized.matrix[0][1]).toBe('Bold');
-    expect((sanitized.matrix[1][0] as any).inner).toBe('Safe');
+    expect((sanitized.matrix[1][0] as Record<string, unknown>).inner).toBe('Safe');
     expect(sanitized.numeric).toBe(12345);
     expect(sanitized.flag).toBe(true);
   });

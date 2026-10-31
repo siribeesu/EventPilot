@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { hashPassword, verifyPassword, isValidUUID } from '../utils/security.js';
 import { sanitizeString, sanitizeObject } from '../utils/sanitize.js';
 import { db } from '../database/db.js';
@@ -107,15 +107,15 @@ describe('Security Layer & Cryptography Tests', () => {
     let statusCode = 0;
     let errorMessage = '';
 
-    const reqMock: any = {
+    const reqMock = {
       headers: { authorization: `Bearer ${forgedToken}` },
     };
-    const resMock: any = {
+    const resMock = {
       status: (code: number) => { statusCode = code; return resMock; },
-      json: (data: any) => { errorMessage = data.error; },
+      json: (data: { error?: string }) => { errorMessage = data.error || ''; },
     };
 
-    authMiddleware(reqMock, resMock, () => {});
+    authMiddleware(reqMock as unknown as Parameters<typeof authMiddleware>[0], resMock as unknown as Parameters<typeof authMiddleware>[1], () => {});
     expect(statusCode).toBe(401);
     expect(errorMessage).toContain('Invalid or expired');
   });

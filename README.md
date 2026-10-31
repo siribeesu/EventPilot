@@ -1,4 +1,4 @@
-# EventPilot â€” GenAI-Powered Event Planning & Financial Optimization Platform
+# EventPilot — GenAI-Powered Event Planning & Financial Optimization Platform
 
 [![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel)](https://vercel.com)
 [![CI/CD Pipeline](https://img.shields.io/badge/CI%2FCD-GitHub_Actions_Passing-success?style=for-the-badge&logo=github-actions)](https://github.com/siribeesu/EventPilot/actions/workflows/ci.yml)
@@ -20,12 +20,12 @@
 
 ---
 
-## ðŸ“‘ Table of Contents
+## 📑 Table of Contents
 
 - [1. Executive Summary](#1-executive-summary)
 - [2. System Architecture](#2-system-architecture)
 - [3. Core Features](#3-core-features)
-  - [A. Autonomous Budget Rescue Modeâ„¢ (Signature Feature)](#a-autonomous-budget-rescue-mode-signature-feature)
+  - [A. Autonomous Budget Rescue Mode™ (Signature Feature)](#a-autonomous-budget-rescue-mode-signature-feature)
   - [B. Interactive AI Copilot (Contextual Assistant)](#b-interactive-ai-copilot-contextual-assistant)
   - [C. AI Master Event Generation Engine](#c-ai-master-event-generation-engine)
   - [D. Itemized Budget Manager & Financial Ledger](#d-itemized-budget-manager--financial-ledger)
@@ -109,11 +109,11 @@ flowchart TD
 
 ## 3. Core Features
 
-### A. Autonomous Budget Rescue Modeâ„¢ (Signature Feature)
+### A. Autonomous Budget Rescue Mode™ (Signature Feature)
 
-Budget Rescue Modeâ„¢ is EventPilot's primary financial protection feature.
+Budget Rescue Mode™ is EventPilot's primary financial protection feature.
 
-* **Scenario**: A user initially creates an event budgeted at â‚¹50,000. Mid-way through planning, financial limits contract to â‚¹35,000.
+* **Scenario**: A user initially creates an event budgeted at ₹50,000 ($600). Mid-way through planning, financial limits contract to ₹35,000 ($420).
 * **Autonomous Intelligence**:
   1. Recalculates the new available financial limit.
   2. Identifies non-essential line items that exceed the new ceiling.
@@ -133,7 +133,7 @@ Budget Rescue Modeâ„¢ is EventPilot's primary financial protection feature.
 A persistent slide-over drawer accessible directly from the event management studio:
 * **Context Awareness**: Ingests current event title, guest headcount, total budget, category expenses, pending tasks, and booked vendors.
 * **Conversational Modifications**: Responds to real natural-language instructions:
-  * *"Reduce my overall budget to â‚¹35,000 without cutting food quality."*
+  * *"Reduce my overall budget to ₹35,000 ($420) without cutting food quality."*
   * *"Suggest a traditional South Indian vegetarian menu for 120 guests."*
   * *"The celebration is in 7 days. What urgent deadlines should I prioritize?"*
   * *"Replace expensive stage lighting with ambient floral candle arrangements."*
@@ -147,7 +147,7 @@ When creating a new event, EventPilot ingests comprehensive celebration paramete
 * Event Title, Event Type (Wedding, Birthday, Anniversary, College Fest, Community)
 * Event Date, Start Time, and End Time
 * Geographic Location & Setting (Indoor Hall, Outdoor Lawn, Hybrid Both)
-* Target Budget & Preferred Currency (INR â‚¹, USD $, EUR â‚¬, GBP Â£, AED)
+* Target Budget & Preferred Currency (INR ₹, USD $, EUR €, GBP £, AED)
 * Expected Guest Headcount
 * Theme Preferences & Aesthetic Style
 * Cultural / Regional Customs
@@ -164,7 +164,7 @@ Every LLM response is requested under a strict JSON schema and validated at runt
 * **Category Breakdown**: Venue & Ambiance, Food & Gourmet Catering, Bespoke Stage Decor, Photography & Video, DJ & Entertainment, Invitations & Stationery, Logistics & Transport, and Contingency.
 * **Recharts Visualization**: Interactive bar charts and distribution graphs.
 * **Deterministic Calculations**: Categorical totals, remaining buffer balances, and overspending deficits are computed in application code rather than estimated by the LLM.
-* **Overspending Alerts**: Real-time warning banners appear when planned expenses exceed the allocated budget, offering a direct 1-click trigger to launch Budget Rescue Modeâ„¢.
+* **Overspending Alerts**: Real-time warning banners appear when planned expenses exceed the allocated budget, offering a direct 1-click trigger to launch Budget Rescue Mode™.
 
 ---
 
@@ -401,16 +401,16 @@ EventPilot operates with zero-configuration dual-mode storage:
 ### Relational Entity-Relationship Overview
 
 ```
- â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”       1:N       â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
- â”‚    users     â”‚â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€<â”‚    events    â”‚
- â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜                 â””â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”˜
-                                         â”‚
-        â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-        â”‚ 1:N              â”‚ 1:N         â”‚ 1:N              â”‚ 1:N              â”‚ 1:N
-        â–¼                  â–¼             â–¼                  â–¼                  â–¼
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ budget_items â”‚   â”‚    tasks     â”‚â”‚   vendors    â”‚   â”‚ event_ideas  â”‚   â”‚plan_revisionsâ”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
++---------------+        1:N       +---------------+
+|     users     |-----------------<|    events     |
++---------------+                  +-------+-------+
+                                           |
+         +-------------------+-------------+-------------+-------------------+
+         | 1:N               | 1:N         | 1:N         | 1:N               | 1:N
+         v                   v             v             v                   v
++-----------------+   +-------------+  +---------+   +---------------+   +-----------------+
+|  budget_items   |   |    tasks    |  | vendors |   |  event_ideas  |   | plan_revisions  |
++-----------------+   +-------------+  +---------+   +---------------+   +-----------------+
 ```
 
 ---
@@ -521,7 +521,7 @@ EventPilot is pre-configured for **single-project zero-config deployment** on Ve
 
 2. **Import into Vercel**:
    - Log into [vercel.com](https://vercel.com).
-   - Click **Add New...** â†’ **Project**.
+   - Click **Add New...** → **Project**.
    - Select your repository: **`siribeesu/EventPilot`**.
 
 3. **Verify Settings (Auto-Detected)**:
@@ -540,6 +540,6 @@ EventPilot is pre-configured for **single-project zero-config deployment** on Ve
 
 ---
 
-## ðŸ“„ License
+## 📄 License
 
-This project is licensed under the MIT License. Built with â¤ï¸ for seamless, stress-free celebration planning.
+This project is licensed under the MIT License. Built with ❤️ for seamless, stress-free celebration planning.

@@ -88,7 +88,7 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
   if (!isOpen) return null;
 
   const quickPrompts = [
-    `Reduce my budget to ${currency === 'INR' ? 'â‚¹' : currency}35,000`,
+    `Reduce my budget to ${currency === 'INR' ? '₹' : currency === 'USD' ? '$' : currency}35,000`,
     'Make the wedding more traditional',
     'Suggest a vegetarian menu for 100 guests',
     'The event is in 7 days. What should I prioritize?',
@@ -132,7 +132,7 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
         {
           id: `err_${Date.now()}`,
           sender: 'assistant',
-          text: `âš ï¸ Error processing request: ${(err as Error).message}`,
+          text: `⚠️ï¸ Error processing request: ${(err as Error).message}`,
         },
       ]);
     } finally {
@@ -388,7 +388,7 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
                       </button>
                     ) : (
                       <div className="p-2 bg-emerald-50 text-emerald-800 text-xs rounded-lg text-center font-medium">
-                        âœ“ All proposed updates have been merged into your active plan.
+                        ✓ All proposed updates have been merged into your active plan.
                       </div>
                     )}
                   </div>

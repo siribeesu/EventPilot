@@ -37,7 +37,7 @@ export const SystemHealthPill: React.FC = () => {
           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
         </span>
         <span className="hidden sm:inline">Systems: Operational</span>
-        <span className="text-slate-500 hidden md:inline">â€¢</span>
+        <span className="text-slate-500 hidden md:inline">•</span>
         <span className="text-emerald-400 font-mono hidden md:inline">99.9%</span>
       </button>
 

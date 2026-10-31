@@ -86,11 +86,11 @@ class StorageManager {
         });
         await this.pool.query('SELECT 1');
         this.isPostgres = true;
-        console.log('âœ… Connected to PostgreSQL database');
+        console.log('✅ Connected to PostgreSQL database');
         await this.initPostgresSchema();
         return;
       } catch (err) {
-        console.warn('âš ï¸ PostgreSQL connection failed, falling back to local persistent storage:', (err as Error).message);
+        console.warn('⚠️ï¸ PostgreSQL connection failed, falling back to local persistent storage:', (err as Error).message);
         this.isPostgres = false;
       }
     }

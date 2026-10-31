@@ -231,7 +231,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
       }
       return 'AI Advisory: Accurate guest headcounts ensure our catering formulas scale correctly without over-ordering.';
     }
-    return 'AI Advisory: Your selected priority areas are strictly shielded by Budget Rescue Modeâ„¢â€”if you reduce your financial ceiling later, your highest priorities stay protected.';
+    return 'AI Advisory: Your selected priority areas are strictly shielded by Budget Rescue Mode™ — if you reduce your financial ceiling later, your highest priorities stay protected.';
   };
 
   return (
@@ -388,21 +388,21 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
           </div>
 
           {/* Contextual AI Advisor Card */}
-          <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white border border-slate-800 shadow-md space-y-3.5">
+          <div className="bg-indigo-50/80 rounded-3xl p-6 text-slate-900 border border-indigo-200/80 shadow-xs space-y-3.5">
             <div className="flex items-center space-x-2.5">
               <div className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                 <Sparkles className="w-4 h-4" aria-hidden="true" />
               </div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-200">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-900">
                 AI Planner Guidance
               </h3>
             </div>
-            <p className="text-xs leading-relaxed text-slate-300">
+            <p className="text-xs leading-relaxed text-slate-600">
               {getAiTip()}
             </p>
-            <div className="pt-2 border-t border-slate-800 flex items-center space-x-2 text-[11px] text-indigo-300 font-semibold">
+            <div className="pt-2 border-t border-indigo-200 flex items-center space-x-2 text-[11px] text-indigo-700 font-semibold">
               <ShieldCheck className="w-4 h-4 text-emerald-400" aria-hidden="true" />
-              <span>Budget Rescue Modeâ„¢ Protected</span>
+              <span>Budget Rescue Mode™ Protected</span>
             </div>
           </div>
         </div>
@@ -411,7 +411,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
         <div className="lg:col-span-8">
           <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">
             {/* Wizard Card Header */}
-            <div className="bg-slate-900 border-b border-slate-800 px-8 py-6 text-white flex items-center justify-between">
+            <div className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 border-b border-indigo-500/30 px-8 py-6 text-white flex items-center justify-between">
               <div>
                 <div className="flex items-center space-x-2">
                   <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
@@ -657,7 +657,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                       </label>
                       <div className="relative">
                         <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold" aria-hidden="true">
-                          {currency === 'INR' ? 'â‚¹' : currency}
+                          {currency === 'INR' ? '₹' : currency === 'USD' ? '$' : currency}
                         </span>
                         <input
                           id="wizard-budget"
@@ -691,10 +691,10 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                         onChange={(e) => setCurrency(e.target.value)}
                         className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                       >
-                        <option value="INR">INR (â‚¹)</option>
+                        <option value="INR">INR (₹)</option>
                         <option value="USD">USD ($)</option>
-                        <option value="EUR">EUR (â‚¬)</option>
-                        <option value="GBP">GBP (Â£)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
                         <option value="AED">AED</option>
                       </select>
                     </div>
@@ -847,7 +847,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="inline-flex items-center space-x-2 px-7 py-3 rounded-2xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-md cursor-pointer active:scale-95"
+                    className="inline-flex items-center space-x-2 px-7 py-3 rounded-2xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-md cursor-pointer active:scale-95"
                   >
                     <span>Continue to Step {step + 1}</span>
                     <ArrowRight className="w-4 h-4 text-indigo-300" aria-hidden="true" />
@@ -856,7 +856,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-xl shadow-slate-900/20 disabled:opacity-50 cursor-pointer"
+                    className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-xl shadow-slate-900/20 disabled:opacity-50 cursor-pointer"
                   >
                     {isSubmitting ? (
                       <span className="flex items-center space-x-2">

@@ -133,4 +133,63 @@ describe('Accessibility (A11y) & WCAG 2.1 AA Compliance Suite', () => {
     expect(drawerContent).toContain('aria-labelledby="assistant-drawer-title"');
     expect(drawerContent).toContain('focus-visible:ring-2');
   });
+
+  it('8. Verifies all enterprise modals implement useFocusTrap and Escape key handling', () => {
+    const modalFiles = [
+      'BudgetRescueModal.tsx',
+      'PrivacyDataModal.tsx',
+      'AuditTrailModal.tsx',
+      'CollaboratorsModal.tsx',
+    ];
+
+    for (const f of modalFiles) {
+      const p1 = path.resolve(process.cwd(), `../client/src/components/${f}`);
+      const p2 = path.resolve(process.cwd(), `client/src/components/${f}`);
+      const filePath = fs.existsSync(p1) ? p1 : p2;
+      expect(fs.existsSync(filePath), `Modal file ${f} must exist`).toBe(true);
+
+      const content = fs.readFileSync(filePath, 'utf-8');
+      expect(content).toContain('useFocusTrap');
+      expect(content).toMatch(/Escape/i);
+      expect(content).toContain('role="dialog"');
+      expect(content).toContain('aria-modal="true"');
+    }
+  });
+
+  it('9. Verifies interactive controls enforce visible focus ring states', () => {
+    const componentFiles = [
+      'BudgetRescueModal.tsx',
+      'PrivacyDataModal.tsx',
+      'AuditTrailModal.tsx',
+      'CollaboratorsModal.tsx',
+      'ConsentBanner.tsx',
+    ];
+
+    for (const f of componentFiles) {
+      const p1 = path.resolve(process.cwd(), `../client/src/components/${f}`);
+      const p2 = path.resolve(process.cwd(), `client/src/components/${f}`);
+      const filePath = fs.existsSync(p1) ? p1 : p2;
+
+      const content = fs.readFileSync(filePath, 'utf-8');
+      expect(content).toMatch(/focus-visible:ring/);
+    }
+  });
+
+  it('10. Verifies screen reader accessibility labels exist on all modal dismiss triggers', () => {
+    const modalFiles = [
+      'BudgetRescueModal.tsx',
+      'PrivacyDataModal.tsx',
+      'AuditTrailModal.tsx',
+      'CollaboratorsModal.tsx',
+    ];
+
+    for (const f of modalFiles) {
+      const p1 = path.resolve(process.cwd(), `../client/src/components/${f}`);
+      const p2 = path.resolve(process.cwd(), `client/src/components/${f}`);
+      const filePath = fs.existsSync(p1) ? p1 : p2;
+
+      const content = fs.readFileSync(filePath, 'utf-8');
+      expect(content).toMatch(/aria-label=["'][^"']*close[^"']*["']/i);
+    }
+  });
 });

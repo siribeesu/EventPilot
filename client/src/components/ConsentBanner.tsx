@@ -40,14 +40,16 @@ export const ConsentBanner: React.FC<ConsentBannerProps> = ({ onOpenPrivacy }) =
           <div className="flex items-center gap-2 pt-2">
             <button
               onClick={handleAccept}
-              className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-1 cursor-pointer"
+              aria-label="Accept and continue with data protection terms"
+              className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-1 cursor-pointer focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
             >
               <Check className="w-3.5 h-3.5" />
               <span>Accept & Continue</span>
             </button>
             <button
               onClick={onOpenPrivacy}
-              className="px-2.5 py-1.5 text-xs text-slate-400 hover:text-white transition flex items-center gap-1 cursor-pointer"
+              aria-label="Review data protection rights and GDPR details"
+              className="px-2.5 py-1.5 text-xs text-slate-400 hover:text-white transition flex items-center gap-1 cursor-pointer focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none rounded-lg"
             >
               <Info className="w-3.5 h-3.5" />
               <span>Review Rights</span>

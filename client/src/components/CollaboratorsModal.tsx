@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Users, UserPlus, Trash2, Shield, X, Check, Loader2 } from 'lucide-react';
 import { api } from '../services/api';
 import { Collaborator } from '../types';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface CollaboratorsModalProps {
   eventId: string;
@@ -24,6 +25,16 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
   const [role, setRole] = useState<'editor' | 'viewer'>('editor');
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const modalContainerRef = useFocusTrap(isOpen);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     if (isOpen) {
@@ -75,6 +86,7 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
 
   return (
     <div
+      ref={modalContainerRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="collab-title"
@@ -94,7 +106,7 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
           <button
             onClick={onClose}
             aria-label="Close dialog"
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
           >
             <X className="w-5 h-5" />
           </button>
@@ -126,7 +138,7 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
                 placeholder="colleague@domain.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                className="w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus-visible:ring-2 focus-visible:ring-indigo-500"
               />
               <input
                 type="text"
@@ -134,7 +146,7 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
                 placeholder="Name (Optional)"
                 value={name}
                 onChange={e => setName(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                className="w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus-visible:ring-2 focus-visible:ring-indigo-500"
               />
             </div>
             <div className="flex items-center justify-between gap-3 pt-1">
@@ -143,7 +155,7 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
                 <select aria-label="Access role"
                   value={role}
                   onChange={e => setRole(e.target.value as 'editor' | 'viewer')}
-                  className="px-2.5 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  className="px-2.5 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus-visible:ring-2 focus-visible:ring-indigo-500"
                 >
                   <option value="editor">Editor (Can edit budget & tasks)</option>
                   <option value="viewer">Viewer (Read-only)</option>
@@ -152,7 +164,8 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg text-xs font-medium transition flex items-center gap-1.5 shadow-sm"
+                aria-label="Invite team member"
+                className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg text-xs font-medium transition flex items-center gap-1.5 shadow-sm focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
               >
                 {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UserPlus className="w-3.5 h-3.5" />}
                 <span>Invite</span>
@@ -194,8 +207,9 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
                     {isOwner && (
                       <button
                         onClick={() => handleRemove(c.id)}
-                        className="p-1 text-slate-500 hover:text-rose-400 rounded transition"
+                        className="p-1 text-slate-500 hover:text-rose-400 rounded transition focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:outline-none"
                         title="Remove collaborator"
+                        aria-label={`Remove collaborator ${c.user_name || c.user_email}`}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -210,7 +224,8 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
         <div className="mt-6 pt-4 border-t border-slate-800 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-medium transition"
+            aria-label="Close dialog"
+            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-medium transition focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
           >
             Done
           </button>

@@ -1,7 +1,7 @@
 import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { Shield, Clock, CheckCircle2, X, RefreshCw, Loader2 } from 'lucide-react';
-
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import { AuditLog } from '../types';
 
 interface AuditTrailModalProps {
@@ -13,6 +13,16 @@ interface AuditTrailModalProps {
 export const AuditTrailModal: React.FC<AuditTrailModalProps> = ({ eventId, isOpen, onClose }) => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(false);
+  const modalContainerRef = useFocusTrap(isOpen);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   const fetchLogs = async () => {
     setLoading(true);
@@ -39,6 +49,7 @@ export const AuditTrailModal: React.FC<AuditTrailModalProps> = ({ eventId, isOpe
 
   return (
     <div
+      ref={modalContainerRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="audit-title"
@@ -61,14 +72,14 @@ export const AuditTrailModal: React.FC<AuditTrailModalProps> = ({ eventId, isOpe
               disabled={loading}
               title="Refresh audit trail"
               aria-label="Refresh audit trail"
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-indigo-400' : ''}`} />
             </button>
             <button
               onClick={onClose}
               aria-label="Close dialog"
-              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+              className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
             >
               <X className="w-5 h-5" />
             </button>
@@ -133,7 +144,8 @@ export const AuditTrailModal: React.FC<AuditTrailModalProps> = ({ eventId, isOpe
         <div className="mt-6 pt-4 border-t border-slate-800 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-medium transition"
+            aria-label="Close dialog"
+            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-medium transition focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
           >
             Close Audit Trail
           </button>

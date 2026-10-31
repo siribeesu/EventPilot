@@ -1,7 +1,8 @@
 import { logger } from '../utils/logger';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Download, Lock, X, Check, Loader2 } from 'lucide-react';
 import { api } from '../services/api';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface PrivacyDataModalProps {
   isOpen: boolean;
@@ -11,6 +12,16 @@ interface PrivacyDataModalProps {
 export const PrivacyDataModal: React.FC<PrivacyDataModalProps> = ({ isOpen, onClose }) => {
   const [downloading, setDownloading] = useState(false);
   const [exported, setExported] = useState(false);
+  const modalContainerRef = useFocusTrap(isOpen);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -29,6 +40,7 @@ export const PrivacyDataModal: React.FC<PrivacyDataModalProps> = ({ isOpen, onCl
 
   return (
     <div
+      ref={modalContainerRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="privacy-title"
@@ -48,7 +60,7 @@ export const PrivacyDataModal: React.FC<PrivacyDataModalProps> = ({ isOpen, onCl
           <button
             onClick={onClose}
             aria-label="Close dialog"
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
           >
             <X className="w-5 h-5" />
           </button>
@@ -89,7 +101,8 @@ export const PrivacyDataModal: React.FC<PrivacyDataModalProps> = ({ isOpen, onCl
             <button
               onClick={handleExport}
               disabled={downloading}
-              className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-medium transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+              aria-label="Download Personal Data Package"
+              className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-medium transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
             >
               {downloading ? (
                 <>
@@ -114,7 +127,8 @@ export const PrivacyDataModal: React.FC<PrivacyDataModalProps> = ({ isOpen, onCl
         <div className="mt-6 pt-4 border-t border-slate-800 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-medium transition"
+            aria-label="Close dialog"
+            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-medium transition focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
           >
             Close
           </button>

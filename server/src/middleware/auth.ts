@@ -20,16 +20,21 @@ export interface AuthenticatedRequest extends RequestWithId {
 
 export function authMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.substring(7);
+    if (authHeader) {
+    if (!authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Authorization header must use Bearer scheme' });
+    }
+    const token = authHeader.substring(7).trim();
+    if (!token) {
+      return res.status(401).json({ error: 'Authentication token missing from Bearer header' });
+    }
     try {
       const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string; name?: string };
       req.userId = decoded.id;
       req.userEmail = decoded.email;
       req.user = { id: decoded.id, email: decoded.email, name: decoded.name };
       return next();
-    } catch (err) {
-      // Invalid token
+    } catch (_err) {
       return res.status(401).json({ error: 'Invalid or expired authentication token' });
     }
   }

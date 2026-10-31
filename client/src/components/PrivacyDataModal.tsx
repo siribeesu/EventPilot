@@ -1,5 +1,5 @@
-﻿import React, { useState } from 'react';
-import { ShieldCheck, Download, Lock, FileText, X, Check, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShieldCheck, Download, Lock, X, Check, Loader2 } from 'lucide-react';
 import { api } from '../services/api';
 
 interface PrivacyDataModalProps {

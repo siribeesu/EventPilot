@@ -19,7 +19,7 @@ export function recordMetricRequest(isError = false) {
  * System Telemetry & Operational Health Observability
  * GET /api/metrics
  */
-router.get('/metrics', async (req, res) => {
+router.get('/metrics', async (_req, res) => {
   const uptimeSeconds = Math.floor((Date.now() - startTime) / 1000);
   const memUsage = process.memoryUsage();
   const aiMetrics = aiCache.getMetrics();

@@ -37,7 +37,10 @@ jobs:
       - name: ⚡ Typecheck & Compile Frontend Vite Client
         run: npm run build:client
 
-      - name: 🧪 Run Automated Vitest Test Suites (52 Tests across 9 Suites)
+      - name: ⚡ Run Mandatory Critical Path Suite
+        run: npm run test:critical
+
+      - name: 🧪 Run Automated Vitest Test Suites (63 Tests across 10 Suites)
         run: npm run test
 
       - name: 🎭 Run Real End-to-End User Journey Tests (E2E)
@@ -53,7 +56,7 @@ jobs:
           echo "| Check | Status | Verification Detail |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- | :---: | :--- |" >> $GITHUB_STEP_SUMMARY
           echo "| **TypeScript Compilation & Lint** | ✅ Passed | Frontend Vite 8 + Backend Express compiled with 0 errors |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Automated Vitest Test Suites** | ✅ Passed | 52/52 Tests Passing across 9 specialized suites |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Automated Vitest Test Suites** | ✅ Passed | 63/63 Tests Passing across 10 specialized suites |" >> $GITHUB_STEP_SUMMARY
           echo "| **Real End-to-End (E2E) Journey** | ✅ Passed | Signup, Create Event, Budget Rescue, Human-in-the-Loop AI, Vendors, PDF & GDPR Export |" >> $GITHUB_STEP_SUMMARY
           echo "| **AI Safety Guardrails** | ✅ Passed | 10 Prompt Injection Vectors blocked & Zod bounded with Confidence Scores |" >> $GITHUB_STEP_SUMMARY
           echo "| **Human-in-the-Loop Feedback** | ✅ Passed | User feedback learning loop & async task queue verified |" >> $GITHUB_STEP_SUMMARY

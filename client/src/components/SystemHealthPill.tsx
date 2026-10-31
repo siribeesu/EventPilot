@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, ShieldCheck, Cpu, X, Zap, Loader2 } from 'lucide-react';
+import { Activity, ShieldCheck, X, Zap, Loader2 } from 'lucide-react';
 import { api } from '../services/api';
 import { SystemMetrics } from '../types';
 

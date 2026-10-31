@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import {
   Sparkles,
   ShieldCheck,
-  Calendar,
+
   DollarSign,
-  FileText,
-  Mail,
+
+
   CheckCircle2,
   ArrowRight,
   Shield,

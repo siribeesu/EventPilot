@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Clock, FileText, CheckCircle2, X, RefreshCw, Loader2 } from 'lucide-react';
-import { api } from '../services/api';
+import { Shield, Clock, CheckCircle2, X, RefreshCw, Loader2 } from 'lucide-react';
+
 import { AuditLog } from '../types';
 
 interface AuditTrailModalProps {
@@ -59,6 +59,7 @@ export const AuditTrailModal: React.FC<AuditTrailModalProps> = ({ eventId, isOpe
               onClick={fetchLogs}
               disabled={loading}
               title="Refresh audit trail"
+              aria-label="Refresh audit trail"
               className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-indigo-400' : ''}`} />

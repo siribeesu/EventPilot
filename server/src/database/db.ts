@@ -125,13 +125,13 @@ class StorageManager {
         path.resolve(process.cwd(), 'server/data/database.json'),
         path.resolve(process.cwd(), 'data/database.json'),
       ];
-      let seedFound = false;
+
       for (const candidate of seedCandidates) {
         if (fs.existsSync(candidate)) {
           try {
             const raw = fs.readFileSync(candidate, 'utf-8');
             this.memoryData = JSON.parse(raw);
-            seedFound = true;
+
             logger.info(`Seeded database from ${candidate} (${this.memoryData.events.length} events)`);
             break;
           } catch (seedErr) { logger.debug(`Candidate ${candidate} not loadable`, { error: (seedErr as Error).message }); }

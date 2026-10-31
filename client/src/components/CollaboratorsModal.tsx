@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, UserPlus, Trash2, Shield, X, Check, Loader2 } from 'lucide-react';
 import { api } from '../services/api';
-import { Collaborator, CollaboratorRole } from '../types';
+import { Collaborator } from '../types';
 
 interface CollaboratorsModalProps {
   eventId: string;
@@ -121,6 +121,7 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
               <input
                 type="email"
                 required
+                aria-label="Collaborator email address"
                 placeholder="colleague@domain.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
@@ -128,6 +129,7 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
               />
               <input
                 type="text"
+                aria-label="Collaborator name"
                 placeholder="Name (Optional)"
                 value={name}
                 onChange={e => setName(e.target.value)}
@@ -137,7 +139,7 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
             <div className="flex items-center justify-between gap-3 pt-1">
               <div className="flex items-center gap-2">
                 <label className="text-xs text-slate-400">Access Role:</label>
-                <select
+                <select aria-label="Access role"
                   value={role}
                   onChange={e => setRole(e.target.value as 'editor' | 'viewer')}
                   className="px-2.5 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50"

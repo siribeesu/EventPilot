@@ -66,7 +66,7 @@ app.use(
 );
 
 // Advanced Defensive Headers: Device lockdowns & Anti-Clickjacking
-app.use((req, res, next) => {
+app.use((_req, res, next) => {
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), vr=()');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -106,7 +106,7 @@ app.use(
 );
 
 // 5. Body parser with Vercel serverless pre-parsed body handling & strict size limits
-app.use((req, res, next) => {
+app.use((req, _res, next) => {
   if (req.body !== undefined && req.body !== null && typeof req.body === 'object') {
     (req as express.Request & { _body?: boolean })._body = true;
   }
@@ -115,7 +115,7 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: '2mb' }));
 
 // 6. Global Input Sanitization Middleware to strip XSS & control characters
-app.use((req, res, next) => {
+app.use((req, _res, next) => {
   if (req.body && typeof req.body === 'object') {
     req.body = sanitizeObject(req.body);
   }
@@ -126,7 +126,7 @@ app.use((req, res, next) => {
 const apiRouter = express.Router();
 
 // Telemetry & metrics request counting
-apiRouter.use((req, res, next) => {
+apiRouter.use((_req, _res, next) => {
   recordMetricRequest();
   next();
 });
@@ -135,7 +135,7 @@ apiRouter.use((req, res, next) => {
 apiRouter.use(standardLimiter);
 
 // Health check endpoint with security & performance metadata
-apiRouter.get('/health', (req, res) => {
+apiRouter.get('/health', (_req, res) => {
   res.json({
     status: 'ok',
     service: 'EventPilot Enterprise Core',

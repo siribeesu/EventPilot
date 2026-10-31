@@ -1,12 +1,12 @@
 import {
   AIGeneratedPlan,
-  AIGeneratedPlanSchema,
+
   BudgetRescueResponse,
-  BudgetRescueResponseSchema,
+
   AIAssistantAction,
-  AIAssistantActionSchema,
+
 } from '../schemas/index.js';
-import { EventRecord, BudgetItem, TaskItem, VendorItem, EventIdea } from '../types/index.js';
+import { EventRecord, BudgetItem, TaskItem } from '../types/index.js';
 import { inspectPromptSafety, validateAndSanitizeAIPlan, aiCache } from './guardrails.js';
 
 /**
@@ -523,7 +523,7 @@ Important Rules:
 export function calculateBudgetRescue(
   event: EventRecord,
   budgetItems: BudgetItem[],
-  targetBudget: number
+  targetBudget: number = event.budget
 ): BudgetRescueResponse {
   const currentTotal = budgetItems.reduce((acc, b) => acc + (Number(b.estimated_cost) || 0), 0);
   const neededReduction = Math.max(0, currentTotal - targetBudget);
@@ -717,7 +717,7 @@ export async function processAssistantMessage(
     ];
 
     return {
-      reply: `With the event coming up quickly, here is your high-priority action checklist:\n1. Lock in the final headcount with the caterer to avoid extra plate surcharges.\n2. Reconfirm vendor arrival times (decor, sound/DJ, and photography).\n3. Prepare your emergency day-of kit and assign an on-site point of contact.\n\nWould you like me to add these urgent countdown tasks to your tracker?`,
+      reply: `With the event coming up quickly and ${urgentTasks.length} urgent tasks in flight, here is your high-priority action checklist:\n1. Lock in the final headcount with the caterer to avoid extra plate surcharges.\n2. Reconfirm vendor arrival times (decor, sound/DJ, and photography).\n3. Prepare your emergency day-of kit and assign an on-site point of contact.\n\nWould you like me to add these urgent countdown tasks to your tracker?`,
       proposedChanges: {
         tasksToAdd: taskRecommendations,
       },

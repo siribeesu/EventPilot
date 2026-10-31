@@ -210,6 +210,13 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
           Quick Prompts:
         </span>
         <div className="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar">
+          <button
+            type="button"
+            onClick={onTriggerBudgetRescue}
+            className="text-xs font-semibold whitespace-nowrap bg-amber-50 border border-amber-200 text-amber-800 px-2.5 py-1 rounded-full hover:bg-amber-600 hover:text-white transition shadow-2xs"
+          >
+            Budget Rescue
+          </button>
           {quickPrompts.map((prompt, i) => (
             <button
               key={i}

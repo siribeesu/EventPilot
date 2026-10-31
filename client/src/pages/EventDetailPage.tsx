@@ -14,7 +14,7 @@ import {
   MapPin,
   Check,
   ChevronRight,
-  X,
+
 } from 'lucide-react';
 import {
   ResponsiveContainer,

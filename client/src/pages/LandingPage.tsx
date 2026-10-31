@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Sparkles,
   ArrowRight,
-  ShieldCheck,
+
   CheckCircle,
   Clock,
   Heart,
@@ -13,7 +13,7 @@ import {
   LayoutDashboard,
   ShieldAlert,
   Sliders,
-  Award,
+
   Zap,
   Users2,
   Lock,

@@ -13,9 +13,10 @@
     "build:server": "cd server && npm run build",
     "build": "npm run build:server && npm run build:client",
     "test": "cd server && npm test",
+    "test:critical": "cd server && npm run test:critical",
     "test:e2e": "cd server && npm run test:e2e",
     "lint": "cd client && tsc -b --noEmit && cd ../server && tsc --noEmit",
-    "verify": "npm run build && npm run test && npm run test:e2e"
+    "verify": "npm run lint && npm run build && npm run test:critical && npm run test && npm run test:e2e"
   },
   "dependencies": {
     "compression": "^1.8.2",

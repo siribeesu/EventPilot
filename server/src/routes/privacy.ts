@@ -61,7 +61,7 @@ router.delete('/user/account', async (req: AuthenticatedRequest, res) => {
  * Enterprise Data Privacy & Retention Disclosures
  * GET /api/privacy/policy
  */
-router.get('/privacy/policy', (req, res) => {
+router.get('/privacy/policy', (_req, res) => {
   res.json({
     compliance: ['GDPR', 'CCPA', 'SOC2-Type-II-Ready'],
     dataController: 'EventPilot AI Technologies Inc.',

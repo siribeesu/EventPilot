@@ -263,7 +263,7 @@ npm run verify     # Full verification: compile + unit + integration + E2E
 | `src/tests/api_integration.test.ts` | 4 | Integration | Event CRUD lifecycle, calculated metrics verification, Budget Rescue proposal application, AI Copilot approval workflow |
 
 > 📖 **In-Depth Evidence & Audit Reports:**
-> * 🧪 [Automated Vitest Test Run Log (52/52)](docs/TEST_RESULTS.md) — Execution logs across 9 specialized suites and E2E journeys
+> * 🧪 [Automated Vitest Test Run Log (63/63)](docs/TEST_RESULTS.md) — Execution logs across 10 specialized suites and E2E journeys
 > * 🏛️ [Architecture Decision Records (ADRs)](docs/adr/001-hybrid-postgres-json-storage.md) — Formal records on storage, guardrails, RBAC, and client-side PDF export
 > * 📜 [Privacy Policy & Data Retention](docs/PRIVACY_POLICY.md) — Formal GDPR Article 15/17 compliance standards
 > * ⚖️ [Terms of Service](docs/TERMS_OF_SERVICE.md) — Acceptable use and AI advisory disclaimers

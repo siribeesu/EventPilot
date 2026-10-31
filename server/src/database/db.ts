@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pg from 'pg';
+import { logger } from '../utils/logger.js';
 import { v4 as uuidv4 } from 'uuid';
 import {
   User,
@@ -21,9 +22,7 @@ import {
 const getCurrentDir = () => {
   try {
     return path.dirname(fileURLToPath(import.meta.url));
-  } catch {
-    return process.cwd();
-  }
+  } catch (_err) { return process.cwd(); }
 };
 const currentDir = getCurrentDir();
 
@@ -92,7 +91,7 @@ class StorageManager {
         });
         await this.pool.query('SELECT 1');
         this.isPostgres = true;
-        console.log('✅ Connected to PostgreSQL database');
+        logger.info('Connected to PostgreSQL database');
         await this.initPostgresSchema();
         return;
       } catch (err) {
@@ -112,9 +111,9 @@ class StorageManager {
         if (!this.memoryData.users.find(u => u.id === defaultUser.id)) {
           this.memoryData.users.push(defaultUser);
         }
-        console.log(` Loaded persistent database from ${this.dataFilePath} (${this.memoryData.events.length} events)`);
+        logger.info(`Loaded persistent database from ${this.dataFilePath} (${this.memoryData.events.length} events)`);
       } catch (err) {
-        console.error('Failed reading database.json, starting with fresh store', err);
+        logger.error('Failed reading database.json, starting with fresh store', err);
         this.persist();
       }
     } else {
@@ -133,11 +132,9 @@ class StorageManager {
             const raw = fs.readFileSync(candidate, 'utf-8');
             this.memoryData = JSON.parse(raw);
             seedFound = true;
-            console.log(` Seeded database from ${candidate} (${this.memoryData.events.length} events)`);
+            logger.info(`Seeded database from ${candidate} (${this.memoryData.events.length} events)`);
             break;
-          } catch {
-            // ignore and try next candidate
-          }
+          } catch (seedErr) { logger.debug(`Candidate ${candidate} not loadable`, { error: (seedErr as Error).message }); }
         }
       }
       if (!this.memoryData.users) this.memoryData.users = [defaultUser];
@@ -252,7 +249,9 @@ class StorageManager {
           this.memoryData = reloaded;
           evt = this.memoryData.events.find(e => e.id === id);
         }
-      } catch {}
+      } catch (readErr) {
+        logger.debug('Reload attempt skipped', { error: (readErr as Error).message });
+      }
     }
     if (!evt) return null;
     if (!userId || userId === 'usr_demo_123' || evt.user_id === userId) return evt;

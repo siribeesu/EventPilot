@@ -64,7 +64,7 @@ export const AIAssistantDrawer: React.FC<AIAssistantDrawerProps> = ({
         rating,
         userAction: 'viewed_only',
       });
-    } catch {
+    } catch (feedbackErr) {
       // Non-blocking feedback telemetry
     }
   };

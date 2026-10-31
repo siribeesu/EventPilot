@@ -1,4 +1,4 @@
-﻿export type EventType = 'wedding' | 'birthday' | 'anniversary' | 'college' | 'community' | 'other';
+export type EventType = 'wedding' | 'birthday' | 'anniversary' | 'college' | 'community' | 'other';
 export type IndoorOutdoor = 'indoor' | 'outdoor' | 'both';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 export type TaskStatus = 'pending' | 'in_progress' | 'completed';
@@ -180,3 +180,14 @@ export interface AIAssistantAction {
   clarifyingQuestions?: string[];
   requiresUserApproval: boolean;
 }
+
+
+export const getCurrencySymbol = (currency?: string): string => {
+  if (!currency) return '\u20B9';
+  const c = currency.toUpperCase();
+  if (c === 'INR') return '\u20B9';
+  if (c === 'USD') return '$';
+  if (c === 'EUR') return '\u20AC';
+  if (c === 'GBP') return '\u00A3';
+  return currency;
+};

@@ -84,7 +84,7 @@ describe('EventPilot End-to-End System Integration', () => {
     expect(full?.metrics.remainingBalance).toBe(0);
   });
 
-  it('executes Budget Rescue Mode when reducing budget to â‚¹40,000', async () => {
+  it('executes Budget Rescue Mode when reducing budget to ₹40,000', async () => {
     const event = await db.getEventById(createdEventId, 'usr_demo_123');
     const items = await db.getBudgetItems(createdEventId);
 

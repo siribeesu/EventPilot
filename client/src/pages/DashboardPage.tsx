@@ -110,7 +110,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <span className="text-[11px] font-bold tracking-widest uppercase text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">
               Command Center
             </span>
-            <span className="text-xs text-slate-400">â€¢</span>
+            <span className="text-xs text-slate-400">•</span>
             <span className="text-xs text-slate-500 font-medium">Real-Time Portfolio</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
@@ -214,11 +214,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           <div className="text-xs font-medium">
             {totalBudgetAcross >= totalPlannedSpending ? (
               <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                âœ“ Remaining Buffer: {currency} {(totalBudgetAcross - totalPlannedSpending).toLocaleString()}
+                ✓ Remaining Buffer: {currency} {(totalBudgetAcross - totalPlannedSpending).toLocaleString()}
               </span>
             ) : (
               <span className="text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200 font-bold">
-                âš  Over Limit: {currency} {(totalPlannedSpending - totalBudgetAcross).toLocaleString()}
+                ⚠️ Over Limit: {currency} {(totalPlannedSpending - totalBudgetAcross).toLocaleString()}
               </span>
             )}
           </div>
@@ -379,7 +379,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     </h3>
                     <p className="text-xs text-slate-500 mt-1 flex items-center space-x-1.5 font-medium">
                       <span>{evt.location}</span>
-                      <span aria-hidden="true">â€¢</span>
+                      <span aria-hidden="true">•</span>
                       <span>{evt.guest_count} attendees</span>
                     </p>
                   </div>

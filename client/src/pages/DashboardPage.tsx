@@ -103,7 +103,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   }, [events, debouncedSearchQuery, filterType]);
 
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-8 py-9 space-y-9">
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-7">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
         <div className="space-y-1">

@@ -540,6 +540,3 @@ EventPilot is pre-configured for **single-project zero-config deployment** on Ve
 
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License. Built with ❤️ for seamless, stress-free celebration planning.

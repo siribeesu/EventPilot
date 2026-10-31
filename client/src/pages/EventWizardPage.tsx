@@ -388,19 +388,19 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
           </div>
 
           {/* Contextual AI Advisor Card */}
-          <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white border border-slate-800 shadow-md space-y-3.5">
+          <div className="bg-indigo-50/80 rounded-3xl p-6 text-slate-900 border border-indigo-200/80 shadow-xs space-y-3.5">
             <div className="flex items-center space-x-2.5">
               <div className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                 <Sparkles className="w-4 h-4" aria-hidden="true" />
               </div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-200">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-900">
                 AI Planner Guidance
               </h3>
             </div>
-            <p className="text-xs leading-relaxed text-slate-300">
+            <p className="text-xs leading-relaxed text-slate-600">
               {getAiTip()}
             </p>
-            <div className="pt-2 border-t border-slate-800 flex items-center space-x-2 text-[11px] text-indigo-300 font-semibold">
+            <div className="pt-2 border-t border-indigo-200 flex items-center space-x-2 text-[11px] text-indigo-700 font-semibold">
               <ShieldCheck className="w-4 h-4 text-emerald-400" aria-hidden="true" />
               <span>Budget Rescue Mode™ Protected</span>
             </div>
@@ -411,7 +411,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
         <div className="lg:col-span-8">
           <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">
             {/* Wizard Card Header */}
-            <div className="bg-slate-900 border-b border-slate-800 px-8 py-6 text-white flex items-center justify-between">
+            <div className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 border-b border-indigo-500/30 px-8 py-6 text-white flex items-center justify-between">
               <div>
                 <div className="flex items-center space-x-2">
                   <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
@@ -847,7 +847,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="inline-flex items-center space-x-2 px-7 py-3 rounded-2xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-md cursor-pointer active:scale-95"
+                    className="inline-flex items-center space-x-2 px-7 py-3 rounded-2xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-md cursor-pointer active:scale-95"
                   >
                     <span>Continue to Step {step + 1}</span>
                     <ArrowRight className="w-4 h-4 text-indigo-300" aria-hidden="true" />
@@ -856,7 +856,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-xl shadow-slate-900/20 disabled:opacity-50 cursor-pointer"
+                    className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-xl shadow-slate-900/20 disabled:opacity-50 cursor-pointer"
                   >
                     {isSubmitting ? (
                       <span className="flex items-center space-x-2">

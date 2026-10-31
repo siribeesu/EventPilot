@@ -148,9 +148,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               type="button"
               onClick={() => onNavigate('wizard')}
-              className="inline-flex items-center space-x-1.5 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 active:scale-[0.98] transition-all shadow-sm hover:shadow-md cursor-pointer"
+              className="inline-flex items-center space-x-1.5 px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 active:scale-[0.98] transition-all shadow-sm shadow-indigo-600/20 hover:shadow-md cursor-pointer"
             >
-              <Plus className="w-4 h-4 text-indigo-300" aria-hidden="true" />
+              <Plus className="w-4 h-4 text-white" aria-hidden="true" />
               <span className="hidden xs:inline">New Event</span>
               <span className="xs:hidden">New</span>
             </button>

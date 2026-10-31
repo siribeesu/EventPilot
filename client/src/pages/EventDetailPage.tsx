@@ -429,19 +429,19 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
 
 
       {/* Interactive Guided Planning Stepper & Recommended Next Action */}
-      <div className="p-5 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white space-y-4 shadow-xl border border-slate-800">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+      <div className="p-5 rounded-3xl bg-white rounded-3xl border border-slate-200/90 text-slate-900 space-y-4 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
           <div className="flex items-center space-x-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
-            <span className="text-xs font-bold uppercase tracking-wider text-indigo-300">
+            <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">
               Guided Planning Flow
             </span>
             <span className="text-slate-500 text-xs hidden sm:inline">•</span>
-            <span className="text-xs text-slate-300 hidden sm:inline">Follow the 4 phases from vision to celebration</span>
+            <span className="text-xs text-slate-500 hidden sm:inline">Follow the 4 phases from vision to celebration</span>
           </div>
-          <div className="flex items-center space-x-2 text-xs font-semibold text-slate-300">
+          <div className="flex items-center space-x-2 text-xs font-semibold text-slate-600">
             <span>Overall Progress:</span>
-            <span className="text-emerald-400 font-bold">
+            <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
               {Math.round(((event.metrics.tasksCompleted + event.metrics.vendorsBooked) / Math.max(event.metrics.tasksTotal + event.metrics.vendorsTotal, 1)) * 100)}%
             </span>
           </div>
@@ -455,11 +455,11 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
             onClick={() => setActiveTab('budget')}
             className={`p-3.5 rounded-2xl border text-left transition cursor-pointer ${
               activeTab === 'budget'
-                ? 'bg-indigo-600/30 border-indigo-400 text-white shadow-xs'
-                : 'bg-slate-800/40 border-slate-700/60 hover:bg-slate-800 text-slate-300'
+                ? 'bg-indigo-50 border-indigo-400 text-indigo-950 shadow-xs'
+                : 'bg-slate-50 border-slate-200/80 hover:bg-slate-100/80 text-slate-700'
             }`}
           >
-            <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase">
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 uppercase">
               <span>Phase 1: Budget</span>
               {isOverBudget ? (
                 <span className="text-rose-400 text-[10px] font-extrabold bg-rose-950/60 px-1.5 py-0.5 rounded border border-rose-800">⚠️ Deficit</span>
@@ -467,10 +467,10 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
                 <span className="text-emerald-400 text-[10px] font-bold bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800">✓ Balanced</span>
               )}
             </div>
-            <div className="font-extrabold text-sm text-white mt-1.5">
+            <div className="font-extrabold text-sm text-slate-900 mt-1.5">
               {currency} {totalEstimated.toLocaleString()}
             </div>
-            <div className="text-[10px] text-slate-400 mt-0.5">
+            <div className="text-[10px] text-slate-500 mt-0.5">
               {isOverBudget ? `Over by ${currency} ${(totalEstimated - totalBudget).toLocaleString()}` : `${event.budget_items.length} protected line items`}
             </div>
           </button>

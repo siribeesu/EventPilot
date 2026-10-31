@@ -14,6 +14,15 @@ import {
 
 const API_BASE = '/api';
 
+function getAuthHeaders(headers: Record<string, string> = {}): Record<string, string> {
+  const token = localStorage.getItem('eventpilot_auth_token');
+  const result: Record<string, string> = { ...headers };
+  if (token) {
+    result['Authorization'] = `Bearer ${token}`;
+  }
+  return result;
+}
+
 function getLocalEvents(): Record<string, EventFullDetail> {
   try {
     const raw = localStorage.getItem('eventpilot_events_cache');
@@ -51,10 +60,25 @@ async function handleResponse<T>(res: Response, fallbackError: string): Promise<
 }
 
 export const api = {
+  // Authentication Session
+  setAuthToken(token: string): void {
+    if (token) {
+      localStorage.setItem('eventpilot_auth_token', token);
+    } else {
+      localStorage.removeItem('eventpilot_auth_token');
+    }
+  },
+
+  getAuthToken(): string | null {
+    return localStorage.getItem('eventpilot_auth_token');
+  },
+
   // Events
   async getEvents(): Promise<EventFullDetail[]> {
     try {
-      const res = await fetch(`${API_BASE}/events`);
+      const res = await fetch(`${API_BASE}/events`, {
+        headers: getAuthHeaders(),
+      });
       const serverEvents = await handleResponse<EventFullDetail[]>(res, 'Failed to fetch events');
       const localStore = getLocalEvents();
       serverEvents.forEach(e => { localStore[e.id] = e; });
@@ -69,7 +93,9 @@ export const api = {
 
   async getEvent(id: string): Promise<EventFullDetail> {
     try {
-      const res = await fetch(`${API_BASE}/events/${id}`);
+      const res = await fetch(`${API_BASE}/events/${id}`, {
+        headers: getAuthHeaders(),
+      });
       const data = await handleResponse<EventFullDetail>(res, 'Failed to fetch event');
       saveLocalEvent(data);
       return data;
@@ -85,7 +111,7 @@ export const api = {
   async createEvent(data: Partial<EventRecord>): Promise<EventFullDetail> {
     const res = await fetch(`${API_BASE}/events`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(data),
     });
     const created = await handleResponse<EventFullDetail>(res, 'Failed to create event');
@@ -96,7 +122,7 @@ export const api = {
   async updateEvent(id: string, updates: Partial<EventRecord>): Promise<EventFullDetail> {
     const res = await fetch(`${API_BASE}/events/${id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(updates),
     });
     if (!res.ok) throw new Error('Failed to update event');
@@ -106,6 +132,7 @@ export const api = {
   async deleteEvent(id: string): Promise<void> {
     const res = await fetch(`${API_BASE}/events/${id}`, {
       method: 'DELETE',
+      headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to delete event');
   },
@@ -113,6 +140,7 @@ export const api = {
   async regeneratePlan(id: string): Promise<EventFullDetail> {
     const res = await fetch(`${API_BASE}/events/${id}/generate-plan`, {
       method: 'POST',
+      headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to regenerate plan');
     return res.json();
@@ -122,7 +150,7 @@ export const api = {
   async addBudgetItem(eventId: string, item: Partial<BudgetItem>): Promise<BudgetItem> {
     const res = await fetch(`${API_BASE}/events/${eventId}/budget-items`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(item),
     });
     if (!res.ok) throw new Error('Failed to add budget item');
@@ -132,7 +160,7 @@ export const api = {
   async updateBudgetItem(id: string, updates: Partial<BudgetItem>): Promise<BudgetItem> {
     const res = await fetch(`${API_BASE}/budget-items/${id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(updates),
     });
     if (!res.ok) throw new Error('Failed to update budget item');
@@ -142,6 +170,7 @@ export const api = {
   async deleteBudgetItem(id: string): Promise<void> {
     const res = await fetch(`${API_BASE}/budget-items/${id}`, {
       method: 'DELETE',
+      headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to delete budget item');
   },
@@ -150,7 +179,7 @@ export const api = {
   async addTask(eventId: string, task: Partial<TaskItem>): Promise<TaskItem> {
     const res = await fetch(`${API_BASE}/events/${eventId}/tasks`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(task),
     });
     if (!res.ok) throw new Error('Failed to add task');
@@ -160,7 +189,7 @@ export const api = {
   async updateTask(id: string, updates: Partial<TaskItem>): Promise<TaskItem> {
     const res = await fetch(`${API_BASE}/tasks/${id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(updates),
     });
     if (!res.ok) throw new Error('Failed to update task');
@@ -170,6 +199,7 @@ export const api = {
   async deleteTask(id: string): Promise<void> {
     const res = await fetch(`${API_BASE}/tasks/${id}`, {
       method: 'DELETE',
+      headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to delete task');
   },
@@ -178,7 +208,7 @@ export const api = {
   async addVendor(eventId: string, vendor: Partial<VendorItem>): Promise<VendorItem> {
     const res = await fetch(`${API_BASE}/events/${eventId}/vendors`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(vendor),
     });
     if (!res.ok) throw new Error('Failed to add vendor');
@@ -188,7 +218,7 @@ export const api = {
   async updateVendor(id: string, updates: Partial<VendorItem>): Promise<VendorItem> {
     const res = await fetch(`${API_BASE}/vendors/${id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(updates),
     });
     if (!res.ok) throw new Error('Failed to update vendor');
@@ -198,6 +228,7 @@ export const api = {
   async deleteVendor(id: string): Promise<void> {
     const res = await fetch(`${API_BASE}/vendors/${id}`, {
       method: 'DELETE',
+      headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to delete vendor');
   },
@@ -206,7 +237,7 @@ export const api = {
   async previewBudgetRescue(eventId: string, targetBudget: number): Promise<BudgetRescueResponse> {
     const res = await fetch(`${API_BASE}/events/${eventId}/budget-rescue/preview`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ targetBudget }),
     });
     if (!res.ok) throw new Error('Failed to calculate budget rescue');
@@ -223,7 +254,7 @@ export const api = {
   ): Promise<{ success: boolean; event: EventFullDetail }> {
     const res = await fetch(`${API_BASE}/events/${eventId}/budget-rescue/apply`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(data),
     });
     if (!res.ok) throw new Error('Failed to apply budget rescue');
@@ -238,7 +269,7 @@ export const api = {
   ): Promise<AIAssistantAction> {
     const res = await fetch(`${API_BASE}/events/${eventId}/assistant`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ message, conversationHistory }),
     });
     if (!res.ok) throw new Error('Failed to get assistant response');
@@ -252,7 +283,7 @@ export const api = {
   ): Promise<{ success: boolean; event: EventFullDetail }> {
     const res = await fetch(`${API_BASE}/events/${eventId}/assistant/apply`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ proposedChanges, revisionNote }),
     });
     if (!res.ok) throw new Error('Failed to apply assistant changes');
@@ -274,7 +305,7 @@ export const api = {
   ): Promise<{ success: boolean; id?: string }> {
     const res = await fetch(`${API_BASE}/events/${eventId}/ai/feedback`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({
         suggestionType: 'assistant_chat',
         userAction: 'viewed_only',
@@ -287,7 +318,9 @@ export const api = {
 
   // Team Collaboration & RBAC
   async getCollaborators(eventId: string): Promise<Collaborator[]> {
-    const res = await fetch(`${API_BASE}/events/${eventId}/collaborators`);
+    const res = await fetch(`${API_BASE}/events/${eventId}/collaborators`, {
+      headers: getAuthHeaders(),
+    });
     if (!res.ok) throw new Error('Failed to fetch collaborators');
     const data = await res.json();
     return data.collaborators || [];
@@ -296,7 +329,7 @@ export const api = {
   async addCollaborator(eventId: string, email: string, role: string, name?: string): Promise<Collaborator> {
     const res = await fetch(`${API_BASE}/events/${eventId}/collaborators`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ email, role, name }),
     });
     if (!res.ok) {
@@ -309,13 +342,16 @@ export const api = {
   async removeCollaborator(eventId: string, collaboratorId: string): Promise<void> {
     const res = await fetch(`${API_BASE}/events/${eventId}/collaborators/${collaboratorId}`, {
       method: 'DELETE',
+      headers: getAuthHeaders(),
     });
     if (!res.ok) throw new Error('Failed to remove collaborator');
   },
 
   // Privacy & GDPR
   async exportUserData(): Promise<void> {
-    const res = await fetch(`${API_BASE}/user/data-export`);
+    const res = await fetch(`${API_BASE}/user/data-export`, {
+      headers: getAuthHeaders(),
+    });
     if (!res.ok) throw new Error('Failed to export user data');
     const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);

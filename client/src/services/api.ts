@@ -216,7 +216,7 @@ export const api = {
     data: {
       newTargetBudget: number;
       acceptedProposalIds: string[];
-      proposals: any[];
+      proposals: BudgetRescueResponse['proposals'];
     }
   ): Promise<{ success: boolean; event: EventFullDetail }> {
     const res = await fetch(`${API_BASE}/events/${eventId}/budget-rescue/apply`, {
@@ -245,7 +245,7 @@ export const api = {
 
   async applyAssistantChanges(
     eventId: string,
-    proposedChanges: any,
+    proposedChanges: AIAssistantAction['proposedChanges'],
     revisionNote?: string
   ): Promise<{ success: boolean; event: EventFullDetail }> {
     const res = await fetch(`${API_BASE}/events/${eventId}/assistant/apply`, {

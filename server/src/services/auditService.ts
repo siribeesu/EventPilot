@@ -14,7 +14,7 @@ export async function logAuditEvent(
 ): Promise<AuditLog> {
   const actorId = req.user?.id || req.userId || 'usr_demo_123';
   const actorEmail = req.user?.email || req.userEmail || 'planner@eventpilot.ai';
-  const requestId = (req as any).requestId;
+  const requestId = req.requestId;
   const ipAddress = req.ip || req.socket.remoteAddress || '127.0.0.1';
   const userAgent = req.headers['user-agent'] || 'unknown';
 

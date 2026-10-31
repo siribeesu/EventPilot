@@ -21,7 +21,7 @@ export interface BackgroundJob<T = any, R = any> {
 
 export class TaskQueueService {
   private jobs = new Map<string, BackgroundJob>();
-  private handlers = new Map<JobType, (payload: any) => Promise<any>>();
+  private handlers = new Map<JobType, (payload: unknown) => Promise<unknown>>();
   private isProcessing = false;
 
   constructor() {
@@ -30,7 +30,7 @@ export class TaskQueueService {
   }
 
   registerHandler<T, R>(type: JobType, handler: (payload: T) => Promise<R>): void {
-    this.handlers.set(type, handler);
+    this.handlers.set(type, handler as (payload: unknown) => Promise<unknown>);
   }
 
   enqueue<T>(type: JobType, payload: T, maxRetries = 2): BackgroundJob<T> {

@@ -94,13 +94,33 @@ export interface EventIdea {
   created_at: string;
 }
 
+export interface AppliedChangeRecord {
+  action?: 'reduced' | 'removed' | 'reallocated' | 'added' | 'updated';
+  recommendedAction?: 'reduce' | 'remove' | 'reallocate' | 'keep' | 'substitute' | 'eliminate';
+  id?: string;
+  itemId?: string;
+  item_id?: string;
+  category?: string;
+  name?: string;
+  currentEstimatedCost?: number;
+  proposedEstimatedCost?: number;
+  savings?: number;
+  explanation?: string;
+  tradeOffOrAlternative?: string;
+  amount_change?: number;
+  previous_amount?: number;
+  new_amount?: number;
+  description?: string;
+  [key: string]: unknown;
+}
+
 export interface PlanRevision {
   id: string;
   event_id: string;
   revision_note: string;
   previous_budget: number;
   new_budget: number;
-  changes_applied: any[];
+  changes_applied: AppliedChangeRecord[];
   created_at: string;
 }
 

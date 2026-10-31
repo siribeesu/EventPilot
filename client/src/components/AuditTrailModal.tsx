@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, Clock, FileText, CheckCircle2, X, RefreshCw, Loader2 } from 'lucide-react';
 import { api } from '../services/api';
+import { AuditLog } from '../types';
 
 interface AuditTrailModalProps {
   eventId: string;
@@ -9,7 +10,7 @@ interface AuditTrailModalProps {
 }
 
 export const AuditTrailModal: React.FC<AuditTrailModalProps> = ({ eventId, isOpen, onClose }) => {
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchLogs = async () => {
@@ -92,7 +93,7 @@ export const AuditTrailModal: React.FC<AuditTrailModalProps> = ({ eventId, isOpe
             </div>
           ) : (
             <div className="divide-y divide-slate-800/80 max-h-80 overflow-y-auto pr-1 space-y-1">
-              {logs.map((log: any) => (
+              {logs.map((log: AuditLog) => (
                 <div key={log.id} className="py-3 px-2 flex flex-col gap-1 text-xs hover:bg-slate-800/30 rounded-lg transition">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">

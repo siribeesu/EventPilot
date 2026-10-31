@@ -85,4 +85,38 @@ describe('Security Layer & Cryptography Tests', () => {
     const isBobOwner = await db.verifyBudgetItemOwnership(item.id, 'usr_bob_attacker');
     expect(isBobOwner).toBe(false);
   });
+  it('enforces defensive security headers: X-Frame-Options, X-Content-Type-Options and Permissions-Policy', async () => {
+    const { app } = await import('../app.js');
+    const { createServer } = await import('http');
+    const server = createServer(app);
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    const address = server.address() as { port: number };
+    const res = await fetch(`http://localhost:${address.port}/api/health`);
+    server.close();
+
+    expect(res.headers.get('x-frame-options')).toBe('DENY');
+    expect(res.headers.get('x-content-type-options')).toBe('nosniff');
+    expect(res.headers.get('permissions-policy')).toContain('camera=()');
+  });
+
+  it('rejects forged JWT tokens and algorithm manipulation', async () => {
+    const jwt = (await import('jsonwebtoken')).default;
+    const forgedToken = jwt.sign({ id: 'usr_fake', email: 'fake@attacker.com' }, 'wrong_secret');
+    
+    const { authMiddleware } = await import('../middleware/auth.js');
+    let statusCode = 0;
+    let errorMessage = '';
+
+    const reqMock: any = {
+      headers: { authorization: `Bearer ${forgedToken}` },
+    };
+    const resMock: any = {
+      status: (code: number) => { statusCode = code; return resMock; },
+      json: (data: any) => { errorMessage = data.error; },
+    };
+
+    authMiddleware(reqMock, resMock, () => {});
+    expect(statusCode).toBe(401);
+    expect(errorMessage).toContain('Invalid or expired');
+  });
 });

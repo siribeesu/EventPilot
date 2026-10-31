@@ -166,31 +166,37 @@ export const Navbar: React.FC<NavbarProps> = ({
         <button
           type="button"
           onClick={() => onNavigate('landing')}
-          className={`flex flex-col items-center py-1 px-3 rounded-lg text-[10px] font-semibold transition ${
+          aria-label="Navigate to Product Tour"
+          aria-current={currentView === 'landing' ? 'page' : undefined}
+          className={`flex flex-col items-center py-1 px-3 rounded-lg text-[10px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
             currentView === 'landing' ? 'text-indigo-600 font-bold' : 'text-slate-500'
           }`}
         >
-          <Compass className="w-4 h-4 mb-0.5" />
+          <Compass className="w-4 h-4 mb-0.5" aria-hidden="true" />
           <span>Tour</span>
         </button>
         <button
           type="button"
           onClick={() => onNavigate('dashboard')}
-          className={`flex flex-col items-center py-1 px-3 rounded-lg text-[10px] font-semibold transition ${
+          aria-label="Navigate to My Events Dashboard"
+          aria-current={currentView === 'dashboard' || currentView === 'event' ? 'page' : undefined}
+          className={`flex flex-col items-center py-1 px-3 rounded-lg text-[10px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
             currentView === 'dashboard' || currentView === 'event' ? 'text-indigo-600 font-bold' : 'text-slate-500'
           }`}
         >
-          <LayoutDashboard className="w-4 h-4 mb-0.5" />
+          <LayoutDashboard className="w-4 h-4 mb-0.5" aria-hidden="true" />
           <span>Events</span>
         </button>
         <button
           type="button"
           onClick={() => onNavigate('wizard')}
-          className={`flex flex-col items-center py-1 px-3 rounded-lg text-[10px] font-semibold transition ${
+          aria-label="Navigate to Create Event Wizard"
+          aria-current={currentView === 'wizard' ? 'page' : undefined}
+          className={`flex flex-col items-center py-1 px-3 rounded-lg text-[10px] font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
             currentView === 'wizard' ? 'text-indigo-600 font-bold' : 'text-slate-500'
           }`}
         >
-          <Plus className="w-4 h-4 mb-0.5 text-indigo-600" />
+          <Plus className="w-4 h-4 mb-0.5 text-indigo-600" aria-hidden="true" />
           <span>Create</span>
         </button>
       </nav>

@@ -81,7 +81,7 @@ describe('RBAC & Team Collaboration Suite', () => {
     });
 
     expect(res.status).toBe(200);
-    const body: any = await res.json();
+    const body = (await res.json()) as Record<string, any>;
     expect(body.collaborators).toBeDefined();
     expect(body.collaborators.length).toBe(2);
   });
@@ -103,7 +103,7 @@ describe('RBAC & Team Collaboration Suite', () => {
       body: JSON.stringify({ email: 'newbie@eventpilot.ai', role: 'viewer' }),
     });
     expect(writeRes.status).toBe(403);
-    const writeBody: any = await writeRes.json();
+    const writeBody = (await writeRes.json()) as Record<string, any>;
     expect(writeBody.code).toBe('INSUFFICIENT_ROLE');
   });
 
@@ -113,7 +113,7 @@ describe('RBAC & Team Collaboration Suite', () => {
     });
 
     expect(res.status).toBe(403);
-    const body: any = await res.json();
+    const body = (await res.json()) as Record<string, any>;
     expect(body.code).toBe('FORBIDDEN_EVENT_ACCESS');
   });
 
@@ -128,7 +128,7 @@ describe('RBAC & Team Collaboration Suite', () => {
     });
 
     expect(res.status).toBe(201);
-    const body: any = await res.json();
+    const body = (await res.json()) as Record<string, any>;
     expect(body.collaborator.role).toBe('editor');
     expect(body.collaborator.user_email).toBe('coordinator@eventpilot.ai');
   });
@@ -144,7 +144,7 @@ describe('RBAC & Team Collaboration Suite', () => {
     });
 
     expect(deleteRes.status).toBe(200);
-    const body: any = await deleteRes.json();
+    const body = (await deleteRes.json()) as Record<string, any>;
     expect(body.success).toBe(true);
 
     const remaining = await db.getCollaborators(testEventId);

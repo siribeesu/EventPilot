@@ -1,9 +1,13 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { RequestWithId } from './requestId.js';
+import { CollaboratorRole } from '../types/index.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'eventpilot_secret_jwt_key_2026';
+const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production'
+  ? (() => { throw new Error('JWT_SECRET must be securely set in production environment'); })()
+  : 'eventpilot_secret_jwt_key_2026');
 
-export interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest extends RequestWithId {
   userId?: string;
   userEmail?: string;
   user?: {
@@ -11,6 +15,7 @@ export interface AuthenticatedRequest extends Request {
     email: string;
     name?: string;
   };
+  eventRole?: CollaboratorRole;
 }
 
 export function authMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction) {

@@ -106,4 +106,31 @@ describe('Accessibility (A11y) & WCAG 2.1 AA Compliance Suite', () => {
     expect(cssContent).toBeDefined();
     expect(cssContent.length).toBeGreaterThan(10);
   });
+  it('6. Verifies mobile navigation buttons include explicit aria-label and aria-current attributes', () => {
+    const navPath = path.resolve(process.cwd(), '../client/src/components/Navbar.tsx');
+    const fallbackPath = path.resolve(process.cwd(), 'client/src/components/Navbar.tsx');
+    const finalPath = fs.existsSync(navPath) ? navPath : fallbackPath;
+
+    expect(fs.existsSync(finalPath)).toBe(true);
+    const navContent = fs.readFileSync(finalPath, 'utf-8');
+
+    expect(navContent).toContain('aria-label="Navigate to Product Tour"');
+    expect(navContent).toContain('aria-label="Navigate to My Events Dashboard"');
+    expect(navContent).toContain('aria-label="Navigate to Create Event Wizard"');
+    expect(navContent).toContain('aria-current');
+  });
+
+  it('7. Verifies modal dialogs implement ARIA dialog semantics and focus visible rings', () => {
+    const drawerPath = path.resolve(process.cwd(), '../client/src/components/AIAssistantDrawer.tsx');
+    const fallbackPath = path.resolve(process.cwd(), 'client/src/components/AIAssistantDrawer.tsx');
+    const finalPath = fs.existsSync(drawerPath) ? drawerPath : fallbackPath;
+
+    expect(fs.existsSync(finalPath)).toBe(true);
+    const drawerContent = fs.readFileSync(finalPath, 'utf-8');
+
+    expect(drawerContent).toContain('role="dialog"');
+    expect(drawerContent).toContain('aria-modal="true"');
+    expect(drawerContent).toContain('aria-labelledby="assistant-drawer-title"');
+    expect(drawerContent).toContain('focus-visible:ring-2');
+  });
 });

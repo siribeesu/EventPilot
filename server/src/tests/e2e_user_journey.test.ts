@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { db } from '../database/db.js';
+import { EventRecord } from '../types/index.js';
 import { generateDeterministicPlan, calculateBudgetRescue, processAssistantMessage } from '../ai/planner.js';
 import { taskQueue } from '../services/taskQueue.js';
 
@@ -233,7 +234,7 @@ describe('EventPilot Real End-to-End User Journey Tests', () => {
     expect(event).toBeDefined();
 
     // Register job handler for testing
-    taskQueue.registerHandler('ai_plan_generation', async (payload: { event: any }) => {
+    taskQueue.registerHandler('ai_plan_generation', async (payload: { event: EventRecord }) => {
       return generateDeterministicPlan(payload.event);
     });
 

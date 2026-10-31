@@ -668,7 +668,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
                     <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} />
                     <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} />
                     <Tooltip
-                      formatter={(val: any) => [`${currency} ${Number(val).toLocaleString()}`, 'Estimated']}
+                      formatter={(val) => [`${currency} ${Number(val || 0).toLocaleString()}`, 'Estimated']}
                       contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '12px' }}
                     />
                     <Bar dataKey="amount" fill="#6366f1" radius={[6, 6, 0, 0]} />

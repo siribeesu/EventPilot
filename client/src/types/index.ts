@@ -86,13 +86,33 @@ export interface EventIdea {
   created_at: string;
 }
 
+export interface AppliedChangeRecord {
+  action?: 'reduced' | 'removed' | 'reallocated' | 'added' | 'updated';
+  recommendedAction?: 'reduce' | 'remove' | 'reallocate' | 'keep' | 'substitute' | 'eliminate';
+  id?: string;
+  itemId?: string;
+  item_id?: string;
+  category?: string;
+  name?: string;
+  currentEstimatedCost?: number;
+  proposedEstimatedCost?: number;
+  savings?: number;
+  explanation?: string;
+  tradeOffOrAlternative?: string;
+  amount_change?: number;
+  previous_amount?: number;
+  new_amount?: number;
+  description?: string;
+  [key: string]: unknown;
+}
+
 export interface PlanRevision {
   id: string;
   event_id: string;
   revision_note: string;
   previous_budget: number;
   new_budget: number;
-  changes_applied: any[];
+  changes_applied: AppliedChangeRecord[];
   created_at: string;
 }
 
@@ -191,3 +211,17 @@ export const getCurrencySymbol = (currency?: string): string => {
   if (c === 'GBP') return '\u00A3';
   return currency;
 };
+
+export interface AuditLog {
+  id: string;
+  timestamp: string;
+  request_id?: string;
+  actor_id: string;
+  actor_email?: string;
+  action: string;
+  resource_type: 'event' | 'budget_item' | 'task' | 'vendor' | 'collaborator' | 'user' | 'ai';
+  resource_id?: string;
+  status: 'success' | 'denied' | 'failed';
+  ip_address?: string;
+  metadata?: Record<string, unknown>;
+}

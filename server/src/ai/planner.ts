@@ -474,7 +474,7 @@ Important Rules:
       if (!response.ok) {
         throw new Error(`Gemini API error: ${response.status} ${response.statusText}`);
       }
-      const data: any = await response.json();
+      const data = (await response.json()) as { candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> };
       rawContent = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     } else if (openaiKey) {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -496,7 +496,7 @@ Important Rules:
       if (!response.ok) {
         throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
       }
-      const data: any = await response.json();
+      const data = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> };
       rawContent = data.choices?.[0]?.message?.content || '';
     }
 

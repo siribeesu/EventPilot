@@ -305,7 +305,7 @@ class StorageManager {
       const keys = Object.keys(updates).filter(k => k !== 'id' && k !== 'user_id' && k !== 'created_at');
       if (keys.length === 0) return existing;
       const setClauses = keys.map((k, i) => `${k} = $${i + 3}`).join(', ');
-      const values = keys.map(k => (updates as any)[k]);
+      const values = keys.map(k => (updates as Record<string, unknown>)[k]);
       const res = await this.pool.query(
         `UPDATE events SET ${setClauses}, updated_at = $2 WHERE id = $1 AND user_id = $${keys.length + 3} RETURNING *`,
         [id, now, ...values, userId]
@@ -423,7 +423,7 @@ class StorageManager {
     if (this.isPostgres && this.pool) {
       const keys = Object.keys(updates).filter(k => k !== 'id' && k !== 'event_id');
       const setClauses = keys.map((k, i) => `${k} = $${i + 2}`).join(', ');
-      const values = keys.map(k => (updates as any)[k]);
+      const values = keys.map(k => (updates as Record<string, unknown>)[k]);
       const res = await this.pool.query(
         `UPDATE budget_items SET ${setClauses}, updated_at = '${now}' WHERE id = $1 RETURNING *`,
         [id, ...values]
@@ -512,7 +512,7 @@ class StorageManager {
     if (this.isPostgres && this.pool) {
       const keys = Object.keys(updates).filter(k => k !== 'id' && k !== 'event_id');
       const setClauses = keys.map((k, i) => `${k} = $${i + 2}`).join(', ');
-      const values = keys.map(k => (updates as any)[k]);
+      const values = keys.map(k => (updates as Record<string, unknown>)[k]);
       const res = await this.pool.query(
         `UPDATE tasks SET ${setClauses}, updated_at = '${now}' WHERE id = $1 RETURNING *`,
         [id, ...values]
@@ -601,7 +601,7 @@ class StorageManager {
     if (this.isPostgres && this.pool) {
       const keys = Object.keys(updates).filter(k => k !== 'id' && k !== 'event_id');
       const setClauses = keys.map((k, i) => `${k} = $${i + 2}`).join(', ');
-      const values = keys.map(k => (updates as any)[k]);
+      const values = keys.map(k => (updates as Record<string, unknown>)[k]);
       const res = await this.pool.query(
         `UPDATE vendors SET ${setClauses}, updated_at = '${now}' WHERE id = $1 RETURNING *`,
         [id, ...values]

@@ -29,7 +29,7 @@ export function requireEventRole(minimumRole: CollaboratorRole) {
     if (!role) {
       // User is neither owner nor collaborator
       await db.createAuditLog({
-        request_id: (req as any).requestId,
+        request_id: req.requestId,
         actor_id: userId,
         actor_email: req.user?.email,
         action: 'ACCESS_DENIED',
@@ -53,7 +53,7 @@ export function requireEventRole(minimumRole: CollaboratorRole) {
 
     if (userWeight < requiredWeight) {
       await db.createAuditLog({
-        request_id: (req as any).requestId,
+        request_id: req.requestId,
         actor_id: userId,
         actor_email: req.user?.email,
         action: 'INSUFFICIENT_PRIVILEGES',
@@ -73,7 +73,7 @@ export function requireEventRole(minimumRole: CollaboratorRole) {
     }
 
     // Attach role to request context for downstream handlers
-    (req as any).eventRole = role;
+    req.eventRole = role;
     next();
   };
 }

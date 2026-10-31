@@ -1,3 +1,4 @@
+import { sanitizeObject } from '../utils/sanitize.js';
 ﻿import { describe, it, expect } from 'vitest';
 import { memoryCache } from '../utils/cache.js';
 import {
@@ -70,5 +71,33 @@ describe('Efficiency, Caching & Validation Tests', () => {
       priority: 'invalid-priority',
     };
     expect(CreateTaskSchema.safeParse(invalidTask).success).toBe(false);
+  });
+  it('handles deep recursive sanitization across multi-dimensional arrays without type mutation', () => {
+    const payload = {
+      matrix: [
+        ['<script>alert(1)</script>Clean', '<b>Bold</b>'],
+        [{ inner: '  <iframe src=evil.com></iframe>Safe  ' }]
+      ],
+      numeric: 12345,
+      flag: true
+    };
+    const sanitized = sanitizeObject(payload);
+    expect(sanitized.matrix[0][0]).toBe('Clean');
+    expect(sanitized.matrix[0][1]).toBe('Bold');
+    expect((sanitized.matrix[1][0] as any).inner).toBe('Safe');
+    expect(sanitized.numeric).toBe(12345);
+    expect(sanitized.flag).toBe(true);
+  });
+
+  it('validates budget items reject non-numeric values and zero/negative costs correctly', () => {
+    const invalidItem = {
+      event_id: 'a1b2c3d4-e5f6-4a1b-8c2d-3e4f5a6b7c8d',
+      category: 'Catering',
+      name: 'Buffet',
+      estimated_cost: -500,
+      actual_cost: 0,
+      paid_amount: 0,
+    };
+    expect(() => CreateBudgetItemSchema.parse(invalidItem)).toThrow();
   });
 });

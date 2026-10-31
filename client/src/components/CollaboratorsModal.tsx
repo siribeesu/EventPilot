@@ -1,7 +1,7 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Users, UserPlus, Trash2, Shield, X, Check, Loader2 } from 'lucide-react';
 import { api } from '../services/api';
-import { Collaborator } from '../types';
+import { Collaborator, CollaboratorRole } from '../types';
 
 interface CollaboratorsModalProps {
   eventId: string;
@@ -54,8 +54,8 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
       setEmail('');
       setName('');
       loadCollaborators();
-    } catch (err: any) {
-      setMessage({ text: err.message || 'Failed to add collaborator', type: 'error' });
+    } catch (err) {
+      setMessage({ text: (err as Error).message || 'Failed to add collaborator', type: 'error' });
     } finally {
       setSubmitting(false);
     }
@@ -65,8 +65,8 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
     try {
       await api.removeCollaborator(eventId, collabId);
       setCollaborators(prev => prev.filter(c => c.id !== collabId));
-    } catch (err: any) {
-      setMessage({ text: err.message || 'Failed to remove', type: 'error' });
+    } catch (err) {
+      setMessage({ text: (err as Error).message || 'Failed to remove', type: 'error' });
     }
   };
 
@@ -139,7 +139,7 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
                 <label className="text-xs text-slate-400">Access Role:</label>
                 <select
                   value={role}
-                  onChange={e => setRole(e.target.value as any)}
+                  onChange={e => setRole(e.target.value as 'editor' | 'viewer')}
                   className="px-2.5 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                 >
                   <option value="editor">Editor (Can edit budget & tasks)</option>

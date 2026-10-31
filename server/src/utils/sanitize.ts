@@ -15,10 +15,13 @@ export function sanitizeString(input: unknown): string {
     .trim();
 }
 
-export function sanitizeObject<T extends Record<string, any>>(obj: T): T {
+export function sanitizeObject<T>(obj: T): T {
   if (!obj || typeof obj !== 'object') return obj;
-  const sanitized: any = Array.isArray(obj) ? [] : {};
-  for (const [key, value] of Object.entries(obj)) {
+  if (Array.isArray(obj)) {
+    return obj.map(item => (typeof item === 'object' && item !== null ? sanitizeObject(item) : typeof item === 'string' ? sanitizeString(item) : item)) as unknown as T;
+  }
+  const sanitized: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
     if (typeof value === 'string') {
       sanitized[key] = sanitizeString(value);
     } else if (typeof value === 'object' && value !== null) {
@@ -27,5 +30,5 @@ export function sanitizeObject<T extends Record<string, any>>(obj: T): T {
       sanitized[key] = value;
     }
   }
-  return sanitized;
+  return sanitized as T;
 }

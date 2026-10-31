@@ -2,6 +2,10 @@
 import autoTable from 'jspdf-autotable';
 import { EventFullDetail } from '../types';
 
+interface AutoTableDoc extends jsPDF {
+  lastAutoTable?: { finalY: number };
+}
+
 export function exportEventToPDF(event: EventFullDetail) {
   const doc = new jsPDF({
     orientation: 'portrait',
@@ -110,7 +114,7 @@ export function exportEventToPDF(event: EventFullDetail) {
   });
 
   // 4. Timeline & Tasks Table
-  const finalY1 = (doc as any).lastAutoTable.finalY + 10;
+  const finalY1 = ((doc as AutoTableDoc).lastAutoTable?.finalY ?? 30) + 10;
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(30, 41, 59);
@@ -142,7 +146,7 @@ export function exportEventToPDF(event: EventFullDetail) {
 
   // 5. Vendor Checklist Table
   if (event.vendors && event.vendors.length > 0) {
-    const finalY2 = (doc as any).lastAutoTable.finalY + 10;
+    const finalY2 = ((doc as AutoTableDoc).lastAutoTable?.finalY ?? 30) + 10;
     if (finalY2 > 240) {
       doc.addPage();
     }
@@ -180,7 +184,7 @@ export function exportEventToPDF(event: EventFullDetail) {
 
   // 6. Themes & Recommendations on new page if needed
   if (event.ideas && event.ideas.length > 0) {
-    const finalY3 = (doc as any).lastAutoTable.finalY + 10;
+    const finalY3 = ((doc as AutoTableDoc).lastAutoTable?.finalY ?? 30) + 10;
     let currentY3 = finalY3;
     if (finalY3 > 220) {
       doc.addPage();

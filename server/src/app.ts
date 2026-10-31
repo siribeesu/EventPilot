@@ -44,8 +44,15 @@ app.use(
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", 'data:', 'https:'],
         connectSrc: ["'self'", 'https:', 'http://localhost:5000', 'http://localhost:5173', 'http://127.0.0.1:5173'],
+        frameAncestors: ["'none'"],
+        formAction: ["'self'"],
+        upgradeInsecureRequests: [],
       },
     },
+    frameguard: { action: 'deny' },
+    noSniff: true,
+    xssFilter: true,
+    originAgentCluster: true,
     hsts: {
       maxAge: 31536000,
       includeSubDomains: true,
@@ -56,9 +63,12 @@ app.use(
   })
 );
 
-// Permissions-Policy Header for device-level feature lockdowns
+// Advanced Defensive Headers: Device lockdowns & Anti-Clickjacking
 app.use((req, res, next) => {
-  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), vr=()');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
   next();
 });
 
@@ -96,7 +106,7 @@ app.use(
 // 5. Body parser with Vercel serverless pre-parsed body handling & strict size limits
 app.use((req, res, next) => {
   if (req.body !== undefined && req.body !== null && typeof req.body === 'object') {
-    (req as any)._body = true;
+    (req as express.Request & { _body?: boolean })._body = true;
   }
   next();
 });
@@ -178,10 +188,16 @@ apiRouter.use('/', authMiddleware, vendorsRouter);
 app.use('/api', apiRouter);
 app.use('/', apiRouter);
 
+export interface AppHttpError extends Error {
+  status?: number;
+  statusCode?: number;
+  code?: string;
+}
+
 // Global Error Handler with code quality standard format
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: AppHttpError, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Server Unhandled Error:', err);
-  const status = err.status || 500;
+  const status = err.status || err.statusCode || 500;
   res.status(status).json({
     error: err.message || 'Internal Server Error',
     code: err.code || 'INTERNAL_SERVER_ERROR',

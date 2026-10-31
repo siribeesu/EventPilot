@@ -1,3 +1,4 @@
+import { EventRecord, AppliedChangeRecord } from '../types/index.js';
 import { Router } from 'express';
 import { db } from '../database/db.js';
 import { AuthenticatedRequest } from '../middleware/auth.js';
@@ -20,7 +21,7 @@ import { taskQueue } from '../services/taskQueue.js';
 const router = Router();
 
 // Register async AI plan generation worker
-taskQueue.registerHandler('ai_plan_generation', async (payload: { event: any }) => {
+taskQueue.registerHandler('ai_plan_generation', async (payload: { event: EventRecord }) => {
   return await generateAIEventPlan(payload.event);
 });
 
@@ -413,7 +414,7 @@ router.post('/:id/budget-rescue/apply', validateIdParam('id'), async (req: Authe
     }
 
     const budgetItems = await db.getBudgetItems(event.id);
-    const changesApplied: any[] = [];
+    const changesApplied: AppliedChangeRecord[] = [];
 
     for (const p of proposals || []) {
       if (acceptedProposalIds.includes(p.id)) {
@@ -443,7 +444,7 @@ router.post('/:id/budget-rescue/apply', validateIdParam('id'), async (req: Authe
 
     await db.createRevision({
       event_id: event.id,
-      revision_note: `Budget Rescue applied: ${changesApplied.length} optimizations accepted. Total savings: ${changesApplied.reduce((a, b) => a + b.savings, 0)}`,
+      revision_note: `Budget Rescue applied: ${changesApplied.length} optimizations accepted. Total savings: ${changesApplied.reduce((a, b) => a + (Number(b.savings) || 0), 0)}`,
       previous_budget: Number(event.budget),
       new_budget: Number(newTargetBudget || event.budget),
       changes_applied: changesApplied,
@@ -490,7 +491,7 @@ router.post('/:id/assistant/apply', validateIdParam('id'), async (req: Authentic
     if (!event) return res.status(404).json({ error: 'Event not found' });
 
     const { proposedChanges, revisionNote } = req.body;
-    const changesApplied: any[] = [];
+    const changesApplied: AppliedChangeRecord[] = [];
 
     if (proposedChanges) {
       if (proposedChanges.budgetAdjustments && Array.isArray(proposedChanges.budgetAdjustments)) {

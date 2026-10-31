@@ -72,72 +72,92 @@ export function inspectPromptSafety(input: string): PromptInspectionResult {
  * Ensures AI responses conform strictly to schema and bounds
  */
 export function validateAndSanitizeAIPlan(
-  rawPlan: any,
+  rawPlanInput: unknown,
   eventBudget: number
 ): { valid: boolean; plan?: AIGeneratedPlan; error?: string } {
   try {
-    if (!rawPlan || typeof rawPlan !== 'object') {
+    if (!rawPlanInput || typeof rawPlanInput !== 'object' || Array.isArray(rawPlanInput)) {
       return { valid: false, error: 'AI output must be a valid JSON object' };
     }
 
+    const rawPlan = { ...(rawPlanInput as Record<string, unknown>) };
+
     // Pre-sanitize text fields to eliminate script injection
-    const cleanText = (s: any) => (typeof s === 'string' ? s.replace(/<[^>]*>?/gm, '').trim() : '');
+    const cleanText = (s: unknown) => (typeof s === 'string' ? s.replace(/<[^>]*>?/gm, '').trim() : '');
     if (typeof rawPlan.eventSummary === 'string') {
       rawPlan.eventSummary = cleanText(rawPlan.eventSummary);
     }
 
     // Clamp budget items to realistic bounds
     if (Array.isArray(rawPlan.budget)) {
-      rawPlan.budget = rawPlan.budget.map((b: any) => ({
-        ...b,
-        name: cleanText(b.name),
-        reason: cleanText(b.reason),
-        estimatedCost: Math.min(Math.max(0, Number(b.estimatedCost) || 0), eventBudget),
-      }));
+      rawPlan.budget = rawPlan.budget.map((b: unknown) => {
+        const item = (typeof b === 'object' && b !== null ? b : {}) as Record<string, unknown>;
+        return {
+          ...item,
+          name: cleanText(item.name),
+          reason: cleanText(item.reason),
+          estimatedCost: Math.min(Math.max(0, Number(item.estimatedCost) || 0), eventBudget),
+        };
+      });
     }
 
     if (Array.isArray(rawPlan.themes)) {
-      rawPlan.themes = rawPlan.themes.map((t: any) => ({
-        ...t,
-        name: cleanText(t.name),
-        description: cleanText(t.description),
-        estimatedCost: Math.max(0, Number(t.estimatedCost) || 0),
-      }));
+      rawPlan.themes = rawPlan.themes.map((t: unknown) => {
+        const item = (typeof t === 'object' && t !== null ? t : {}) as Record<string, unknown>;
+        return {
+          ...item,
+          name: cleanText(item.name),
+          description: cleanText(item.description),
+          estimatedCost: Math.max(0, Number(item.estimatedCost) || 0),
+        };
+      });
     }
 
     if (Array.isArray(rawPlan.decorations)) {
-      rawPlan.decorations = rawPlan.decorations.map((d: any) => ({
-        ...d,
-        title: cleanText(d.title),
-        description: cleanText(d.description),
-        estimatedCost: Math.max(0, Number(d.estimatedCost) || 0),
-      }));
+      rawPlan.decorations = rawPlan.decorations.map((d: unknown) => {
+        const item = (typeof d === 'object' && d !== null ? d : {}) as Record<string, unknown>;
+        return {
+          ...item,
+          title: cleanText(item.title),
+          description: cleanText(item.description),
+          estimatedCost: Math.max(0, Number(item.estimatedCost) || 0),
+        };
+      });
     }
 
     if (Array.isArray(rawPlan.menus)) {
-      rawPlan.menus = rawPlan.menus.map((m: any) => ({
-        ...m,
-        title: cleanText(m.title),
-        description: cleanText(m.description),
-        estimatedCost: Math.max(0, Number(m.estimatedCost) || 0),
-      }));
+      rawPlan.menus = rawPlan.menus.map((m: unknown) => {
+        const item = (typeof m === 'object' && m !== null ? m : {}) as Record<string, unknown>;
+        return {
+          ...item,
+          title: cleanText(item.title),
+          description: cleanText(item.description),
+          estimatedCost: Math.max(0, Number(item.estimatedCost) || 0),
+        };
+      });
     }
 
     if (Array.isArray(rawPlan.activities)) {
-      rawPlan.activities = rawPlan.activities.map((a: any) => ({
-        ...a,
-        title: cleanText(a.title),
-        description: cleanText(a.description),
-        estimatedCost: Math.max(0, Number(a.estimatedCost) || 0),
-      }));
+      rawPlan.activities = rawPlan.activities.map((a: unknown) => {
+        const item = (typeof a === 'object' && a !== null ? a : {}) as Record<string, unknown>;
+        return {
+          ...item,
+          title: cleanText(item.title),
+          description: cleanText(item.description),
+          estimatedCost: Math.max(0, Number(item.estimatedCost) || 0),
+        };
+      });
     }
 
     if (Array.isArray(rawPlan.timeline)) {
-      rawPlan.timeline = rawPlan.timeline.map((t: any) => ({
-        ...t,
-        task: cleanText(t.task),
-        daysBeforeEvent: Math.max(0, Math.floor(Number(t.daysBeforeEvent) || 0)),
-      }));
+      rawPlan.timeline = rawPlan.timeline.map((t: unknown) => {
+        const item = (typeof t === 'object' && t !== null ? t : {}) as Record<string, unknown>;
+        return {
+          ...item,
+          task: cleanText(item.task),
+          daysBeforeEvent: Math.max(0, Math.floor(Number(item.daysBeforeEvent) || 0)),
+        };
+      });
     }
 
     const parsed = AIGeneratedPlanSchema.parse(rawPlan);

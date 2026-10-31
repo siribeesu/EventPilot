@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { Activity, ShieldCheck, X, Zap, Loader2 } from 'lucide-react';
 import { api } from '../services/api';
@@ -14,7 +15,7 @@ export const SystemHealthPill: React.FC = () => {
       const data = await api.getMetrics();
       setMetrics(data);
     } catch (err) {
-      console.warn('Could not load telemetry metrics');
+      logger.warn('Could not load telemetry metrics');
     } finally {
       setLoading(false);
     }

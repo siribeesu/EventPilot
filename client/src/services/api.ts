@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import {
   EventRecord,
   EventFullDetail,
@@ -17,7 +18,7 @@ function getLocalEvents(): Record<string, EventFullDetail> {
   try {
     const raw = localStorage.getItem('eventpilot_events_cache');
     return raw ? JSON.parse(raw) : {};
-  } catch (readErr) { console.debug('Cache read fallback', readErr); return {}; }
+  } catch (readErr) { logger.debug('Cache read fallback', readErr); return {}; }
 }
 
 function saveLocalEvent(event: EventFullDetail) {
@@ -26,7 +27,7 @@ function saveLocalEvent(event: EventFullDetail) {
     const store = getLocalEvents();
     store[event.id] = event;
     localStorage.setItem('eventpilot_events_cache', JSON.stringify(store));
-  } catch (writeErr) { console.debug('Cache write skipped', writeErr); }
+  } catch (writeErr) { logger.debug('Cache write skipped', writeErr); }
 }
 
 async function handleResponse<T>(res: Response, fallbackError: string): Promise<T> {
@@ -57,7 +58,7 @@ export const api = {
       const serverEvents = await handleResponse<EventFullDetail[]>(res, 'Failed to fetch events');
       const localStore = getLocalEvents();
       serverEvents.forEach(e => { localStore[e.id] = e; });
-      try { localStorage.setItem('eventpilot_events_cache', JSON.stringify(localStore)); } catch (cacheErr) { console.debug('Cache write error', cacheErr); }
+      try { localStorage.setItem('eventpilot_events_cache', JSON.stringify(localStore)); } catch (cacheErr) { logger.debug('Cache write error', cacheErr); }
       return Object.values(localStore);
     } catch (err) {
       const local = Object.values(getLocalEvents());

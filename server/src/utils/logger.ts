@@ -9,29 +9,30 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 class Logger {
   private isTest = process.env.NODE_ENV === 'test';
 
-  private formatMessage(level: LogLevel, message: string, meta?: Record<string, unknown>): string {
+  private formatMessage(level: LogLevel, message: string, meta?: unknown): string {
     const timestamp = new Date().toISOString();
-    const metaStr = meta ? ` ${JSON.stringify(meta)}` : '';
+    const metaStr = meta ? ` ${typeof meta === 'object' ? JSON.stringify(meta) : String(meta)}` : '';
     return `[${timestamp}] [${level.toUpperCase()}] ${message}${metaStr}`;
   }
 
-  debug(message: string, meta?: Record<string, unknown>): void {
+  debug(message: string, meta?: unknown): void {
     if (this.isTest && !process.env.DEBUG) return;
     console.debug(this.formatMessage('debug', message, meta));
   }
 
-  info(message: string, meta?: Record<string, unknown>): void {
+  info(message: string, meta?: unknown): void {
     if (this.isTest && !process.env.DEBUG) return;
     console.info(this.formatMessage('info', message, meta));
   }
 
-  warn(message: string, meta?: Record<string, unknown>): void {
+  warn(message: string, meta?: unknown): void {
     console.warn(this.formatMessage('warn', message, meta));
   }
 
-  error(message: string, error?: unknown, meta?: Record<string, unknown>): void {
+  error(message: string, error?: unknown, meta?: unknown): void {
     const errObj = error instanceof Error ? { errorName: error.name, message: error.message, stack: error.stack } : { rawError: error };
-    console.error(this.formatMessage('error', message, { ...meta, ...errObj }));
+    const combined = typeof meta === 'object' && meta ? { ...meta, ...errObj } : { meta, ...errObj };
+    console.error(this.formatMessage('error', message, combined));
   }
 }
 

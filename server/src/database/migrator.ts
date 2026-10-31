@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -59,7 +60,7 @@ export class SchemaMigrator {
           await pool.query(sql);
           await pool.query('INSERT INTO schema_migrations (id, name) VALUES ($1, $2)', [id, file]);
           applied.push({ id, name: file, appliedAt: new Date().toISOString() });
-          console.log(`[Migrator] Applied migration: ${file}`);
+          logger.info(`[Migrator] Applied migration: ${file}`);
         }
       }
     } else {

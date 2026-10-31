@@ -74,7 +74,7 @@ class StorageManager {
         fs.mkdirSync(dataDir, { recursive: true });
       }
     } catch (e) {
-      console.warn('Storage directory warning (running with in-memory store):', (e as Error).message);
+      logger.warn('Storage directory warning (running with in-memory store):', (e as Error).message);
     }
 
     this.dataFilePath = path.join(dataDir, 'database.json');
@@ -95,7 +95,7 @@ class StorageManager {
         await this.initPostgresSchema();
         return;
       } catch (err) {
-        console.warn('⚠️ï¸ PostgreSQL connection failed, falling back to local persistent storage:', (err as Error).message);
+        logger.warn('⚠️ï¸ PostgreSQL connection failed, falling back to local persistent storage:', (err as Error).message);
         this.isPostgres = false;
       }
     }
@@ -167,7 +167,7 @@ class StorageManager {
         [defaultUser.id, defaultUser.email, defaultUser.name]
       );
     } catch (err) {
-      console.warn('Postgres schema verification completed with notice:', (err as Error).message);
+      logger.warn('Postgres schema verification completed with notice:', (err as Error).message);
     }
   }
 
@@ -176,7 +176,7 @@ class StorageManager {
       fs.writeFileSync(this.dataFilePath, JSON.stringify(this.memoryData, null, 2), 'utf-8');
     } catch (e) {
       // Graceful fallback for read-only serverless runtimes
-      console.warn('Persistence to filesystem deferred (in-memory state active):', (e as Error).message);
+      logger.warn('Persistence to filesystem deferred (in-memory state active):', (e as Error).message);
     }
   }
 
@@ -838,7 +838,7 @@ class StorageManager {
           [newLog.id, newLog.timestamp, newLog.request_id || null, newLog.actor_id, newLog.actor_email || null, newLog.action, newLog.resource_type, newLog.resource_id || null, newLog.status, newLog.ip_address || null, newLog.user_agent || null, JSON.stringify(newLog.metadata || {})]
         );
       } catch (e) {
-        console.warn('Audit log write to postgres skipped:', (e as Error).message);
+        logger.warn('Audit log write to postgres skipped:', (e as Error).message);
       }
     }
     if (!this.memoryData.audit_logs) this.memoryData.audit_logs = [];
@@ -951,7 +951,7 @@ class StorageManager {
         );
         return record;
       } catch (err) {
-        console.warn('Postgres saveAIFeedback error, falling back to memory:', err);
+        logger.warn('Postgres saveAIFeedback error, falling back to memory:', err);
       }
     }
     if (!this.memoryData.ai_feedback) {
@@ -972,7 +972,7 @@ class StorageManager {
         const res = await this.pool.query('SELECT * FROM ai_feedback ORDER BY created_at DESC LIMIT 100');
         return res.rows;
       } catch (err) {
-        console.warn('Postgres getAIFeedback error, falling back to memory:', err);
+        logger.warn('Postgres getAIFeedback error, falling back to memory:', err);
       }
     }
     const list = this.memoryData.ai_feedback || [];

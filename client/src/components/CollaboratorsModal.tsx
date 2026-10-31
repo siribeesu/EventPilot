@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { Users, UserPlus, Trash2, Shield, X, Check, Loader2 } from 'lucide-react';
 import { api } from '../services/api';
@@ -36,7 +37,7 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
       const data = await api.getCollaborators(eventId);
       setCollaborators(data);
     } catch (err) {
-      console.error(err);
+      logger.error(err);
     } finally {
       setLoading(false);
     }

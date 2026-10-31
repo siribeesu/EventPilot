@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger.js';
 import { EventRecord, AppliedChangeRecord } from '../types/index.js';
 import { Router } from 'express';
 import { db } from '../database/db.js';
@@ -173,7 +174,7 @@ router.post('/', validateBody(CreateEventSchema), async (req: AuthenticatedReque
       ];
       await db.createIdeasBatch(ideasToInsert);
     } catch (genErr) {
-      console.error('Plan generation background error:', genErr);
+      logger.error('Plan generation background error', genErr);
     }
 
     const fullEvent = await db.getFullEvent(newEvent.id, userId);

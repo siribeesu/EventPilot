@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Calendar,
@@ -44,7 +45,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       const data = await api.getEvents();
       setEvents(data);
     } catch (err) {
-      console.error('Failed to load events:', err);
+      logger.error('Failed to load events:', err);
     } finally {
       setLoading(false);
     }

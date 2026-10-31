@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { Shield, Clock, CheckCircle2, X, RefreshCw, Loader2 } from 'lucide-react';
 
@@ -22,7 +23,7 @@ export const AuditTrailModal: React.FC<AuditTrailModalProps> = ({ eventId, isOpe
         setLogs(data.logs || []);
       }
     } catch (err) {
-      console.warn('Could not fetch audit trail');
+      logger.warn('Could not fetch audit trail');
     } finally {
       setLoading(false);
     }

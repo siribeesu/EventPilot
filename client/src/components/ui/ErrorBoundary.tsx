@@ -1,3 +1,4 @@
+import { logger } from '../../utils/logger';
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 
@@ -21,7 +22,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error caught by EventPilot ErrorBoundary:', error, errorInfo);
+    logger.error('Uncaught error caught by EventPilot ErrorBoundary:', error, errorInfo);
   }
 
   private handleReload = () => {

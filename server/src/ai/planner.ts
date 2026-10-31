@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger.js';
 import {
   AIGeneratedPlan,
 
@@ -408,7 +409,7 @@ export async function generateAIEventPlan(event: EventRecord): Promise<AIGenerat
   const themeCheck = inspectPromptSafety(event.theme_preference || '');
   if (!reqCheck.isSafe || !themeCheck.isSafe) {
     aiCache.recordBlockedInjection();
-    console.warn('🛡️ Flagged potential prompt injection in event parameters; sanitizing before processing.');
+    logger.warn('Flagged potential prompt injection in event parameters; sanitizing before processing');
   }
 
   const safeRequirements = reqCheck.sanitized || 'None';
@@ -510,7 +511,7 @@ Important Rules:
     }
     throw new Error(guardrailResult.error || 'AI response failed guardrails validation');
   } catch (err) {
-    console.warn('⚠️ï¸ GenAI API call or validation failed, using deterministic high-quality plan:', (err as Error).message);
+    logger.warn('GenAI API call or validation fallback triggered', { error: (err as Error).message });
     return generateDeterministicPlan(event);
   }
 }

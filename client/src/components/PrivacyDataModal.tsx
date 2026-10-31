@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { useState } from 'react';
 import { ShieldCheck, Download, Lock, X, Check, Loader2 } from 'lucide-react';
 import { api } from '../services/api';
@@ -20,7 +21,7 @@ export const PrivacyDataModal: React.FC<PrivacyDataModalProps> = ({ isOpen, onCl
       setExported(true);
       setTimeout(() => setExported(false), 4000);
     } catch (err) {
-      console.error('Export failed:', err);
+      logger.error('Export failed:', err);
     } finally {
       setDownloading(false);
     }

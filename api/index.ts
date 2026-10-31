@@ -5,13 +5,18 @@ export const config = {
   maxDuration: 30,
 };
 
-export default async function handler(req: any, res: any) {
+export default function handler(req: any, res: any) {
   try {
-    const forwardedUri = req.headers['x-forwarded-uri'] || req.headers['x-matched-path'];
-    if (forwardedUri && typeof forwardedUri === 'string' && (forwardedUri.startsWith('/api') || forwardedUri.startsWith('/'))) {
-      const queryIndex = req.url ? req.url.indexOf('?') : -1;
-      const queryString = queryIndex !== -1 ? req.url.slice(queryIndex) : '';
-      req.url = forwardedUri.split('?')[0] + queryString;
+    // If Vercel rewrote /api/... to /api, reconstruct the real requested path
+    if (req.url === '/api' || req.url === '/api/' || req.url?.startsWith('/api?') || req.url === '/' || req.url?.startsWith('/?')) {
+      const forwarded = req.headers['x-forwarded-uri'];
+      if (forwarded && typeof forwarded === 'string' && forwarded.startsWith('/api')) {
+        req.url = forwarded;
+      } else if (req.query && req.query.__path) {
+        const p = Array.isArray(req.query.__path) ? req.query.__path.join('/') : req.query.__path;
+        delete req.query.__path;
+        req.url = `/api/${p}`;
+      }
     }
     return app(req, res);
   } catch (err: any) {

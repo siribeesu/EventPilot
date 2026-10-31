@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Sparkles,
   ArrowRight,
@@ -105,20 +105,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     <div className="space-y-20 pb-24 saas-glow-bg">
       {/* 1. Hero Section: Modern SaaS High-Impact Aura */}
       <section className="relative overflow-hidden pt-14 pb-20 border-b border-slate-200/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div className="w-full px-4 sm:px-6 lg:px-8 relative">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Left Column: Compelling Typography & CTAs */}
             <div className="lg:col-span-7 space-y-7">
-              {/* Micro Shimmer Pill Badge */}
-              <div className="inline-flex items-center space-x-2.5 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-900 text-xs font-semibold shadow-2xs">
-                <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" aria-hidden="true" />
-                <span className="tracking-wide">Autonomous Event Intelligence 2.5</span>
-                <span className="text-indigo-400 font-normal">|</span>
-                <span className="text-indigo-700 font-bold flex items-center space-x-1">
-                  <span>Gemini & Safety Engine</span>
-                </span>
-              </div>
-
               {/* Ultra-Modern SaaS Headline */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.08]">
                 Plan Unforgettable Events in Minutes,{' '}
@@ -281,7 +271,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* 2. Bento Grid: Enterprise Feature Matrix */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <section className="w-full px-4 sm:px-6 lg:px-8 space-y-10">
         <div className="text-center max-w-2xl mx-auto space-y-2.5">
           <span className="text-xs font-bold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
             Engineered For Precision
@@ -381,7 +371,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* 3. Occasion Blueprints & Interactive Showcase */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <section className="w-full px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Tailored Intelligence for Every Occasion
@@ -527,7 +517,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* 4. Consistent Full-Width Bottom CTA Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="w-full px-4 sm:px-6 lg:px-8">
         <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-10 sm:p-14 text-white text-center space-y-6 shadow-2xl relative overflow-hidden border border-slate-800">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_0%,rgba(99,102,241,0.25),transparent)]" aria-hidden="true" />
           <div className="relative space-y-4 max-w-2xl mx-auto">

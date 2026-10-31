@@ -20,7 +20,7 @@ import { useDebounce } from '../hooks/useDebounce';
 import { OnboardingChecklist } from '../components/OnboardingChecklist';
 
 interface DashboardPageProps {
-  onSelectEvent: (eventId: string) => void;
+  onSelectEvent: (eventId: string, title?: string) => void;
   onCreateNew: () => void;
   currency: string;
 }
@@ -102,7 +102,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   }, [events, debouncedSearchQuery, filterType]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-9 space-y-9">
+    <div className="w-full px-4 sm:px-6 lg:px-8 py-9 space-y-9">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
         <div className="space-y-1">
@@ -130,6 +130,50 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           <span>New Event Plan</span>
         </button>
       </div>
+
+
+      {/* Active In-Progress Event Spotlight (Zero-Friction Quick Jump) */}
+      {events.length > 0 && (
+        <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border border-slate-800 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+          <div className="space-y-2.5 relative z-10">
+            <div className="flex items-center space-x-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-500/30 text-indigo-300 border border-indigo-500/40">
+                Primary Celebration Spotlight
+              </span>
+              <span className="text-slate-500 text-xs">•</span>
+              <span className="text-xs text-slate-300 font-medium">{events[0].location}</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+              {events[0].title}
+            </h2>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-300">
+              <span className="bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700">
+                Target Budget: <strong className="text-white">{currency} {Number(events[0].budget).toLocaleString()}</strong>
+              </span>
+              <span className="bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700">
+                Allocated: <strong className="text-white">{currency} {events[0].metrics.totalEstimated.toLocaleString()}</strong>
+              </span>
+              <span className="bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700">
+                Guests: <strong className="text-white">{events[0].guest_count}</strong>
+              </span>
+              <span className="bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700">
+                Tasks Pending: <strong className="text-amber-300">{events[0].metrics.tasksTotal - events[0].metrics.tasksCompleted}</strong>
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center space-x-3 flex-shrink-0 relative z-10">
+            <button
+              type="button"
+              onClick={() => onSelectEvent(events[0].id, events[0].title)}
+              className="px-6 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-sm shadow-lg shadow-indigo-600/30 transition flex items-center space-x-2 cursor-pointer active:scale-95"
+            >
+              <span>Resume Planning Studio</span>
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Guided Quickstart Onboarding */}
       <OnboardingChecklist
@@ -294,10 +338,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    onSelectEvent(evt.id);
+                    onSelectEvent(evt.id, evt.title);
                   }
                 }}
-                onClick={() => onSelectEvent(evt.id)}
+                onClick={() => onSelectEvent(evt.id, evt.title)}
                 className="bg-white rounded-3xl border border-slate-200/90 hover:border-indigo-300 hover:shadow-[0_12px_28px_-6px_rgba(15,23,42,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-all cursor-pointer p-6 flex flex-col justify-between group space-y-5"
               >
                 {/* Card Top */}

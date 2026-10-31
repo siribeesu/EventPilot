@@ -18,8 +18,14 @@ import {
   AIFeedbackRecord,
 } from '../types/index.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const getCurrentDir = () => {
+  try {
+    return path.dirname(fileURLToPath(import.meta.url));
+  } catch {
+    return process.cwd();
+  }
+};
+const currentDir = getCurrentDir();
 
 interface DbData {
   users: User[];
@@ -62,7 +68,7 @@ class StorageManager {
     const isVercel = !!process.env.VERCEL;
     const dataDir = isVercel
       ? path.join('/tmp', 'data')
-      : path.resolve(__dirname, '../../data');
+      : path.resolve(currentDir, '../../data');
 
     try {
       if (!fs.existsSync(dataDir)) {
@@ -114,9 +120,9 @@ class StorageManager {
     } else {
       // Check if bundled seed database file exists in project tree
       const seedCandidates = [
-        path.resolve(__dirname, 'seed.json'),
+        path.resolve(currentDir, 'seed.json'),
         path.resolve(process.cwd(), 'server/src/database/seed.json'),
-        path.resolve(__dirname, '../../data/database.json'),
+        path.resolve(currentDir, '../../data/database.json'),
         path.resolve(process.cwd(), 'server/data/database.json'),
         path.resolve(process.cwd(), 'data/database.json'),
       ];
@@ -148,7 +154,7 @@ class StorageManager {
     if (!this.pool) return;
     try {
       const schemaCandidates = [
-        path.resolve(__dirname, 'schema.sql'),
+        path.resolve(currentDir, 'schema.sql'),
         path.resolve(process.cwd(), 'server/src/database/schema.sql'),
       ];
       for (const schemaPath of schemaCandidates) {

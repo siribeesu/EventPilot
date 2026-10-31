@@ -3,8 +3,14 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import pg from 'pg';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const getCurrentDir = () => {
+  try {
+    return path.dirname(fileURLToPath(import.meta.url));
+  } catch {
+    return process.cwd();
+  }
+};
+const currentDir = getCurrentDir();
 
 export interface MigrationRecord {
   id: string;
@@ -16,7 +22,7 @@ export class SchemaMigrator {
   private migrationsDir: string;
 
   constructor() {
-    this.migrationsDir = path.resolve(__dirname, 'migrations');
+    this.migrationsDir = path.resolve(currentDir, 'migrations');
   }
 
   /**

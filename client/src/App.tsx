@@ -96,7 +96,7 @@ export function App() {
               role="status"
               aria-live="polite"
               aria-busy="true"
-              className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center space-y-3"
+              className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center space-y-3"
             >
               <div
                 className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"

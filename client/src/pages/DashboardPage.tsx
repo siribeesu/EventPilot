@@ -103,7 +103,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   }, [events, debouncedSearchQuery, filterType]);
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-7">
+    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-7">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
         <div className="space-y-1">
@@ -186,7 +186,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       {/* Aggregate Stats Cards: Bento 4-Column Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Card 1: Planned Spending */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-[0_1px_3px_rgba(15,23,42,0.03)] hover:shadow-md transition space-y-3">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all flex flex-col justify-between min-h-[155px]">
           <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
             <span>Planned Spending</span>
             <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600" aria-hidden="true">
@@ -202,7 +202,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         </div>
 
         {/* Card 2: Total Budget Target */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-[0_1px_3px_rgba(15,23,42,0.03)] hover:shadow-md transition space-y-3">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all flex flex-col justify-between min-h-[155px]">
           <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
             <span>Total Budget Limit</span>
             <div className="p-2.5 rounded-xl bg-violet-50 text-violet-600" aria-hidden="true">
@@ -226,7 +226,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         </div>
 
         {/* Card 3: Pending Tasks */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-[0_1px_3px_rgba(15,23,42,0.03)] hover:shadow-md transition space-y-3">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all flex flex-col justify-between min-h-[155px]">
           <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
             <span>Pending Deadlines</span>
             <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600" aria-hidden="true">
@@ -238,7 +238,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         </div>
 
         {/* Card 4: Active Events & Vendors */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-[0_1px_3px_rgba(15,23,42,0.03)] hover:shadow-md transition space-y-3">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all flex flex-col justify-between min-h-[155px]">
           <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
             <span>Active Events</span>
             <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600" aria-hidden="true">

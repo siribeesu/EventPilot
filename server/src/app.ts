@@ -47,6 +47,8 @@ app.use(
         imgSrc: ["'self'", 'data:', 'https:'],
         connectSrc: ["'self'", 'https:', 'http://localhost:5000', 'http://localhost:5173', 'http://127.0.0.1:5173'],
         frameAncestors: ["'none'"],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
         formAction: ["'self'"],
         upgradeInsecureRequests: [],
       },

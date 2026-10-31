@@ -28,7 +28,7 @@ jobs:
       - name: 📦 Install workspace dependencies
         run: npm ci
 
-      - name: 🔍 TypeScript Lint & Typecheck
+      - name: 🔍 Oxlint & TypeScript Strict Linter Gate
         run: npm run lint
 
       - name: 🏗️ Typecheck & Compile Backend Server
@@ -40,7 +40,7 @@ jobs:
       - name: ⚡ Run Mandatory Critical Path Suite
         run: npm run test:critical
 
-      - name: 🧪 Run Automated Vitest Test Suites (98 Tests across 11 Suites)
+      - name: 🧪 Run Automated Vitest Test Suites (101 Tests across 11 Suites)
         run: npm run test
 
       - name: 📈 Enforce Code Coverage Thresholds (Lines >= 65%, Functions >= 70%)
@@ -58,8 +58,8 @@ jobs:
           echo "## 🚀 EventPilot Verification Summary (Node ${{ matrix.node-version }})" >> $GITHUB_STEP_SUMMARY
           echo "| Check | Status | Verification Detail |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- | :---: | :--- |" >> $GITHUB_STEP_SUMMARY
-          echo "| **TypeScript Compilation & Lint** | ✅ Passed | Frontend Vite 8 + Backend Express compiled with 0 errors |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Automated Vitest Test Suites** | ✅ Passed | 98/98 Tests Passing across 11 specialized suites |" >> $GITHUB_STEP_SUMMARY
+          echo "| **TypeScript Compilation & Lint** | ✅ Passed | Oxlint (63 files, 114 rules) + strict tsc compiled with 0 errors |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Automated Vitest Test Suites** | ✅ Passed | 101/101 Tests Passing across 11 specialized suites |" >> $GITHUB_STEP_SUMMARY
           echo "| **Test Coverage Enforced** | ✅ Passed | Coverage thresholds exceeded across lines, functions, and statements |" >> $GITHUB_STEP_SUMMARY
           echo "| **Real End-to-End (E2E) Journey** | ✅ Passed | Signup, Create Event, Budget Rescue, Human-in-the-Loop AI, Vendors, PDF & GDPR Export |" >> $GITHUB_STEP_SUMMARY
           echo "| **AI Safety Guardrails** | ✅ Passed | 10 Prompt Injection Vectors blocked & Zod bounded with Confidence Scores |" >> $GITHUB_STEP_SUMMARY

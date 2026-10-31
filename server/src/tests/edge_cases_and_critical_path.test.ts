@@ -66,6 +66,21 @@ describe('Critical Path & Edge Cases Verification Suite', () => {
       });
       expect(negativeItem.success).toBe(false);
     });
+
+    it('sanitizes malicious script injections and HTML tags from user-supplied payloads', async () => {
+      const { sanitizeObject } = await import('../utils/sanitize.js');
+      const maliciousPayload = {
+        title: '<script>alert("xss")</script>Annual Gala<style>body{display:none}</style>',
+        location: 'Grand Ballroom<img src=x onerror=alert(1)>',
+        notes: 'javascript:alert(document.cookie)',
+      };
+      const clean = sanitizeObject(maliciousPayload);
+      expect(clean.title).not.toContain('<script>');
+      expect(clean.title).not.toContain('</script>');
+      expect(clean.title).toBe('Annual Gala');
+      expect(clean.location).toBe('Grand Ballroom');
+      expect(clean.notes).not.toContain('javascript:');
+    });
   });
 
   // 2. Authentication & Authorization Failure Edge Cases
@@ -110,6 +125,25 @@ describe('Critical Path & Edge Cases Verification Suite', () => {
       authMiddleware(reqMock, resMock, () => {});
       expect(statusCode).toBe(401);
       expect(errorMessage).toContain('Invalid or expired');
+    });
+
+    it('strictly denies cross-tenant access when unauthorized user queries another user event', async () => {
+      const ownerEvent = await db.createEvent({
+        user_id: 'usr_isolated_owner',
+        title: 'Secret Board Dinner',
+        event_type: 'other',
+        event_date: '2026-12-20',
+        location: 'Private Suite',
+        budget: 50000,
+        guest_count: 12,
+      });
+
+      // An uninvited attacker cannot retrieve the event
+      const intruderAccess = await db.getFullEvent(ownerEvent.id, 'usr_malicious_intruder');
+      expect(intruderAccess).toBeNull();
+
+      // Clean up
+      await db.deleteEvent(ownerEvent.id, 'usr_isolated_owner');
     });
   });
 

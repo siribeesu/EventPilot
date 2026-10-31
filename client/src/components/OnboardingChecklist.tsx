@@ -95,7 +95,7 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
         {steps.map(step => (
           <div
             key={step.id}
-            className={`p-4 rounded-xl border transition-all flex flex-col justify-between ${
+            className={`p-5 rounded-2xl border transition-all flex flex-col justify-between min-h-[165px] ${
               step.done
                 ? 'bg-emerald-50/50 border-emerald-200 text-slate-800'
                 : 'bg-slate-50/80 border-slate-200/80 hover:bg-indigo-50/30 hover:border-indigo-200 text-slate-900'

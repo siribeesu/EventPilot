@@ -32,7 +32,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenPrivacy }) => 
   return (
     <footer role="contentinfo" className="bg-slate-900 text-slate-300 border-t border-slate-800 transition-colors">
       {/* Main Footer Content */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 pt-16 pb-12">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
           {/* Brand & Description (4 cols on lg) */}
           <div className="lg:col-span-4 space-y-5">
@@ -223,7 +223,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenPrivacy }) => 
 
       {/* Bottom Legal / Copyright Bar */}
       <div className="border-t border-slate-800/80 bg-slate-950/50 py-6">
-        <div className="w-full px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex items-center space-x-2">
             <span>© {new Date().getFullYear()} EventPilot Inc. All rights reserved.</span>
             <span aria-hidden="true" className="text-slate-700">•</span>

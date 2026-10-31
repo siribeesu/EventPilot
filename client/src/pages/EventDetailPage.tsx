@@ -42,6 +42,7 @@ interface EventDetailPageProps {
   eventId: string;
   onBack: () => void;
   currency: string;
+  onTitleLoaded?: (title: string) => void;
 }
 
 type TabType = 'overview' | 'budget' | 'timeline' | 'vendors' | 'ideas';
@@ -50,6 +51,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
   eventId,
   onBack,
   currency: globalCurrency,
+  onTitleLoaded,
 }) => {
   const [event, setEvent] = useState<EventFullDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,6 +89,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
     try {
       const data = await api.getEvent(eventId);
       setEvent(data);
+      if (onTitleLoaded && data.title) onTitleLoaded(data.title);
     } catch (err) {
       alert(`Error loading event: ${(err as Error).message}`);
     } finally {
@@ -116,7 +119,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
       <div
         role="status"
         aria-live="polite"
-        className="max-w-7xl mx-auto px-4 py-20 text-center space-y-3"
+        className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-3"
       >
         <div className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto" aria-hidden="true" />
         <p className="text-slate-500 text-sm">Loading event itinerary & budget data...</p>
@@ -263,7 +266,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-9 space-y-7">
+    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-9 space-y-7">
       {/* Top Banner Navigation & Summary */}
       <div className="bg-white rounded-3xl border border-slate-200/90 p-7 shadow-[0_1px_3px_rgba(15,23,42,0.03)] space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -273,7 +276,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
               onClick={onBack}
               className="text-xs font-bold text-indigo-600 hover:text-indigo-800 focus-visible:ring-2 focus-visible:ring-indigo-500 rounded transition mb-1 inline-flex items-center space-x-1 cursor-pointer"
             >
-              <span>â† Back to Command Center</span>
+              <span>← Back to Command Center</span>
             </button>
             <div className="flex flex-wrap items-center gap-2.5">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -288,12 +291,12 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
                 <Calendar className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
                 <span>{event.event_date} {event.start_time ? `(${event.start_time} - ${event.end_time || ''})` : ''}</span>
               </span>
-              <span aria-hidden="true" className="text-slate-300">â€¢</span>
+              <span aria-hidden="true" className="text-slate-300">•</span>
               <span className="flex items-center space-x-1.5">
                 <MapPin className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
                 <span>{event.location} ({event.indoor_outdoor})</span>
               </span>
-              <span aria-hidden="true" className="text-slate-300">â€¢</span>
+              <span aria-hidden="true" className="text-slate-300">•</span>
               <span className="flex items-center space-x-1.5">
                 <Users className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
                 <span>{event.guest_count} Confirmed Guests</span>
@@ -310,7 +313,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
               className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold bg-amber-50/90 border border-amber-300 text-amber-950 hover:bg-amber-100 focus-visible:ring-2 focus-visible:ring-amber-500 transition shadow-2xs cursor-pointer active:scale-95"
             >
               <ShieldAlert className="w-4 h-4 text-amber-600" aria-hidden="true" />
-              <span>Budget Rescue Modeâ„¢</span>
+              <span>Budget Rescue Mode™</span>
             </button>
 
             {/* AI Assistant Drawer Trigger */}
@@ -418,10 +421,182 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
               onClick={() => setShowRescueModal(true)}
               className="text-xs font-bold text-rose-700 underline hover:text-rose-900 ml-3 whitespace-nowrap focus-visible:ring-2 focus-visible:ring-rose-500 rounded cursor-pointer"
             >
-              Launch Budget Rescue â†’
+              Launch Budget Rescue →
             </button>
           </div>
         )}
+      </div>
+
+
+      {/* Interactive Guided Planning Stepper & Recommended Next Action */}
+      <div className="p-5 rounded-3xl bg-white rounded-3xl border border-slate-200/90 text-slate-900 space-y-4 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div className="flex items-center space-x-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
+            <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">
+              Guided Planning Flow
+            </span>
+            <span className="text-slate-500 text-xs hidden sm:inline">•</span>
+            <span className="text-xs text-slate-500 hidden sm:inline">Follow the 4 phases from vision to celebration</span>
+          </div>
+          <div className="flex items-center space-x-2 text-xs font-semibold text-slate-600">
+            <span>Overall Progress:</span>
+            <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              {Math.round(((event.metrics.tasksCompleted + event.metrics.vendorsBooked) / Math.max(event.metrics.tasksTotal + event.metrics.vendorsTotal, 1)) * 100)}%
+            </span>
+          </div>
+        </div>
+
+        {/* 4 Interactive Milestone Steps (Click to Jump Directly) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {/* Step 1: Budget */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('budget')}
+            className={`p-3.5 rounded-2xl border text-left transition cursor-pointer ${
+              activeTab === 'budget'
+                ? 'bg-indigo-50 border-indigo-400 text-indigo-950 shadow-xs'
+                : 'bg-slate-50 border-slate-200/80 hover:bg-slate-100/80 text-slate-700'
+            }`}
+          >
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 uppercase">
+              <span>Phase 1: Budget</span>
+              {isOverBudget ? (
+                <span className="text-rose-400 text-[10px] font-extrabold bg-rose-950/60 px-1.5 py-0.5 rounded border border-rose-800">⚠️ Deficit</span>
+              ) : (
+                <span className="text-emerald-400 text-[10px] font-bold bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800">✓ Balanced</span>
+              )}
+            </div>
+            <div className="font-extrabold text-sm text-slate-900 mt-1.5">
+              {currency} {totalEstimated.toLocaleString()}
+            </div>
+            <div className="text-[10px] text-slate-500 mt-0.5">
+              {isOverBudget ? `Over by ${currency} ${(totalEstimated - totalBudget).toLocaleString()}` : `${event.budget_items.length} protected line items`}
+            </div>
+          </button>
+
+          {/* Step 2: Timeline */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('timeline')}
+            className={`p-3.5 rounded-2xl border text-left transition cursor-pointer ${
+              activeTab === 'timeline'
+                ? 'bg-indigo-600/30 border-indigo-400 text-white shadow-xs'
+                : 'bg-slate-800/40 border-slate-700/60 hover:bg-slate-800 text-slate-300'
+            }`}
+          >
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase">
+              <span>Phase 2: Timeline</span>
+              <span className="text-indigo-300 text-[10px] font-bold bg-indigo-950/60 px-1.5 py-0.5 rounded border border-indigo-800">
+                {event.metrics.tasksCompleted}/{event.metrics.tasksTotal} Done
+              </span>
+            </div>
+            <div className="font-extrabold text-sm text-white mt-1.5">
+              {daysLeft > 0 ? `${daysLeft} Days to Event` : 'Event Day'}
+            </div>
+            <div className="text-[10px] text-slate-400 mt-0.5">
+              {event.metrics.tasksTotal - event.metrics.tasksCompleted} milestones pending
+            </div>
+          </button>
+
+          {/* Step 3: Vendors */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('vendors')}
+            className={`p-3.5 rounded-2xl border text-left transition cursor-pointer ${
+              activeTab === 'vendors'
+                ? 'bg-indigo-600/30 border-indigo-400 text-white shadow-xs'
+                : 'bg-slate-800/40 border-slate-700/60 hover:bg-slate-800 text-slate-300'
+            }`}
+          >
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase">
+              <span>Phase 3: Vendors</span>
+              <span className="text-amber-300 text-[10px] font-bold bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-800">
+                {event.metrics.vendorsBooked}/{event.metrics.vendorsTotal} Booked
+              </span>
+            </div>
+            <div className="font-extrabold text-sm text-white mt-1.5">
+              {event.vendors.length} Categories
+            </div>
+            <div className="text-[10px] text-slate-400 mt-0.5">
+              Quotes & contract tracking
+            </div>
+          </button>
+
+          {/* Step 4: Creative & PDF */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('ideas')}
+            className={`p-3.5 rounded-2xl border text-left transition cursor-pointer ${
+              activeTab === 'ideas'
+                ? 'bg-indigo-600/30 border-indigo-400 text-white shadow-xs'
+                : 'bg-slate-800/40 border-slate-700/60 hover:bg-slate-800 text-slate-300'
+            }`}
+          >
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase">
+              <span>Phase 4: Creative</span>
+              <span className="text-emerald-300 text-[10px] font-bold bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-800">
+                Export Ready
+              </span>
+            </div>
+            <div className="font-extrabold text-sm text-white mt-1.5">
+              Themes & Menu
+            </div>
+            <div className="text-[10px] text-slate-400 mt-0.5">
+              {event.ideas.length} ideas + Master PDF
+            </div>
+          </button>
+        </div>
+
+        {/* Smart Recommended Next Step Banner */}
+        <div className="p-3.5 bg-indigo-900/50 border border-indigo-500/30 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center space-x-2.5">
+            <Sparkles className="w-4 h-4 text-indigo-400 flex-shrink-0" aria-hidden="true" />
+            <div>
+              {isOverBudget ? (
+                <span className="text-rose-200">
+                  <strong className="text-white">Recommended Next Action:</strong> Budget deficit detected ({currency} {(totalEstimated - totalBudget).toLocaleString()}). Launch Budget Rescue Mode™ to resolve without sacrificing priorities.
+                </span>
+              ) : event.metrics.tasksTotal - event.metrics.tasksCompleted > 0 ? (
+                <span className="text-indigo-200">
+                  <strong className="text-white">Recommended Next Action:</strong> You have {event.metrics.tasksTotal - event.metrics.tasksCompleted} countdown tasks pending. Check your countdown checklist and mark completed milestones.
+                </span>
+              ) : (
+                <span className="text-emerald-200">
+                  <strong className="text-white">Recommended Next Action:</strong> All milestones on track! Download your executive run-of-show PDF or invite co-planners to collaborate.
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center space-x-2 flex-shrink-0">
+            {isOverBudget ? (
+              <button
+                type="button"
+                onClick={() => setShowRescueModal(true)}
+                className="px-3.5 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold transition cursor-pointer active:scale-95 shadow-sm"
+              >
+                Launch Budget Rescue →
+              </button>
+            ) : event.metrics.tasksTotal - event.metrics.tasksCompleted > 0 ? (
+              <button
+                type="button"
+                onClick={() => setActiveTab('timeline')}
+                className="px-3.5 py-1.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-bold transition cursor-pointer active:scale-95 shadow-sm"
+              >
+                Go to Timeline →
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => exportEventToPDF(event)}
+                className="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition cursor-pointer flex items-center space-x-1 shadow-sm"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Export Master PDF</span>
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Tabs Navigation with accessible ARIA Tablist */}
@@ -623,7 +798,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
                         {currency} {Number(b.estimated_cost).toLocaleString()}
                       </td>
                       <td className="py-3.5 px-4 text-right text-slate-600">
-                        {Number(b.actual_cost) > 0 ? `${currency} ${Number(b.actual_cost).toLocaleString()}` : 'â€”'}
+                        {Number(b.actual_cost) > 0 ? `${currency} ${Number(b.actual_cost).toLocaleString()}` : '—'}
                       </td>
                       <td className="py-3.5 px-4">
                         <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
@@ -729,7 +904,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
                       </div>
                       <div className="flex items-center space-x-2 text-xs text-slate-400 mt-0.5">
                         <span className="font-medium text-slate-600">{task.category}</span>
-                        <span aria-hidden="true">â€¢</span>
+                        <span aria-hidden="true">•</span>
                         <span>
                           {task.due_date
                             ? `Due: ${task.due_date}`

@@ -14,13 +14,13 @@ import {
   ShieldCheck,
   AlertTriangle,
 } from 'lucide-react';
-import type { EventFullDetail } from '../types';
+import { type EventFullDetail, getCurrencySymbol } from '../types';
 import { api } from '../services/api';
 import { useDebounce } from '../hooks/useDebounce';
 import { OnboardingChecklist } from '../components/OnboardingChecklist';
 
 interface DashboardPageProps {
-  onSelectEvent: (eventId: string) => void;
+  onSelectEvent: (eventId: string, title?: string) => void;
   onCreateNew: () => void;
   currency: string;
 }
@@ -30,6 +30,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   onCreateNew,
   currency,
 }) => {
+  const sym = getCurrencySymbol(currency);
   const [events, setEvents] = useState<EventFullDetail[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -102,7 +103,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   }, [events, debouncedSearchQuery, filterType]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-9 space-y-9">
+    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-7">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
         <div className="space-y-1">
@@ -110,7 +111,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <span className="text-[11px] font-bold tracking-widest uppercase text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">
               Command Center
             </span>
-            <span className="text-xs text-slate-400">â€¢</span>
+            <span className="text-xs text-slate-400">•</span>
             <span className="text-xs text-slate-500 font-medium">Real-Time Portfolio</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
@@ -124,12 +125,56 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <button
           type="button"
           onClick={onCreateNew}
-          className="inline-flex items-center space-x-2 px-5 py-3 rounded-2xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 active:scale-[0.98] transition shadow-md shadow-slate-900/10 cursor-pointer"
+          className="inline-flex items-center space-x-2 px-5 py-3 rounded-2xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 active:scale-[0.98] transition shadow-md shadow-indigo-600/20 cursor-pointer"
         >
-          <Plus className="w-4 h-4 text-indigo-300" aria-hidden="true" />
+          <Plus className="w-4 h-4 text-white" aria-hidden="true" />
           <span>New Event Plan</span>
         </button>
       </div>
+
+
+      {/* Active In-Progress Event Spotlight (Zero-Friction Quick Jump) */}
+      {events.length > 0 && (
+        <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 text-white border border-indigo-500/30 shadow-xl shadow-indigo-900/10 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+          <div className="space-y-2.5 relative z-10">
+            <div className="flex items-center space-x-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" aria-hidden="true" />
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/20 text-white border border-white/30">
+                Primary Celebration Spotlight
+              </span>
+              <span className="text-slate-500 text-xs">•</span>
+              <span className="text-xs text-white/90 font-medium">{events[0].location}</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+              {events[0].title}
+            </h2>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-300">
+              <span className="bg-white/15 px-2.5 py-1 rounded-lg border border-white/20 text-white">
+                Target Budget: <strong className="text-white">{currency} {Number(events[0].budget).toLocaleString()}</strong>
+              </span>
+              <span className="bg-white/15 px-2.5 py-1 rounded-lg border border-white/20 text-white">
+                Allocated: <strong className="text-white">{currency} {events[0].metrics.totalEstimated.toLocaleString()}</strong>
+              </span>
+              <span className="bg-white/15 px-2.5 py-1 rounded-lg border border-white/20 text-white">
+                Guests: <strong className="text-white">{events[0].guest_count}</strong>
+              </span>
+              <span className="bg-white/15 px-2.5 py-1 rounded-lg border border-white/20 text-white">
+                Tasks Pending: <strong className="text-amber-300">{events[0].metrics.tasksTotal - events[0].metrics.tasksCompleted}</strong>
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center space-x-3 flex-shrink-0 relative z-10">
+            <button
+              type="button"
+              onClick={() => onSelectEvent(events[0].id, events[0].title)}
+              className="px-6 py-3.5 rounded-2xl bg-white text-indigo-950 hover:bg-slate-50 font-extrabold text-sm shadow-lg transition flex items-center space-x-2 cursor-pointer active:scale-95"
+            >
+              <span>Resume Planning Studio</span>
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Guided Quickstart Onboarding */}
       <OnboardingChecklist
@@ -141,7 +186,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       {/* Aggregate Stats Cards: Bento 4-Column Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Card 1: Planned Spending */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-[0_1px_3px_rgba(15,23,42,0.03)] hover:shadow-md transition space-y-3">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all flex flex-col justify-between min-h-[155px]">
           <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
             <span>Planned Spending</span>
             <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600" aria-hidden="true">
@@ -149,7 +194,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             </div>
           </div>
           <div className="text-3xl font-extrabold text-slate-900 tracking-tight">
-            {currency} {totalPlannedSpending.toLocaleString()}
+            {sym}{totalPlannedSpending.toLocaleString()}
           </div>
           <div className="text-xs text-slate-500 flex items-center space-x-1 font-medium">
             <span>Allocated across {events.length} planned celebrations</span>
@@ -157,7 +202,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         </div>
 
         {/* Card 2: Total Budget Target */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-[0_1px_3px_rgba(15,23,42,0.03)] hover:shadow-md transition space-y-3">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all flex flex-col justify-between min-h-[155px]">
           <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
             <span>Total Budget Limit</span>
             <div className="p-2.5 rounded-xl bg-violet-50 text-violet-600" aria-hidden="true">
@@ -165,23 +210,23 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             </div>
           </div>
           <div className="text-3xl font-extrabold text-slate-900 tracking-tight">
-            {currency} {totalBudgetAcross.toLocaleString()}
+            {sym}{totalBudgetAcross.toLocaleString()}
           </div>
           <div className="text-xs font-medium">
             {totalBudgetAcross >= totalPlannedSpending ? (
               <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                âœ“ Remaining Buffer: {currency} {(totalBudgetAcross - totalPlannedSpending).toLocaleString()}
+                ✓ Remaining Buffer: {sym} {(totalBudgetAcross - totalPlannedSpending).toLocaleString()}
               </span>
             ) : (
               <span className="text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200 font-bold">
-                âš  Over Limit: {currency} {(totalPlannedSpending - totalBudgetAcross).toLocaleString()}
+                ⚠️ Over Limit: {sym} {(totalPlannedSpending - totalBudgetAcross).toLocaleString()}
               </span>
             )}
           </div>
         </div>
 
         {/* Card 3: Pending Tasks */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-[0_1px_3px_rgba(15,23,42,0.03)] hover:shadow-md transition space-y-3">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all flex flex-col justify-between min-h-[155px]">
           <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
             <span>Pending Deadlines</span>
             <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600" aria-hidden="true">
@@ -193,7 +238,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         </div>
 
         {/* Card 4: Active Events & Vendors */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-[0_1px_3px_rgba(15,23,42,0.03)] hover:shadow-md transition space-y-3">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all flex flex-col justify-between min-h-[155px]">
           <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider">
             <span>Active Events</span>
             <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600" aria-hidden="true">
@@ -273,7 +318,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           <button
             type="button"
             onClick={onCreateNew}
-            className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white focus-visible:ring-2 focus-visible:ring-indigo-500 transition cursor-pointer"
+            className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-md shadow-indigo-600/20 cursor-pointer"
           >
             <Plus className="w-4 h-4 text-indigo-300" aria-hidden="true" />
             <span>Create First Event</span>
@@ -294,10 +339,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    onSelectEvent(evt.id);
+                    onSelectEvent(evt.id, evt.title);
                   }
                 }}
-                onClick={() => onSelectEvent(evt.id)}
+                onClick={() => onSelectEvent(evt.id, evt.title)}
                 className="bg-white rounded-3xl border border-slate-200/90 hover:border-indigo-300 hover:shadow-[0_12px_28px_-6px_rgba(15,23,42,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-all cursor-pointer p-6 flex flex-col justify-between group space-y-5"
               >
                 {/* Card Top */}
@@ -335,7 +380,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                     </h3>
                     <p className="text-xs text-slate-500 mt-1 flex items-center space-x-1.5 font-medium">
                       <span>{evt.location}</span>
-                      <span aria-hidden="true">â€¢</span>
+                      <span aria-hidden="true">•</span>
                       <span>{evt.guest_count} attendees</span>
                     </p>
                   </div>

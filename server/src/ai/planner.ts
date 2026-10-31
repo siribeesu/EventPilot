@@ -360,6 +360,11 @@ export function generateDeterministicPlan(event: EventRecord): AIGeneratedPlan {
     `Request all vendor quotations in writing with clear cancellation and weather backup clauses.`,
   ];
 
+  const uncertaintyFlags: string[] = [];
+  if (guestCount > 300) uncertaintyFlags.push('High guest count: venue and catering capacity variance');
+  if (daysUntil < 14) uncertaintyFlags.push('Expedited timeline: vendor booking priority urgent');
+  if (budget / guestCount < 300 && currency === 'INR') uncertaintyFlags.push('Strict per-guest budget constraint');
+
   return {
     eventSummary: summary,
     themes: themeList,
@@ -371,6 +376,8 @@ export function generateDeterministicPlan(event: EventRecord): AIGeneratedPlan {
     menus: menuList,
     activities: activityList,
     recommendations,
+    confidenceScore: uncertaintyFlags.length > 0 ? 0.88 : 0.98,
+    uncertaintyFlags,
   };
 }
 
@@ -503,7 +510,7 @@ Important Rules:
     }
     throw new Error(guardrailResult.error || 'AI response failed guardrails validation');
   } catch (err) {
-    console.warn('âš ï¸ GenAI API call or validation failed, using deterministic high-quality plan:', (err as Error).message);
+    console.warn('⚠️ï¸ GenAI API call or validation failed, using deterministic high-quality plan:', (err as Error).message);
     return generateDeterministicPlan(event);
   }
 }
@@ -654,6 +661,8 @@ export async function processAssistantMessage(
     return {
       reply: '🛡️ EventPilot AI Safety Guardrail: Your input was flagged for potential prompt instruction override. For security, administrative directives and prompt injection syntax are blocked. Please enter your event request normally.',
       requiresUserApproval: false,
+      confidenceScore: 0.1,
+      uncertaintyFlags: ['Prompt injection vector flagged'],
     };
   }
 
@@ -661,9 +670,9 @@ export async function processAssistantMessage(
   const currency = event.currency || 'INR';
 
   // Check if user is asking to reduce budget e.g. "reduce my budget to 35000"
-  const budgetMatch = lowerMsg.match(/(?:reduce|change|cut|set)\s+(?:my\s+)?budget\s+to\s+([â‚¹$â‚¬Â£]?\s*[\d,]+)/i);
+  const budgetMatch = lowerMsg.match(/(?:reduce|change|cut|set)\s+(?:my\s+)?budget\s+to\s+([₹$€£]?\s*[\d,]+)/i);
   if (budgetMatch) {
-    const rawVal = budgetMatch[1].replace(/[â‚¹$â‚¬Â£,\s]/g, '');
+    const rawVal = budgetMatch[1].replace(/[₹$€£,\s]/g, '');
     const newBudget = Number(rawVal);
     if (!isNaN(newBudget) && newBudget > 0) {
       const rescue = calculateBudgetRescue(event, budgetItems, newBudget);
@@ -683,6 +692,8 @@ export async function processAssistantMessage(
           updatedSummary: `Revised plan aligned with updated budget of ${currency} ${newBudget.toLocaleString()}.`,
         },
         requiresUserApproval: true,
+        confidenceScore: 0.96,
+        uncertaintyFlags: [],
       };
     }
   }
@@ -711,6 +722,8 @@ export async function processAssistantMessage(
         tasksToAdd: taskRecommendations,
       },
       requiresUserApproval: true,
+      confidenceScore: 0.94,
+      uncertaintyFlags: [],
     };
   }
 
@@ -718,7 +731,7 @@ export async function processAssistantMessage(
   if (lowerMsg.includes('vegetarian') || lowerMsg.includes('vegan') || lowerMsg.includes('menu')) {
     const guestCount = event.guest_count || 50;
     return {
-      reply: `Here is a curated vegetarian banquet menu concept for ${guestCount} guests designed to delight all attendees:\n\nâ€¢ Welcome Drinks: Spiced Pomegranate Spritzer & Fresh Mango Basil Cooler\nâ€¢ Live Starters: Tandoori Stuffed Mushrooms, Paneer Malai Tikka, Crispy Lotus Stem Honey Chilli\nâ€¢ Main Courses: Paneer Lababdar, Dal Bukhara (18-hour slow cooked), Vegetable Dum Biryani with Burani Raita, Assorted Clay-Oven Kulchas & Naans\nâ€¢ Desserts: Saffron Angoori Rasmalai & Warm Moong Dal Halwa\n\nWould you like me to save this menu idea to your event plan?`,
+      reply: `Here is a curated vegetarian banquet menu concept for ${guestCount} guests designed to delight all attendees:\n\n• Welcome Drinks: Spiced Pomegranate Spritzer & Fresh Mango Basil Cooler\n• Live Starters: Tandoori Stuffed Mushrooms, Paneer Malai Tikka, Crispy Lotus Stem Honey Chilli\n• Main Courses: Paneer Lababdar, Dal Bukhara (18-hour slow cooked), Vegetable Dum Biryani with Burani Raita, Assorted Clay-Oven Kulchas & Naans\n• Desserts: Saffron Angoori Rasmalai & Warm Moong Dal Halwa\n\nWould you like me to save this menu idea to your event plan?`,
       proposedChanges: {
         ideasToAdd: [
           {
@@ -730,13 +743,15 @@ export async function processAssistantMessage(
         ],
       },
       requiresUserApproval: true,
+      confidenceScore: 0.97,
+      uncertaintyFlags: [],
     };
   }
 
   // Check if asking for traditional themes
   if (lowerMsg.includes('traditional') || lowerMsg.includes('cultural') || lowerMsg.includes('heritage')) {
     return {
-      reply: `To infuse authentic traditional elegance into your ${event.event_type}, I recommend adopting a 'Royal Marigold & Brass Heritage' theme:\n\nâ€¢ Decor: Floral cascades of fresh yellow & orange marigolds, antique brass urlis with floating petals and diyas, and authentic raw silk backdrop drapes.\nâ€¢ Music: Live Shenai / Flute instrumental welcome for the guest arrival.\nâ€¢ Attire Palette: Warm sunset hues, ivory, and deep crimson.\n\nShall I add these ideas and decorative concepts to your event plan?`,
+      reply: `To infuse authentic traditional elegance into your ${event.event_type}, I recommend adopting a 'Royal Marigold & Brass Heritage' theme:\n\n• Decor: Floral cascades of fresh yellow & orange marigolds, antique brass urlis with floating petals and diyas, and authentic raw silk backdrop drapes.\n• Music: Live Shenai / Flute instrumental welcome for the guest arrival.\n• Attire Palette: Warm sunset hues, ivory, and deep crimson.\n\nShall I add these ideas and decorative concepts to your event plan?`,
       proposedChanges: {
         ideasToAdd: [
           {
@@ -748,6 +763,8 @@ export async function processAssistantMessage(
         ],
       },
       requiresUserApproval: true,
+      confidenceScore: 0.95,
+      uncertaintyFlags: [],
     };
   }
 
@@ -759,5 +776,7 @@ export async function processAssistantMessage(
       'Do you prefer more elaborate decorations or an upgraded gourmet dining experience?',
     ],
     requiresUserApproval: false,
+    confidenceScore: 0.92,
+    uncertaintyFlags: [],
   };
 }

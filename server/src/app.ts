@@ -93,7 +93,13 @@ app.use(
   })
 );
 
-// 5. Body parser with strict size limits
+// 5. Body parser with Vercel serverless pre-parsed body handling & strict size limits
+app.use((req, res, next) => {
+  if (req.body !== undefined && req.body !== null && typeof req.body === 'object') {
+    (req as any)._body = true;
+  }
+  next();
+});
 app.use(express.json({ limit: '2mb' }));
 
 // 6. Global Input Sanitization Middleware to strip XSS & control characters

@@ -1,4 +1,4 @@
-# EventPilot â€” GenAI-Powered Event Planning & Financial Optimization Platform
+# EventPilot — GenAI-Powered Event Planning & Financial Optimization Platform
 
 [![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel)](https://vercel.com)
 [![CI/CD Pipeline](https://img.shields.io/badge/CI%2FCD-GitHub_Actions_Passing-success?style=for-the-badge&logo=github-actions)](https://github.com/siribeesu/EventPilot/actions/workflows/ci.yml)
@@ -6,20 +6,26 @@
 [![React 19](https://img.shields.io/badge/React-19.1-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-v20%20%7C%20v22%20%7C%20v24-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
-[![Tests Passing](https://img.shields.io/badge/Vitest-38%2F38%20Passed%20(100%25)-brightgreen?style=for-the-badge&logo=vitest)](docs/TEST_RESULTS.md)
+[![Tests Passing](https://img.shields.io/badge/Vitest-46%2F46%20Passed%20(100%25)-brightgreen?style=for-the-badge&logo=vitest)](docs/TEST_RESULTS.md)
+[![E2E Journey](https://img.shields.io/badge/E2E_Tests-8%20User%20Flows_Passing-teal?style=for-the-badge&logo=playwright)](docs/TEST_RESULTS.md)
+[![ADRs](https://img.shields.io/badge/Architecture-4%20ADRs_Accepted-blueviolet?style=for-the-badge)](docs/adr/001-hybrid-postgres-json-storage.md)
 [![Security & Guardrails](https://img.shields.io/badge/Security-Prompt_Guardrails_%2B_RBAC-indigo?style=for-the-badge&logo=shield)](docs/SECURITY_AUDIT.md)
 [![WCAG 2.1 AA](https://img.shields.io/badge/Accessibility-WCAG%20AA-purple?style=for-the-badge)](docs/ACCESSIBILITY_AUDIT.md)
 
-> **EventPilot** is an enterprise-grade, full-stack Generative AI application designed to eliminate planning chaos and budget overruns for **weddings, milestone birthdays, anniversaries, college festivals, and community galas**. Built with a deterministic financial engine, real-time AI assistant copilot, and autonomous **Budget Rescue Modeâ„¢**.
+> **EventPilot** is an enterprise-grade, full-stack Generative AI application designed to eliminate planning chaos and budget overruns for **weddings, milestone birthdays, anniversaries, college festivals, and community galas**. Built with a deterministic financial engine, real-time AI assistant copilot, and autonomous **Budget Rescue Mode™**.
+
+> 🌐 **Live Production App:** [eventpilot-ai.vercel.app](https://event-pilot-phi.vercel.app) *(or Vercel Preview)*  
+> 📊 **Live Telemetry & Health:** [`GET /api/metrics`](https://event-pilot-phi.vercel.app/api/metrics) • [`GET /api/health`](https://event-pilot-phi.vercel.app/api/health)  
+> 🧪 **CI/CD Evidence & Run Logs:** [GitHub Actions Run Log](docs/CI_RUN_LOG.md) • [Vitest Execution Log (46/46 across 9 Suites)](docs/TEST_RESULTS.md) • [Architecture Decision Records (ADRs)](docs/adr/001-hybrid-postgres-json-storage.md)
 
 ---
 
-## ðŸ“‘ Table of Contents
+## 📑 Table of Contents
 
 - [1. Executive Summary](#1-executive-summary)
 - [2. System Architecture](#2-system-architecture)
 - [3. Core Features](#3-core-features)
-  - [A. Autonomous Budget Rescue Modeâ„¢ (Signature Feature)](#a-autonomous-budget-rescue-mode-signature-feature)
+  - [A. Autonomous Budget Rescue Mode™ (Signature Feature)](#a-autonomous-budget-rescue-mode-signature-feature)
   - [B. Interactive AI Copilot (Contextual Assistant)](#b-interactive-ai-copilot-contextual-assistant)
   - [C. AI Master Event Generation Engine](#c-ai-master-event-generation-engine)
   - [D. Itemized Budget Manager & Financial Ledger](#d-itemized-budget-manager--financial-ledger)
@@ -103,11 +109,11 @@ flowchart TD
 
 ## 3. Core Features
 
-### A. Autonomous Budget Rescue Modeâ„¢ (Signature Feature)
+### A. Autonomous Budget Rescue Mode™ (Signature Feature)
 
-Budget Rescue Modeâ„¢ is EventPilot's primary financial protection feature.
+Budget Rescue Mode™ is EventPilot's primary financial protection feature.
 
-* **Scenario**: A user initially creates an event budgeted at â‚¹50,000. Mid-way through planning, financial limits contract to â‚¹35,000.
+* **Scenario**: A user initially creates an event budgeted at ₹50,000 ($600). Mid-way through planning, financial limits contract to ₹35,000 ($420).
 * **Autonomous Intelligence**:
   1. Recalculates the new available financial limit.
   2. Identifies non-essential line items that exceed the new ceiling.
@@ -127,7 +133,7 @@ Budget Rescue Modeâ„¢ is EventPilot's primary financial protection feature.
 A persistent slide-over drawer accessible directly from the event management studio:
 * **Context Awareness**: Ingests current event title, guest headcount, total budget, category expenses, pending tasks, and booked vendors.
 * **Conversational Modifications**: Responds to real natural-language instructions:
-  * *"Reduce my overall budget to â‚¹35,000 without cutting food quality."*
+  * *"Reduce my overall budget to ₹35,000 ($420) without cutting food quality."*
   * *"Suggest a traditional South Indian vegetarian menu for 120 guests."*
   * *"The celebration is in 7 days. What urgent deadlines should I prioritize?"*
   * *"Replace expensive stage lighting with ambient floral candle arrangements."*
@@ -141,7 +147,7 @@ When creating a new event, EventPilot ingests comprehensive celebration paramete
 * Event Title, Event Type (Wedding, Birthday, Anniversary, College Fest, Community)
 * Event Date, Start Time, and End Time
 * Geographic Location & Setting (Indoor Hall, Outdoor Lawn, Hybrid Both)
-* Target Budget & Preferred Currency (INR â‚¹, USD $, EUR â‚¬, GBP Â£, AED)
+* Target Budget & Preferred Currency (INR ₹, USD $, EUR €, GBP £, AED)
 * Expected Guest Headcount
 * Theme Preferences & Aesthetic Style
 * Cultural / Regional Customs
@@ -158,7 +164,7 @@ Every LLM response is requested under a strict JSON schema and validated at runt
 * **Category Breakdown**: Venue & Ambiance, Food & Gourmet Catering, Bespoke Stage Decor, Photography & Video, DJ & Entertainment, Invitations & Stationery, Logistics & Transport, and Contingency.
 * **Recharts Visualization**: Interactive bar charts and distribution graphs.
 * **Deterministic Calculations**: Categorical totals, remaining buffer balances, and overspending deficits are computed in application code rather than estimated by the LLM.
-* **Overspending Alerts**: Real-time warning banners appear when planned expenses exceed the allocated budget, offering a direct 1-click trigger to launch Budget Rescue Modeâ„¢.
+* **Overspending Alerts**: Real-time warning banners appear when planned expenses exceed the allocated budget, offering a direct 1-click trigger to launch Budget Rescue Mode™.
 
 ---
 
@@ -235,14 +241,17 @@ EventPilot implements enterprise-grade defensive security:
 
 ### IV. Automated Testing Suite & CI/CD Verification
 
-EventPilot includes a battle-tested Vitest test suite with **38 passing tests** across **8 specialized suites** with continuous integration across Node.js 20.x and 22.x:
+EventPilot includes an enterprise-grade automated test matrix with **46 passing tests** across **9 specialized suites**, covering unit, integration, security, and full end-to-end user journeys:
 
 ```bash
-npm run test
+npm run test       # Run all 46 tests across 9 suites
+npm run test:e2e   # Run 8 end-to-end user journey flows
+npm run verify     # Full verification: compile + unit + integration + E2E
 ```
 
 | Test Suite | Tests | Category | Scope & Key Invariants Verified |
 | :--- | :---: | :---: | :--- |
+| `src/tests/e2e_user_journey.test.ts` | **8** | **Full E2E Journeys** | **Signup/login flow, event creation with templates, budget rescue execution, human-in-the-loop AI approval, vendor negotiation sync, PDF & GDPR export, AI feedback loop, and async background queue** |
 | `src/tests/ai_guardrails.test.ts` | 6 | AI Safety & Cost | Direct & indirect prompt injection detection, delimiter stuffing defense, Zod output validation, negative number clamp, in-memory SHA-256 cost cache |
 | `src/tests/rbac_collaboration.test.ts` | 5 | Authorization | Role-based access control (`owner`, `editor`, `viewer`), collaborator invitation, privilege escalation guards, collaborator revocation |
 | `src/tests/privacy_and_audit.test.ts` | 4 | Privacy & Compliance | GDPR Article 15 Data Portability JSON export, GDPR Article 17 Right to Erasure cascade delete, transparent retention policy disclosures, system telemetry metrics |
@@ -253,6 +262,11 @@ npm run test
 | `src/tests/api_integration.test.ts` | 4 | Integration | Event CRUD lifecycle, calculated metrics verification, Budget Rescue proposal application, AI Copilot approval workflow |
 
 > 📖 **In-Depth Evidence & Audit Reports:**
+> * 🧪 [Automated Vitest Test Run Log (46/46)](docs/TEST_RESULTS.md) — Execution logs across 9 specialized suites and E2E journeys
+> * 🏛️ [Architecture Decision Records (ADRs)](docs/adr/001-hybrid-postgres-json-storage.md) — Formal records on storage, guardrails, RBAC, and client-side PDF export
+> * 📜 [Privacy Policy & Data Retention](docs/PRIVACY_POLICY.md) — Formal GDPR Article 15/17 compliance standards
+> * ⚖️ [Terms of Service](docs/TERMS_OF_SERVICE.md) — Acceptable use and AI advisory disclaimers
+> * 🚀 [GitHub Actions CI Pipeline Run Log](docs/CI_RUN_LOG.md) — Node 20.x & 22.x matrix verification step-by-step
 > * 🛡️ [Enterprise Security & Threat Model Audit](docs/SECURITY_AUDIT.md) — 10 prompt injection tests, PBKDF2 hash verification & RBAC matrix
 > * ♿ [Automated Accessibility (WCAG 2.1 AA) Report](docs/ACCESSIBILITY_AUDIT.md) — Mathematical contrast ratio proofs, skip link & focus trap tests
 > * 📊 [Production Observability & Telemetry Reference](docs/OBSERVABILITY.md) — Live metrics, memory stats & request correlation architecture
@@ -310,6 +324,43 @@ npm run test
 * **Layout Grid**: Consistent 1280px (`max-w-7xl`) container across all pages (Navbar, Dashboard, Wizard, Event Studio, and Footer).
 * **Responsive Breakpoints**: Optimized for Mobile (360px+), Tablet (768px+), Laptop (1024px+), and Desktop (1440px+).
 
+### Visual Interface Architecture & Production Workflows
+
+#### 1. Executive Command Center (Dashboard & Portfolio Management)
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│  EventPilot AI Suite   • Systems: Operational (99.9%)  • Privacy  • ₹ INR  • [New Event]│
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  ✨ Quickstart Onboarding: [████████████████████░░░░] 75% Completed                     │
+│  [✓ Event Initialized]  [✓ Budget Breakdown]  [→ Invite Collaborator]  [✓ GDPR Policy] │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  PLANNED SPENDING       TOTAL BUDGET LIMIT     TASKS COMPLETED        VENDORS LOCKED   │
+│  ₹ 2,45,000             ₹ 2,50,000             18 / 24 Tasks (75%)    5 Booked         │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  ACTIVE CELEBRATION STUDIO                                                             │
+│  • Ananya & Kabir Grand Wedding — Dec 15, 2026 (Taj West End, 150 Guests)             │
+│    Budget: ₹ 2,50,000 | Spent: ₹ 1,90,000 | Surplus: ₹ 60,000 [Open Studio →]         │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 2. Event Studio with Live AI Copilot & Active Safety Guardrails
+```
+┌────────────────────────────────────────────────────────────────┬───────────────────────┐
+│ Event: Ananya & Kabir Wedding  [Rescue Mode™] [Team (3)] [PDF] │ 🤖 AI COPILOT         │
+├────────────────────────────────────────────────────────────────┤ 🛡️ Prompt Guardrails  │
+│ OVERVIEW   • BUDGET (Itemized)   • TIMELINE   • VENDORS        │ SHA-256 Cache Active  │
+├────────────────────────────────────────────────────────────────┼───────────────────────┤
+│ Category Allocation (Deterministic Financial Engine):          │ "I noticed your decor │
+│ • Catering:   ₹ 85,000 (34%) [===================>            ] │ quote is 15% above    │
+│ • Venue:      ₹ 70,000 (28%) [===============>                ] │ plan. Would you like  │
+│ • Decor:      ₹ 40,000 (16%) [========>                       ] │ me to run Budget      │
+│ • Photography:₹ 25,000 (10%) [=====>                          ] │ Rescue Mode to find   │
+│ • Music & DJ: ₹ 15,000 (6%)  [===>                            ] │ substitutions?"       │
+│ • Contingency:₹ 15,000 (6%)  [===>                            ] │                       │
+│                                                                │ [Apply Proposal ✓]    │
+└────────────────────────────────────────────────────────────────┴───────────────────────┘
+```
+
 ---
 
 ## 6. Technology Stack
@@ -350,16 +401,16 @@ EventPilot operates with zero-configuration dual-mode storage:
 ### Relational Entity-Relationship Overview
 
 ```
- â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”       1:N       â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
- â”‚    users     â”‚â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€<â”‚    events    â”‚
- â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜                 â””â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”˜
-                                         â”‚
-        â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-        â”‚ 1:N              â”‚ 1:N         â”‚ 1:N              â”‚ 1:N              â”‚ 1:N
-        â–¼                  â–¼             â–¼                  â–¼                  â–¼
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ budget_items â”‚   â”‚    tasks     â”‚â”‚   vendors    â”‚   â”‚ event_ideas  â”‚   â”‚plan_revisionsâ”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
++---------------+        1:N       +---------------+
+|     users     |-----------------<|    events     |
++---------------+                  +-------+-------+
+                                           |
+         +-------------------+-------------+-------------+-------------------+
+         | 1:N               | 1:N         | 1:N         | 1:N               | 1:N
+         v                   v             v             v                   v
++-----------------+   +-------------+  +---------+   +---------------+   +-----------------+
+|  budget_items   |   |    tasks    |  | vendors |   |  event_ideas  |   | plan_revisions  |
++-----------------+   +-------------+  +---------+   +---------------+   +-----------------+
 ```
 
 ---
@@ -470,7 +521,7 @@ EventPilot is pre-configured for **single-project zero-config deployment** on Ve
 
 2. **Import into Vercel**:
    - Log into [vercel.com](https://vercel.com).
-   - Click **Add New...** â†’ **Project**.
+   - Click **Add New...** → **Project**.
    - Select your repository: **`siribeesu/EventPilot`**.
 
 3. **Verify Settings (Auto-Detected)**:
@@ -489,6 +540,6 @@ EventPilot is pre-configured for **single-project zero-config deployment** on Ve
 
 ---
 
-## ðŸ“„ License
+## 📄 License
 
-This project is licensed under the MIT License. Built with â¤ï¸ for seamless, stress-free celebration planning.
+This project is licensed under the MIT License. Built with ❤️ for seamless, stress-free celebration planning.

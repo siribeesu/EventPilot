@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Sparkles,
   ArrowRight,
@@ -46,6 +46,76 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
   const [dietaryPreferences, setDietaryPreferences] = useState('');
   const [priorityAreas, setPriorityAreas] = useState<string[]>(['catering', 'venue']);
   const [additionalRequirements, setAdditionalRequirements] = useState('');
+
+
+  const quickTemplates = [
+    {
+      title: 'Grand Heritage Palace Wedding',
+      eventType: 'wedding' as EventType,
+      budget: 1500000,
+      guestCount: 250,
+      location: 'Umaid Bhawan Palace, Jodhpur',
+      theme: 'Royal Rajputana Gold & Crimson',
+      cultural: 'Traditional Marwari Heritage',
+      dietary: 'Gourmet Pure Vegetarian Banquet',
+      priorities: ['catering', 'venue', 'decoration'],
+      notes: 'Need live royal nagada welcome, vintage car entry, and stage pyrotechnics.',
+    },
+    {
+      title: 'National Tech Hackathon & Conference',
+      eventType: 'college' as EventType,
+      budget: 350000,
+      guestCount: 180,
+      location: 'Convention Center, Bengaluru',
+      theme: 'Modern Cyber Minimalist',
+      cultural: 'Corporate Tech Innovation',
+      dietary: 'High-energy wraps, snack bowls & specialty coffee bar',
+      priorities: ['venue', 'entertainment', 'catering'],
+      notes: 'Dual Gigabit fiber internet, multi-display LED walls, and 24-hr catering access.',
+    },
+    {
+      title: 'Retro Neon 30th Birthday Bash',
+      eventType: 'birthday' as EventType,
+      budget: 75000,
+      guestCount: 50,
+      location: 'Rooftop Lounge, Mumbai',
+      theme: '80s Retro Neon Glow',
+      cultural: 'Cosmopolitan Party',
+      dietary: 'Finger food sliders, live taco station, artisanal mocktail bar',
+      priorities: ['entertainment', 'decoration', 'catering'],
+      notes: 'Glow accessories, live DJ set with 80s synth-pop, and custom neon photo booth.',
+    },
+    {
+      title: 'Annual Charity Fundraising Gala',
+      eventType: 'community' as EventType,
+      budget: 600000,
+      guestCount: 200,
+      location: 'Grand Ballroom, New Delhi',
+      theme: 'Black-Tie Midnight Elegance',
+      cultural: 'Philanthropic Formal',
+      dietary: '4-Course Plated Fine Dining & Champagne Reception',
+      priorities: ['venue', 'catering', 'photography'],
+      notes: 'Silent auction display tables, keynote stage setup, and press media backdrop.',
+    },
+  ];
+
+  const applyQuickTemplate = (tpl: typeof quickTemplates[0]) => {
+    setTitle(tpl.title);
+    setEventType(tpl.eventType);
+    setBudget(tpl.budget);
+    setGuestCount(tpl.guestCount);
+    setLocation(tpl.location);
+    setThemePreference(tpl.theme);
+    setCulturalPreference(tpl.cultural);
+    setDietaryPreferences(tpl.dietary);
+    setPriorityAreas(tpl.priorities);
+    setAdditionalRequirements(tpl.notes);
+    if (!eventDate) {
+      const d = new Date();
+      d.setDate(d.getDate() + 90);
+      setEventDate(d.toISOString().split('T')[0]);
+    }
+  };
 
   const priorityOptions = [
     { id: 'venue', label: 'Venue & Ambiance' },
@@ -161,11 +231,11 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
       }
       return 'AI Advisory: Accurate guest headcounts ensure our catering formulas scale correctly without over-ordering.';
     }
-    return 'AI Advisory: Your selected priority areas are strictly shielded by Budget Rescue Modeâ„¢â€”if you reduce your financial ceiling later, your highest priorities stay protected.';
+    return 'AI Advisory: Your selected priority areas are strictly shielded by Budget Rescue Mode™ — if you reduce your financial ceiling later, your highest priorities stay protected.';
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Top Header & Breadcrumb */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
@@ -318,21 +388,21 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
           </div>
 
           {/* Contextual AI Advisor Card */}
-          <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white border border-slate-800 shadow-md space-y-3.5">
+          <div className="bg-indigo-50/80 rounded-3xl p-6 text-slate-900 border border-indigo-200/80 shadow-xs space-y-3.5">
             <div className="flex items-center space-x-2.5">
               <div className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                 <Sparkles className="w-4 h-4" aria-hidden="true" />
               </div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-200">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-900">
                 AI Planner Guidance
               </h3>
             </div>
-            <p className="text-xs leading-relaxed text-slate-300">
+            <p className="text-xs leading-relaxed text-slate-600">
               {getAiTip()}
             </p>
-            <div className="pt-2 border-t border-slate-800 flex items-center space-x-2 text-[11px] text-indigo-300 font-semibold">
+            <div className="pt-2 border-t border-indigo-200 flex items-center space-x-2 text-[11px] text-indigo-700 font-semibold">
               <ShieldCheck className="w-4 h-4 text-emerald-400" aria-hidden="true" />
-              <span>Budget Rescue Modeâ„¢ Protected</span>
+              <span>Budget Rescue Mode™ Protected</span>
             </div>
           </div>
         </div>
@@ -341,7 +411,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
         <div className="lg:col-span-8">
           <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">
             {/* Wizard Card Header */}
-            <div className="bg-slate-900 border-b border-slate-800 px-8 py-6 text-white flex items-center justify-between">
+            <div className="bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 border-b border-indigo-500/30 px-8 py-6 text-white flex items-center justify-between">
               <div>
                 <div className="flex items-center space-x-2">
                   <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
@@ -385,6 +455,30 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
             <form onSubmit={handleSubmit} className="p-8 space-y-6">
               {step === 1 && (
                 <div className="space-y-6">
+
+                  {/* Quick-Start Event Templates Banner */}
+                  <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-blue-50 border border-indigo-100/90 space-y-2.5">
+                    <div className="flex items-center space-x-2">
+                      <Sparkles className="w-4 h-4 text-indigo-600" aria-hidden="true" />
+                      <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                        Quick-Start Event Templates (1-Click Fill)
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {quickTemplates.map((tpl, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => applyQuickTemplate(tpl)}
+                          className="text-left p-2.5 rounded-xl border border-indigo-200/60 bg-white/80 hover:bg-white hover:border-indigo-400 hover:shadow-xs transition text-xs font-medium text-slate-800 focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
+                        >
+                          <div className="font-semibold text-indigo-900 truncate">{tpl.title}</div>
+                          <div className="text-[10px] text-slate-500 mt-0.5">{currency} {tpl.budget.toLocaleString()} • {tpl.guestCount} Guests</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Event Title */}
                   <div>
                     <label htmlFor="wizard-event-title" className="block text-sm font-semibold text-slate-800 mb-1.5">
@@ -563,7 +657,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                       </label>
                       <div className="relative">
                         <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold" aria-hidden="true">
-                          {currency === 'INR' ? 'â‚¹' : currency}
+                          {currency === 'INR' ? '₹' : currency === 'USD' ? '$' : currency}
                         </span>
                         <input
                           id="wizard-budget"
@@ -597,10 +691,10 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                         onChange={(e) => setCurrency(e.target.value)}
                         className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                       >
-                        <option value="INR">INR (â‚¹)</option>
+                        <option value="INR">INR (₹)</option>
                         <option value="USD">USD ($)</option>
-                        <option value="EUR">EUR (â‚¬)</option>
-                        <option value="GBP">GBP (Â£)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
                         <option value="AED">AED</option>
                       </select>
                     </div>
@@ -753,7 +847,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="inline-flex items-center space-x-2 px-7 py-3 rounded-2xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-md cursor-pointer active:scale-95"
+                    className="inline-flex items-center space-x-2 px-7 py-3 rounded-2xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-md cursor-pointer active:scale-95"
                   >
                     <span>Continue to Step {step + 1}</span>
                     <ArrowRight className="w-4 h-4 text-indigo-300" aria-hidden="true" />
@@ -762,7 +856,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold bg-slate-900 hover:bg-slate-800 text-white active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-xl shadow-slate-900/20 disabled:opacity-50 cursor-pointer"
+                    className="inline-flex items-center space-x-2.5 px-8 py-3.5 rounded-2xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-indigo-500 transition shadow-xl shadow-slate-900/20 disabled:opacity-50 cursor-pointer"
                   >
                     {isSubmitting ? (
                       <span className="flex items-center space-x-2">

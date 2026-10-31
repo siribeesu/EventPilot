@@ -1,4 +1,4 @@
-﻿import {
+import {
   EventRecord,
   EventFullDetail,
   BudgetItem,
@@ -10,18 +10,36 @@
 
 const API_BASE = '/api';
 
+async function handleResponse<T>(res: Response, fallbackError: string): Promise<T> {
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    let errMsg = fallbackError;
+    try {
+      const parsed = JSON.parse(text);
+      if (parsed.error) errMsg = parsed.error;
+      else if (parsed.message) errMsg = parsed.message;
+    } catch {
+      if (text && text.trim().length > 0 && text.trim().length < 250) {
+        errMsg = text.trim();
+      } else {
+        errMsg = `${fallbackError} (${res.status} ${res.statusText})`;
+      }
+    }
+    throw new Error(errMsg);
+  }
+  return res.json();
+}
+
 export const api = {
   // Events
   async getEvents(): Promise<EventFullDetail[]> {
     const res = await fetch(`${API_BASE}/events`);
-    if (!res.ok) throw new Error('Failed to fetch events');
-    return res.json();
+    return handleResponse<EventFullDetail[]>(res, 'Failed to fetch events');
   },
 
   async getEvent(id: string): Promise<EventFullDetail> {
     const res = await fetch(`${API_BASE}/events/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch event');
-    return res.json();
+    return handleResponse<EventFullDetail>(res, 'Failed to fetch event');
   },
 
   async createEvent(data: Partial<EventRecord>): Promise<EventFullDetail> {
@@ -30,11 +48,7 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || 'Failed to create event');
-    }
-    return res.json();
+    return handleResponse<EventFullDetail>(res, 'Failed to create event');
   },
 
   async updateEvent(id: string, updates: Partial<EventRecord>): Promise<EventFullDetail> {
@@ -200,6 +214,32 @@ export const api = {
       body: JSON.stringify({ proposedChanges, revisionNote }),
     });
     if (!res.ok) throw new Error('Failed to apply assistant changes');
+    return res.json();
+  },
+
+
+  // AI Feedback Loop
+  async submitAIFeedback(
+    eventId: string,
+    feedback: {
+      suggestionId?: string;
+      suggestionType?: string;
+      rating: 'positive' | 'negative' | 'neutral';
+      userAction?: 'accepted' | 'rejected' | 'modified' | 'viewed_only';
+      feedbackComment?: string;
+      category?: string;
+    }
+  ): Promise<any> {
+    const res = await fetch(`${API_BASE}/events/${eventId}/ai/feedback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        suggestionType: 'assistant_chat',
+        userAction: 'viewed_only',
+        ...feedback,
+      }),
+    });
+    if (!res.ok) throw new Error('Failed to submit feedback');
     return res.json();
   },
 

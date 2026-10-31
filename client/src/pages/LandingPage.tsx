@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Sparkles,
   ArrowRight,
@@ -39,7 +39,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       subtitle: 'Harmonize traditions, bespoke floral stages, gourmet banquets, and guest hospitality within strict budgets.',
       icon: Heart,
       tag: 'Weddings',
-      sampleBudget: currency === 'INR' ? 'â‚¹7,50,000' : '$15,000',
+      sampleBudget: currency === 'INR' ? '₹7,50,000' : '$15,000',
       sampleGuests: '250 Guests',
       features: [
         'Multi-function timeline: Sangeet, Mehendi, Ceremony & Grand Reception',
@@ -60,7 +60,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       subtitle: 'From 1st birthday wonderlands to 50th golden celebrations with zero coordinator stress.',
       icon: Cake,
       tag: 'Birthdays',
-      sampleBudget: currency === 'INR' ? 'â‚¹65,000' : '$2,500',
+      sampleBudget: currency === 'INR' ? '₹65,000' : '$2,500',
       sampleGuests: '60 Guests',
       features: [
         'Neon & Glow-in-the-dark or Boho Chic aesthetic generator',
@@ -81,7 +81,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       subtitle: 'High-energy festivals, charity concerts, and alumni reunions with transparent funds tracking.',
       icon: Flame,
       tag: 'Community & College',
-      sampleBudget: currency === 'INR' ? 'â‚¹2,50,000' : '$5,000',
+      sampleBudget: currency === 'INR' ? '₹2,50,000' : '$5,000',
       sampleGuests: '400 Attendees',
       features: [
         'Trussing, line-array audio, and municipal sound permits timeline',
@@ -105,20 +105,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     <div className="space-y-20 pb-24 saas-glow-bg">
       {/* 1. Hero Section: Modern SaaS High-Impact Aura */}
       <section className="relative overflow-hidden pt-14 pb-20 border-b border-slate-200/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             {/* Left Column: Compelling Typography & CTAs */}
             <div className="lg:col-span-7 space-y-7">
-              {/* Micro Shimmer Pill Badge */}
-              <div className="inline-flex items-center space-x-2.5 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-900 text-xs font-semibold shadow-2xs">
-                <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" aria-hidden="true" />
-                <span className="tracking-wide">Autonomous Event Intelligence 2.5</span>
-                <span className="text-indigo-400 font-normal">|</span>
-                <span className="text-indigo-700 font-bold flex items-center space-x-1">
-                  <span>Gemini & Safety Engine</span>
-                </span>
-              </div>
-
               {/* Ultra-Modern SaaS Headline */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.08]">
                 Plan Unforgettable Events in Minutes,{' '}
@@ -129,7 +119,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
               {/* Subheading */}
               <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl font-normal">
-                EventPilot transforms chaotic event planning into itemized budget matrices, adaptive countdown schedules, verified vendor procurement checklists, and personalized themes. Features autonomous <strong>Budget Rescue Modeâ„¢</strong>.
+                EventPilot transforms chaotic event planning into itemized budget matrices, adaptive countdown schedules, verified vendor procurement checklists, and personalized themes. Features autonomous <strong>Budget Rescue Mode™</strong>.
               </p>
 
               {/* Action Buttons */}
@@ -160,7 +150,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 </div>
                 <div className="flex items-center space-x-2">
                   <ShieldAlert className="w-4 h-4 text-amber-600 flex-shrink-0" aria-hidden="true" />
-                  <span>Budget Rescue Modeâ„¢</span>
+                  <span>Budget Rescue Mode™</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <FileText className="w-4 h-4 text-violet-600 flex-shrink-0" aria-hidden="true" />
@@ -195,8 +185,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <span className="text-3xl font-extrabold text-slate-900 tracking-tight">
                       {currency === 'INR'
                         ? heroActiveDemo === 'rescued'
-                          ? 'â‚¹5,25,000'
-                          : 'â‚¹7,50,000'
+                          ? '₹5,25,000'
+                          : '₹7,50,000'
                         : heroActiveDemo === 'rescued'
                         ? '$10,500'
                         : '$15,000'}
@@ -271,7 +261,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   <p className="text-[11px] text-slate-500 leading-relaxed">
                     {heroActiveDemo === 'normal'
                       ? 'Click "Apply -30% Rescue" to see how our autonomous engine intelligently swaps imported stage florals while strictly protecting your royal banquet catering.'
-                      : 'âœ“ Trade-off executed! Preserved dining quality while saving â‚¹2,25,000 on stage elements with 1-click user verification.'}
+                      : '✓ Trade-off executed! Preserved dining quality while saving ₹2,25,000 on stage elements with 1-click user verification.'}
                   </p>
                 </div>
               </div>
@@ -281,7 +271,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* 2. Bento Grid: Enterprise Feature Matrix */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <div className="text-center max-w-2xl mx-auto space-y-2.5">
           <span className="text-xs font-bold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
             Engineered For Precision
@@ -302,7 +292,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <ShieldAlert className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 tracking-tight">
-                Budget Rescue Modeâ„¢ (Priority Safeguards)
+                Budget Rescue Mode™ (Priority Safeguards)
               </h3>
               <p className="text-sm text-slate-600 leading-relaxed">
                 When financial limits decrease, EventPilot never makes blind cuts. It analyzes your declared priority focus, recalculates line items, and generates a side-by-side comparative ledger with individual checkboxes for your approval.
@@ -381,7 +371,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* 3. Occasion Blueprints & Interactive Showcase */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Tailored Intelligence for Every Occasion
@@ -527,7 +517,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* 4. Consistent Full-Width Bottom CTA Banner */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-10 sm:p-14 text-white text-center space-y-6 shadow-2xl relative overflow-hidden border border-slate-800">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_0%,rgba(99,102,241,0.25),transparent)]" aria-hidden="true" />
           <div className="relative space-y-4 max-w-2xl mx-auto">
@@ -538,7 +528,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               Create Your Next Event Plan in 120 Seconds
             </h2>
             <p className="text-sm sm:text-base text-slate-300">
-              Get an itemized budget, vendor quotation directory, and personalized timeline backed by Budget Rescue Modeâ„¢.
+              Get an itemized budget, vendor quotation directory, and personalized timeline backed by Budget Rescue Mode™.
             </p>
             <div className="pt-3">
               <button

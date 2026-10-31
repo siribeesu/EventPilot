@@ -1,4 +1,4 @@
-﻿import { z } from 'zod';
+import { z } from 'zod';
 
 // Event input schema
 export const CreateEventSchema = z.object({
@@ -126,6 +126,8 @@ export const AIGeneratedPlanSchema = z.object({
     })
   ),
   recommendations: z.array(z.string()),
+  confidenceScore: z.number().min(0).max(1).optional(),
+  uncertaintyFlags: z.array(z.string()).optional(),
 });
 
 export type AIGeneratedPlan = z.infer<typeof AIGeneratedPlanSchema>;
@@ -200,6 +202,20 @@ export const AIAssistantActionSchema = z.object({
   }).optional(),
   clarifyingQuestions: z.array(z.string()).optional(),
   requiresUserApproval: z.boolean().default(false),
+  confidenceScore: z.number().min(0).max(1).optional(),
+  uncertaintyFlags: z.array(z.string()).optional(),
 });
 
 export type AIAssistantAction = z.infer<typeof AIAssistantActionSchema>;
+
+// Real User Feedback Loop Schema
+export const AIFeedbackSchema = z.object({
+  suggestionId: z.string().optional(),
+  suggestionType: z.enum(['plan_generation', 'budget_rescue', 'assistant_chat', 'vendor_recommendation']).default('assistant_chat'),
+  rating: z.enum(['positive', 'negative', 'neutral']),
+  userAction: z.enum(['accepted', 'rejected', 'modified', 'viewed_only']).default('viewed_only'),
+  feedbackComment: z.string().max(500).optional(),
+  category: z.string().optional(),
+});
+
+export type AIFeedbackInput = z.infer<typeof AIFeedbackSchema>;

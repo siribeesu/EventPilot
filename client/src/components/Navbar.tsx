@@ -1,6 +1,5 @@
 import React from 'react';
 import { Sparkles, Plus, LayoutDashboard, Compass, Globe, Shield, ChevronRight } from 'lucide-react';
-import { SystemHealthPill } from './SystemHealthPill';
 
 interface NavbarProps {
   currentView: 'landing' | 'dashboard' | 'wizard' | 'event';
@@ -22,7 +21,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <>
       <header role="banner" className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-[0_1px_3px_rgba(15,23,42,0.03)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Brand Logo & Breadcrumb Combo */}
           <div className="flex items-center space-x-3 sm:space-x-4 min-w-0">
             <button
@@ -41,9 +40,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <div className="flex items-center space-x-2">
                   <span className="font-extrabold text-lg text-slate-900 tracking-tight leading-tight">
                     Event<span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Pilot</span>
-                  </span>
-                  <span className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/60 uppercase">
-                    AI Suite
                   </span>
                 </div>
                 <p className="text-[10px] font-medium text-slate-400 -mt-0.5 tracking-wide">Enterprise Event Intelligence</p>
@@ -113,9 +109,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Right Actions */}
           <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
-            {/* Live System Observability Pill */}
-            <SystemHealthPill />
-
             {/* Privacy & GDPR Action */}
             {onOpenPrivacy && (
               <button

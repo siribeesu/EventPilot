@@ -119,7 +119,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
       <div
         role="status"
         aria-live="polite"
-        className="max-w-7xl mx-auto px-4 py-20 text-center space-y-3"
+        className="w-full px-4 sm:px-6 lg:px-8 py-20 text-center space-y-3"
       >
         <div className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto" aria-hidden="true" />
         <p className="text-slate-500 text-sm">Loading event itinerary & budget data...</p>
@@ -266,7 +266,7 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-9 space-y-7">
+    <div className="w-full px-4 sm:px-6 lg:px-8 py-9 space-y-7">
       {/* Top Banner Navigation & Summary */}
       <div className="bg-white rounded-3xl border border-slate-200/90 p-7 shadow-[0_1px_3px_rgba(15,23,42,0.03)] space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Navbar } from './components/Navbar';
+import { Footer } from './components/Footer';
 import { PrivacyDataModal } from './components/PrivacyDataModal';
 import { ConsentBanner } from './components/ConsentBanner';
 import type { EventFullDetail } from './types';
@@ -95,7 +96,7 @@ export function App() {
               role="status"
               aria-live="polite"
               aria-busy="true"
-              className="max-w-7xl mx-auto px-4 py-24 text-center space-y-3"
+              className="w-full px-4 sm:px-6 lg:px-8 py-24 text-center space-y-3"
             >
               <div
                 className="w-8 h-8 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto"
@@ -141,24 +142,11 @@ export function App() {
         </Suspense>
       </main>
 
-      {/* Accessible Footer */}
-      <footer role="contentinfo" className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p>© 2026 EventPilot — GenAI-Powered Event Planning & Financial Optimization Platform.</p>
-          <div className="flex items-center space-x-3 text-slate-500">
-            <button
-              onClick={() => setPrivacyModalOpen(true)}
-              className="hover:text-indigo-600 transition underline underline-offset-2 cursor-pointer"
-            >
-              GDPR & Privacy Disclosures
-            </button>
-            <span aria-hidden="true">•</span>
-            <span>Gemini & Rules Engine</span>
-            <span aria-hidden="true">•</span>
-            <span>PostgreSQL & Supabase Ready</span>
-          </div>
-        </div>
-      </footer>
+      {/* Comprehensive Modern Footer */}
+      <Footer
+        onNavigate={handleNavigate}
+        onOpenPrivacy={() => setPrivacyModalOpen(true)}
+      />
 
       {/* GDPR Data Portability & Privacy Modal */}
       <PrivacyDataModal

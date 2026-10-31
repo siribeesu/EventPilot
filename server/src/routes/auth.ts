@@ -1,6 +1,6 @@
-﻿import { Router } from 'express';
+import { Router } from 'express';
 import { db } from '../database/db.js';
-import { generateToken, AuthenticatedRequest } from '../middleware/auth.js';
+import { generateToken, AuthenticatedRequest, authMiddleware } from '../middleware/auth.js';
 import { hashPassword, verifyPassword } from '../utils/security.js';
 
 const router = Router();
@@ -70,13 +70,22 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.get('/me', async (req: AuthenticatedRequest, res) => {
+router.get('/me', authMiddleware, async (req: AuthenticatedRequest, res) => {
   try {
-    const user = await db.getUserById(req.userId || 'usr_demo_123');
+    const userId = req.userId || req.user?.id || 'usr_demo_123';
+    let user = await db.getUserById(userId);
+    if (!user && req.userEmail) {
+      user = { id: userId, email: req.userEmail, name: req.user?.name || 'User', created_at: new Date().toISOString() };
+    }
     if (!user) {
       return res.status(404).json({ error: 'User not found', code: 'USER_NOT_FOUND' });
     }
     res.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
       id: user.id,
       email: user.email,
       name: user.name,

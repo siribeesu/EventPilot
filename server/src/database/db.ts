@@ -173,7 +173,18 @@ class StorageManager {
 
   private persist() {
     try {
-      fs.writeFileSync(this.dataFilePath, JSON.stringify(this.memoryData, null, 2), 'utf-8');
+      const dir = path.dirname(this.dataFilePath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      const tmpPath = `${this.dataFilePath}.${process.pid}.${Date.now()}.tmp`;
+      fs.writeFileSync(tmpPath, JSON.stringify(this.memoryData, null, 2), 'utf-8');
+      try {
+        fs.renameSync(tmpPath, this.dataFilePath);
+      } catch {
+        fs.copyFileSync(tmpPath, this.dataFilePath);
+        try { fs.unlinkSync(tmpPath); } catch {}
+      }
     } catch (e) {
       // Graceful fallback for read-only serverless runtimes
       logger.warn('Persistence to filesystem deferred (in-memory state active):', (e as Error).message);

@@ -10,6 +10,24 @@ import {
 
 const API_BASE = '/api';
 
+function getLocalEvents(): Record<string, EventFullDetail> {
+  try {
+    const raw = localStorage.getItem('eventpilot_events_cache');
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveLocalEvent(event: EventFullDetail) {
+  if (!event || !event.id) return;
+  try {
+    const store = getLocalEvents();
+    store[event.id] = event;
+    localStorage.setItem('eventpilot_events_cache', JSON.stringify(store));
+  } catch {}
+}
+
 async function handleResponse<T>(res: Response, fallbackError: string): Promise<T> {
   if (!res.ok) {
     const text = await res.text().catch(() => '');
@@ -33,13 +51,33 @@ async function handleResponse<T>(res: Response, fallbackError: string): Promise<
 export const api = {
   // Events
   async getEvents(): Promise<EventFullDetail[]> {
-    const res = await fetch(`${API_BASE}/events`);
-    return handleResponse<EventFullDetail[]>(res, 'Failed to fetch events');
+    try {
+      const res = await fetch(`${API_BASE}/events`);
+      const serverEvents = await handleResponse<EventFullDetail[]>(res, 'Failed to fetch events');
+      const localStore = getLocalEvents();
+      serverEvents.forEach(e => { localStore[e.id] = e; });
+      try { localStorage.setItem('eventpilot_events_cache', JSON.stringify(localStore)); } catch {}
+      return Object.values(localStore);
+    } catch (err) {
+      const local = Object.values(getLocalEvents());
+      if (local.length > 0) return local;
+      throw err;
+    }
   },
 
   async getEvent(id: string): Promise<EventFullDetail> {
-    const res = await fetch(`${API_BASE}/events/${id}`);
-    return handleResponse<EventFullDetail>(res, 'Failed to fetch event');
+    try {
+      const res = await fetch(`${API_BASE}/events/${id}`);
+      const data = await handleResponse<EventFullDetail>(res, 'Failed to fetch event');
+      saveLocalEvent(data);
+      return data;
+    } catch (err) {
+      const localStore = getLocalEvents();
+      if (localStore[id]) {
+        return localStore[id];
+      }
+      throw err;
+    }
   },
 
   async createEvent(data: Partial<EventRecord>): Promise<EventFullDetail> {
@@ -48,7 +86,9 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    return handleResponse<EventFullDetail>(res, 'Failed to create event');
+    const created = await handleResponse<EventFullDetail>(res, 'Failed to create event');
+    saveLocalEvent(created);
+    return created;
   },
 
   async updateEvent(id: string, updates: Partial<EventRecord>): Promise<EventFullDetail> {

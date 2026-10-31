@@ -15,6 +15,7 @@ export function App() {
   const [currentView, setCurrentView] = useState<'landing' | 'dashboard' | 'wizard' | 'event'>('landing');
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [activeEventTitle, setActiveEventTitle] = useState<string | null>(null);
+  const [createdEventDetail, setCreatedEventDetail] = useState<EventFullDetail | null>(null);
   const [currency, setCurrency] = useState<string>('INR');
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
 
@@ -62,6 +63,7 @@ export function App() {
   };
 
   const handleEventCreated = (event: EventFullDetail) => {
+    setCreatedEventDetail(event);
     setSelectedEventId(event.id);
     setActiveEventTitle(event.title);
     setCurrentView('event');
@@ -134,6 +136,7 @@ export function App() {
           {currentView === 'event' && selectedEventId && (
             <EventDetailPage
               eventId={selectedEventId}
+              initialEvent={createdEventDetail && createdEventDetail.id === selectedEventId ? createdEventDetail : undefined}
               onBack={() => handleNavigate('dashboard')}
               currency={currency}
               onTitleLoaded={(title) => setActiveEventTitle(title)}

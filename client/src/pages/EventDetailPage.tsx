@@ -42,6 +42,7 @@ interface EventDetailPageProps {
   eventId: string;
   onBack: () => void;
   currency: string;
+  initialEvent?: EventFullDetail;
   onTitleLoaded?: (title: string) => void;
 }
 
@@ -51,10 +52,11 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
   eventId,
   onBack,
   currency: globalCurrency,
+  initialEvent,
   onTitleLoaded,
 }) => {
-  const [event, setEvent] = useState<EventFullDetail | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [event, setEvent] = useState<EventFullDetail | null>(initialEvent || null);
+  const [loading, setLoading] = useState(!initialEvent);
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [showRescueModal, setShowRescueModal] = useState(false);
   const [showAssistantDrawer, setShowAssistantDrawer] = useState(false);
@@ -91,7 +93,9 @@ export const EventDetailPage: React.FC<EventDetailPageProps> = ({
       setEvent(data);
       if (onTitleLoaded && data.title) onTitleLoaded(data.title);
     } catch (err) {
-      alert(`Error loading event: ${(err as Error).message}`);
+      if (!initialEvent && !event) {
+        alert(`Error loading event: ${(err as Error).message}`);
+      }
     } finally {
       setLoading(false);
     }

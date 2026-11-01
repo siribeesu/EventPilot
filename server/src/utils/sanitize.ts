@@ -1,16 +1,21 @@
 /**
  * Security input sanitizer:
- * Strips dangerous HTML tags, javascript: URIs, and control characters to prevent XSS.
+ * Strips dangerous HTML tags, javascript: URIs, inline event handlers, and control characters to prevent XSS.
+ * Protects against Prototype Pollution by blocking __proto__, constructor, and prototype property injection.
  */
+
+const DANGEROUS_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
 export function sanitizeString(input: unknown): string {
   if (typeof input !== 'string') return '';
   return input
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
     .replace(/<[^>]+>/g, '') // strip HTML tags
-    .replace(/javascript:/gi, '')
-    .replace(/data:/gi, '')
-    .replace(/vbscript:/gi, '')
+    .replace(/\bon[a-zA-Z]+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '') // strip inline event handlers (onerror=, onload=, etc.)
+    .replace(/javascript\s*:/gi, '')
+    .replace(/data\s*:/gi, '')
+    .replace(/vbscript\s*:/gi, '')
     .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // strip non-printable ASCII control characters
     .trim();
 }
@@ -18,10 +23,20 @@ export function sanitizeString(input: unknown): string {
 export function sanitizeObject<T>(obj: T): T {
   if (!obj || typeof obj !== 'object') return obj;
   if (Array.isArray(obj)) {
-    return obj.map(item => (typeof item === 'object' && item !== null ? sanitizeObject(item) : typeof item === 'string' ? sanitizeString(item) : item)) as unknown as T;
+    return obj.map(item =>
+      typeof item === 'object' && item !== null
+        ? sanitizeObject(item)
+        : typeof item === 'string'
+        ? sanitizeString(item)
+        : item
+    ) as unknown as T;
   }
-  const sanitized: Record<string, unknown> = {};
+  const sanitized: Record<string, unknown> = Object.create(null);
   for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
+    // Defend against Prototype Pollution attacks
+    if (DANGEROUS_KEYS.has(key)) {
+      continue;
+    }
     if (typeof value === 'string') {
       sanitized[key] = sanitizeString(value);
     } else if (typeof value === 'object' && value !== null) {
@@ -30,5 +45,5 @@ export function sanitizeObject<T>(obj: T): T {
       sanitized[key] = value;
     }
   }
-  return sanitized as T;
+  return Object.assign({}, sanitized) as T;
 }

@@ -20,7 +20,7 @@ export interface AuthenticatedRequest extends RequestWithId {
 
 export function authMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
-    if (authHeader) {
+  if (authHeader) {
     if (!authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ error: 'Authorization header must use Bearer scheme' });
     }
@@ -29,7 +29,10 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
       return res.status(401).json({ error: 'Authentication token missing from Bearer header' });
     }
     try {
-      const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string; name?: string };
+      const decoded = jwt.verify(token, JWT_SECRET, {
+        algorithms: ['HS256'],
+        clockTolerance: 0,
+      }) as { id: string; email: string; name?: string };
       req.userId = decoded.id;
       req.userEmail = decoded.email;
       req.user = { id: decoded.id, email: decoded.email, name: decoded.name };
@@ -46,6 +49,6 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
   next();
 }
 
-export function generateToken(payload: { id: string; email: string }) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+export function generateToken(payload: { id: string; email: string; name?: string }) {
+  return jwt.sign(payload, JWT_SECRET, { algorithm: 'HS256', expiresIn: '7d' });
 }

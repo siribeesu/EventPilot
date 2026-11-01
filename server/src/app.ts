@@ -88,7 +88,12 @@ const isAllowedOrigin = (origin: string | undefined): boolean => {
   if (customOrigins.includes('*') || customOrigins.includes(origin)) return true;
   if (localOrigins.includes(origin)) return true;
   // Automatically trust Vercel production and preview deployment URLs
-  if (origin.endsWith('.vercel.app')) return true;
+  try {
+    const parsed = new URL(origin);
+    if (parsed.hostname === 'vercel.app' || parsed.hostname.endsWith('.vercel.app')) return true;
+  } catch {
+    return false;
+  }
   return false;
 };
 

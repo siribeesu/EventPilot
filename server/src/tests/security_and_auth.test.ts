@@ -15,6 +15,11 @@ describe('Security Layer & Cryptography Tests', () => {
     expect(verifyPassword('WrongPassword', salt1, hash1)).toBe(false);
   });
 
+  it('handles invalid password hash formats safely without throwing exceptions', () => {
+    expect(verifyPassword('password', 'salt', 'invalid-hex-length')).toBe(false);
+    expect(verifyPassword('', '', '')).toBe(false);
+  });
+
   it('sanitizes malicious XSS script tags and control characters', () => {
     const malicious = '<script>alert("XSS")</script>Hello <b>World</b><style>body{color:red;}</style>';
     const cleaned = sanitizeString(malicious);
@@ -24,6 +29,13 @@ describe('Security Layer & Cryptography Tests', () => {
     expect(cleaned).not.toContain('<style>');
     expect(cleaned).not.toContain('<b>');
     expect(cleaned).toBe('Hello World');
+  });
+
+  it('strips inline HTML event handlers to prevent DOM XSS', () => {
+    const attack1 = '<img src=x onerror=alert(document.cookie)>';
+    const attack2 = '<button onclick="exploit()" onload=\'bad()\'>Click</button>';
+    expect(sanitizeString(attack1)).toBe('');
+    expect(sanitizeString(attack2)).toBe('Click');
   });
 
   it('strips javascript: and data: pseudo-protocols', () => {
@@ -45,12 +57,29 @@ describe('Security Layer & Cryptography Tests', () => {
     expect(sanitized.count).toBe(42);
   });
 
+  it('protects against Prototype Pollution attacks', () => {
+    const maliciousPayload = JSON.parse(
+      '{"__proto__": {"polluted": true}, "constructor": {"prototype": {"isAdmin": true}}, "title": "Secure Gala"}'
+    );
+    const sanitized = sanitizeObject(maliciousPayload);
+
+    expect(sanitized.title).toBe('Secure Gala');
+    expect(Object.prototype.hasOwnProperty.call(sanitized, '__proto__')).toBe(false);
+    expect(Object.prototype.hasOwnProperty.call(sanitized, 'constructor')).toBe(false);
+    expect((sanitized as Record<string, unknown>).polluted).toBeUndefined();
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+    expect(({} as Record<string, unknown>).isAdmin).toBeUndefined();
+  });
+
   it('validates UUID formats correctly and rejects invalid tampering', () => {
     expect(isValidUUID('a1b2c3d4-e5f6-4a1b-8c2d-3e4f5a6b7c8d')).toBe(true);
     expect(isValidUUID('usr_demo_123')).toBe(true);
     expect(isValidUUID('../../etc/passwd')).toBe(false);
     expect(isValidUUID("1' OR '1'='1")).toBe(false);
     expect(isValidUUID('invalid-uuid-string')).toBe(false);
+    expect(isValidUUID('usr_123\0admin')).toBe(false);
+    expect(isValidUUID('evt_123; DROP TABLE events;--')).toBe(false);
+    expect(isValidUUID('..\\..\\windows\\system32')).toBe(false);
   });
 
   it('enforces ownership checks: blocks foreign users from unauthorized item access', async () => {
@@ -85,6 +114,7 @@ describe('Security Layer & Cryptography Tests', () => {
     const isBobOwner = await db.verifyBudgetItemOwnership(item.id, 'usr_bob_attacker');
     expect(isBobOwner).toBe(false);
   });
+
   it('enforces defensive security headers: X-Frame-Options, X-Content-Type-Options and Permissions-Policy', async () => {
     const { app } = await import('../app.js');
     const { createServer } = await import('http');
@@ -122,5 +152,75 @@ describe('Security Layer & Cryptography Tests', () => {
     authMiddleware(reqMock as unknown as Parameters<typeof authMiddleware>[0], resMock as unknown as Parameters<typeof authMiddleware>[1], () => {});
     expect(statusCode).toBe(401);
     expect(errorMessage).toContain('Invalid or expired');
+  });
+
+  it('rejects tokens signed with "none" algorithm (CVE algorithm confusion mitigation)', async () => {
+    const header = Buffer.from(JSON.stringify({ alg: 'none', typ: 'JWT' })).toString('base64url');
+    const payload = Buffer.from(JSON.stringify({ id: 'usr_hacker', email: 'hacker@evil.com' })).toString('base64url');
+    const unsignedNoneToken = `${header}.${payload}.`;
+
+    const { authMiddleware } = await import('../middleware/auth.js');
+    let statusCode = 0;
+    let errorMessage = '';
+
+    const reqMock = {
+      headers: { authorization: `Bearer ${unsignedNoneToken}` },
+    };
+    const resMock = {
+      status: (code: number) => { statusCode = code; return resMock; },
+      json: (data: { error?: string }) => { errorMessage = data.error || ''; },
+    };
+
+    authMiddleware(reqMock as unknown as Parameters<typeof authMiddleware>[0], resMock as unknown as Parameters<typeof authMiddleware>[1], () => {});
+    expect(statusCode).toBe(401);
+    expect(errorMessage).toContain('Invalid or expired');
+  });
+
+  it('rejects expired JWT tokens immediately', async () => {
+    const jwt = (await import('jsonwebtoken')).default;
+    const expiredToken = jwt.sign(
+      { id: 'usr_expired', email: 'expired@eventpilot.ai' },
+      'eventpilot_secret_jwt_key_2026',
+      { expiresIn: '-10s', algorithm: 'HS256' }
+    );
+
+    const { authMiddleware } = await import('../middleware/auth.js');
+    let statusCode = 0;
+    let errorMessage = '';
+
+    const reqMock = {
+      headers: { authorization: `Bearer ${expiredToken}` },
+    };
+    const resMock = {
+      status: (code: number) => { statusCode = code; return resMock; },
+      json: (data: { error?: string }) => { errorMessage = data.error || ''; },
+    };
+
+    authMiddleware(reqMock as unknown as Parameters<typeof authMiddleware>[0], resMock as unknown as Parameters<typeof authMiddleware>[1], () => {});
+    expect(statusCode).toBe(401);
+    expect(errorMessage).toContain('Invalid or expired');
+  });
+
+  it('generates verifiable tokens with pinned HS256 algorithm', async () => {
+    const { generateToken, authMiddleware } = await import('../middleware/auth.js');
+    const validToken = generateToken({ id: 'usr_valid_sec', email: 'sec@eventpilot.ai' });
+    expect(typeof validToken).toBe('string');
+
+    let nextCalled = false;
+    const reqMock: Record<string, unknown> = {
+      headers: { authorization: `Bearer ${validToken}` },
+    };
+    const resMock = {
+      status: () => resMock,
+      json: () => {},
+    };
+
+    authMiddleware(reqMock as unknown as Parameters<typeof authMiddleware>[0], resMock as unknown as Parameters<typeof authMiddleware>[1], () => {
+      nextCalled = true;
+    });
+
+    expect(nextCalled).toBe(true);
+    expect(reqMock.userId).toBe('usr_valid_sec');
+    expect(reqMock.userEmail).toBe('sec@eventpilot.ai');
   });
 });

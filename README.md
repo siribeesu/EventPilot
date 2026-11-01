@@ -6,9 +6,11 @@
 [![React 19](https://img.shields.io/badge/React-19.1-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-v20%20%7C%20v22%20%7C%20v24-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
-[![Tests Passing](https://img.shields.io/badge/Vitest-101%2F101%20Passed%20(100%25)-brightgreen?style=for-the-badge&logo=vitest)](docs/TEST_RESULTS.md)
+[![Tests Passing](https://img.shields.io/badge/Vitest-107%2F107%20Passed%20(100%25)-brightgreen?style=for-the-badge&logo=vitest)](docs/TEST_RESULTS.md)
 [![E2E Journey](https://img.shields.io/badge/E2E_Tests-8%20User%20Flows_Passing-teal?style=for-the-badge&logo=playwright)](docs/TEST_RESULTS.md)
-[![ADRs](https://img.shields.io/badge/Architecture-4%20ADRs_Accepted-blueviolet?style=for-the-badge)](docs/adr/001-hybrid-postgres-json-storage.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+[![Security Policy](https://img.shields.io/badge/Security-Policy_Enforced-red?style=for-the-badge&logo=securityscorecard)](SECURITY.md)
+[![ADRs](https://img.shields.io/badge/Architecture-4%20ADRs_Accepted-blueviolet?style=for-the-badge)](docs/DECISION_LOG.md)
 [![Security & Guardrails](https://img.shields.io/badge/Security-Prompt_Guardrails_%2B_RBAC-indigo?style=for-the-badge&logo=shield)](docs/SECURITY_AUDIT.md)
 [![WCAG 2.1 AA](https://img.shields.io/badge/Accessibility-WCAG%20AA-purple?style=for-the-badge)](docs/ACCESSIBILITY_AUDIT.md)
 
@@ -16,7 +18,7 @@
 
 > 🌐 **Live Production App:** [eventpilot-ai.vercel.app](https://event-pilot-phi.vercel.app) *(or Vercel Preview)*  
 > 📊 **Live Telemetry & Health:** [`GET /api/metrics`](https://event-pilot-phi.vercel.app/api/metrics) • [`GET /api/health`](https://event-pilot-phi.vercel.app/api/health)  
-> 🧪 **CI/CD Evidence & Run Logs:** [Quality Verification Evidence](docs/VERIFICATION.md) • [System Architecture Specification](docs/ARCHITECTURE.md) • [UI/UX Design System](docs/DESIGN_SYSTEM.md) • [GitHub Actions Run Log](docs/CI_RUN_LOG.md) • [Vitest Execution Log (101/101 across 11 Suites)](docs/TEST_RESULTS.md) • [Architecture Decision Records (ADRs)](docs/adr/001-hybrid-postgres-json-storage.md)
+> 🧪 **Engineering Rigor & Proof:** [Quality Verification Evidence](docs/VERIFICATION.md) • [System Architecture Specification](docs/ARCHITECTURE.md) • [Production Operations Manual](docs/PRODUCTION_READINESS.md) • [Architecture Decision Log](docs/DECISION_LOG.md) • [Security Policy](SECURITY.md) • [Contributing Guide](CONTRIBUTING.md) • [Vitest Execution Log (107/107 across 11 Suites)](docs/TEST_RESULTS.md)
 
 ---
 
@@ -37,7 +39,7 @@ npm run verify
 | **Linter & Type Check** | `npm run lint` | Oxlint (63 files, 114 rules) + TypeScript compile | 🟢 **0 errors, 0 warnings** |
 | **Monorepo Build** | `npm run build` | Client Vite bundle + Server TypeScript dist | 🟢 **Build success** |
 | **Critical Path Suite** | `npm run test:critical` | Edge cases, budget overflow, auth failures, prompt injection | 🟢 **21/21 tests pass** |
-| **Full Test Suite** | `npm run test` | 101 automated unit, integration, and security tests | 🟢 **101/101 tests pass** |
+| **Full Test Suite** | `npm run test` | 107 automated unit, integration, and security tests | 🟢 **107/107 tests pass** |
 | **Coverage Threshold** | `npm run test:coverage` | Enforces &ge;65% lines, &ge;70% functions, &ge;65% statements | 🟢 **Gate satisfied** |
 | **End-to-End Journey** | `npm run test:e2e` | 8 multi-step user lifecycle flows | 🟢 **8/8 flows pass** |
 
@@ -529,7 +531,7 @@ Visit: **http://localhost:5173**
 
 ### 4. Build & Test
 ```bash
-# Run 18 Vitest unit and integration tests
+# Run 107 Vitest unit, integration, and security tests across 11 suites
 npm run test
 
 # Compile client & server production bundles
@@ -570,3 +572,13 @@ EventPilot is pre-configured for **single-project zero-config deployment** on Ve
 
 ---
 
+---
+
+## 12. Governance, Security & Licensing
+
+- **Security Policy**: Comprehensive reporting procedures, supported versions, and defensive security controls are documented in [`SECURITY.md`](SECURITY.md).
+- **Contributing**: Development guidelines, branch strategy, and quality gates are outlined in [`CONTRIBUTING.md`](CONTRIBUTING.md).
+- **Code Ownership**: Component and domain ownership definitions are established in [`.github/CODEOWNERS`](.github/CODEOWNERS).
+- **Production Operations**: Infrastructure, environment configuration, and runbooks are maintained in [`docs/PRODUCTION_READINESS.md`](docs/PRODUCTION_READINESS.md).
+- **Architecture Decisions**: Architectural rationale and roadmap are tracked in [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+- **License**: Released under the terms of the [MIT License](LICENSE). Copyright &copy; 2026 Siri Beesu and EventPilot Contributors.

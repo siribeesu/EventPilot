@@ -1,0 +1,38 @@
+# ==============================================================================
+# EventPilot Code Owners & Governance Configuration
+# Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# ==============================================================================
+
+# Global default owners
+*                                               @siribeesu
+
+# CI/CD & GitHub Configuration
+/.github/                                       @siribeesu
+/.github/workflows/                             @siribeesu
+
+# Frontend Workspace (React 19 + Tailwind CSS v4)
+/client/                                        @siribeesu
+/client/src/components/                         @siribeesu
+/client/src/pages/                              @siribeesu
+/client/src/services/                           @siribeesu
+/client/src/hooks/                              @siribeesu
+
+# Backend Workspace & Edge API (Express 5 + PostgreSQL)
+/server/                                        @siribeesu
+/server/src/routes/                             @siribeesu
+/server/src/database/                           @siribeesu
+/api/                                           @siribeesu
+
+# AI Engine & Guardrails
+/server/src/ai/                                 @siribeesu
+
+# Security, Cryptography & Middleware
+/server/src/middleware/                         @siribeesu
+/server/src/utils/security.ts                   @siribeesu
+/server/src/utils/sanitize.ts                   @siribeesu
+/SECURITY.md                                    @siribeesu
+
+# Architecture & Engineering Documentation
+/docs/                                          @siribeesu
+/README.md                                      @siribeesu
+/CONTRIBUTING.md                                @siribeesu

@@ -1,5 +1,4 @@
 import fs from 'fs';
-import path from 'path';
 
 fs.mkdirSync('dist/database', { recursive: true });
 if (fs.existsSync('src/database/seed.json')) {

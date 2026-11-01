@@ -31,7 +31,7 @@ npm run lint
 **Expected Output:**
 ```text
 > eventpilot-workspace@1.0.0 lint
-> npx oxlint -c .oxlintrc.json server/src client/src && cd client && tsc -b --noEmit && cd ../server && tsc --noEmit
+> npx eslint . --max-warnings=0 && npx oxlint -c .oxlintrc.json server/src client/src && cd client && tsc -b --noEmit && cd ../server && tsc --noEmit
 Found 0 warnings and 0 errors.
 # Exits with code 0 (zero errors, zero warnings across all workspaces)
 # Exits with code 0 (zero errors, zero warnings)

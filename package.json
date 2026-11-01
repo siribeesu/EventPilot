@@ -16,6 +16,7 @@
     "test:coverage": "cd server && npm run test:coverage",
     "test:critical": "cd server && npm run test:critical",
     "test:e2e": "cd server && npm run test:e2e",
+    "typecheck": "npx tsc -p tsconfig.json --noEmit && cd client && tsc -b --noEmit && cd ../server && tsc --noEmit",
     "lint:eslint": "npx eslint . --max-warnings=0",
     "lint:oxlint": "npx oxlint -c .oxlintrc.json server/src client/src",
     "lint": "npx eslint . --max-warnings=0 && npx oxlint -c .oxlintrc.json server/src client/src && cd client && tsc -b --noEmit && cd ../server && tsc --noEmit",

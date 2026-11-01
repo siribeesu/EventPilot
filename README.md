@@ -16,7 +16,7 @@
 
 > 🌐 **Live Production App:** [eventpilot-ai.vercel.app](https://event-pilot-phi.vercel.app) *(or Vercel Preview)*  
 > 📊 **Live Telemetry & Health:** [`GET /api/metrics`](https://event-pilot-phi.vercel.app/api/metrics) • [`GET /api/health`](https://event-pilot-phi.vercel.app/api/health)  
-> 🧪 **CI/CD Evidence & Run Logs:** [Quality Verification Evidence](docs/VERIFICATION.md) • [GitHub Actions Run Log](docs/CI_RUN_LOG.md) • [Vitest Execution Log (101/101 across 11 Suites)](docs/TEST_RESULTS.md) • [Architecture Decision Records (ADRs)](docs/adr/001-hybrid-postgres-json-storage.md)
+> 🧪 **CI/CD Evidence & Run Logs:** [Quality Verification Evidence](docs/VERIFICATION.md) • [System Architecture Specification](docs/ARCHITECTURE.md) • [UI/UX Design System](docs/DESIGN_SYSTEM.md) • [GitHub Actions Run Log](docs/CI_RUN_LOG.md) • [Vitest Execution Log (101/101 across 11 Suites)](docs/TEST_RESULTS.md) • [Architecture Decision Records (ADRs)](docs/adr/001-hybrid-postgres-json-storage.md)
 
 ---
 
@@ -86,6 +86,8 @@ Traditional event planning is notoriously fragmented: coordinators juggle unform
 ---
 
 ## 2. System Architecture
+
+> 📘 **Full Architecture Specification:** For complete request lifecycles, service boundaries, and AI orchestration contracts, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ```mermaid
 flowchart TD
@@ -340,6 +342,8 @@ npm run verify     # Full verification: compile + unit + integration + E2E
 ---
 
 ## 5. UI/UX Design System
+
+> 🎨 **Full Design System Specification:** For color tokens, contrast ratios, and component conventions, see [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md).
 
 * **Typography**: Geometric sans-serif **Plus Jakarta Sans** with refined tracking (`-0.011em`).
 * **Color Palette**:

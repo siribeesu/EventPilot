@@ -2,7 +2,10 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
-// https://vite.dev/config/
+/**
+ * EventPilot Frontend Client Bundler Configuration
+ * Optimized for React 19, Tailwind CSS v4, and chunk-split production builds.
+ */
 export default defineConfig({
   plugins: [
     react(),

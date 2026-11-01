@@ -1,5 +1,4 @@
 {
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["react", "typescript", "oxc", "jsx-a11y"],
   "rules": {
     "no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
@@ -12,5 +11,13 @@
     "react/set-state-in-effect": "off",
     "react/purity": "off",
     "react-hooks/exhaustive-deps": "warn"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["server/src/utils/logger.ts", "server/scripts/**"],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
 }

@@ -28,7 +28,7 @@ jobs:
       - name: 📦 Install workspace dependencies
         run: npm ci
 
-      - name: 🔍 Oxlint & TypeScript Strict Linter Gate
+      - name: 🔍 ESLint, Oxlint & TypeScript Strict Linter Gate
         run: npm run lint
 
       - name: 🏗️ Typecheck & Compile Backend Server
@@ -58,7 +58,7 @@ jobs:
           echo "## 🚀 EventPilot Verification Summary (Node ${{ matrix.node-version }})" >> $GITHUB_STEP_SUMMARY
           echo "| Check | Status | Verification Detail |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- | :---: | :--- |" >> $GITHUB_STEP_SUMMARY
-          echo "| **TypeScript Compilation & Lint** | ✅ Passed | Oxlint (63 files, 114 rules) + strict tsc compiled with 0 errors |" >> $GITHUB_STEP_SUMMARY
+          echo "| **TypeScript Compilation & Lint** | ✅ Passed | ESLint (@typescript-eslint) + Oxlint (148 rules) + strict tsc compiled with 0 errors |" >> $GITHUB_STEP_SUMMARY
           echo "| **Automated Vitest Test Suites** | ✅ Passed | 101/101 Tests Passing across 11 specialized suites |" >> $GITHUB_STEP_SUMMARY
           echo "| **Test Coverage Enforced** | ✅ Passed | Coverage thresholds exceeded across lines, functions, and statements |" >> $GITHUB_STEP_SUMMARY
           echo "| **Real End-to-End (E2E) Journey** | ✅ Passed | Signup, Create Event, Budget Rescue, Human-in-the-Loop AI, Vendors, PDF & GDPR Export |" >> $GITHUB_STEP_SUMMARY

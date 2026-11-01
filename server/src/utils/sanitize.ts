@@ -11,7 +11,6 @@ export function sanitizeString(input: unknown): string {
     .replace(/javascript:/gi, '')
     .replace(/data:/gi, '')
     .replace(/vbscript:/gi, '')
-    // eslint-disable-next-line no-control-regex
     .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // strip non-printable ASCII control characters
     .trim();
 }

@@ -1,9 +1,9 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { PrivacyDataModal } from './components/PrivacyDataModal';
 import { ConsentBanner } from './components/ConsentBanner';
-import type { EventFullDetail } from './types';
+import { useAppRouter } from './hooks/useAppRouter';
 
 // Code-split pages for optimal bundle loading & performance
 const LandingPage = lazy(() => import('./pages/LandingPage').then(m => ({ default: m.LandingPage })));
@@ -12,63 +12,20 @@ const EventWizardPage = lazy(() => import('./pages/EventWizardPage').then(m => (
 const EventDetailPage = lazy(() => import('./pages/EventDetailPage').then(m => ({ default: m.EventDetailPage })));
 
 export function App() {
-  const [currentView, setCurrentView] = useState<'landing' | 'dashboard' | 'wizard' | 'event'>('landing');
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-  const [activeEventTitle, setActiveEventTitle] = useState<string | null>(null);
-  const [createdEventDetail, setCreatedEventDetail] = useState<EventFullDetail | null>(null);
-  const [currency, setCurrency] = useState<string>('INR');
-  const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
-
-  // Sync state from hash on mount and on popstate/hashchange
-  useEffect(() => {
-    const parseHash = () => {
-      const hash = window.location.hash.replace(/^#\/?/, '');
-      if (hash.startsWith('event/')) {
-        const id = hash.replace('event/', '');
-        setSelectedEventId(id);
-        setCurrentView('event');
-      } else if (hash === 'dashboard') {
-        setCurrentView('dashboard');
-      } else if (hash === 'wizard') {
-        setCurrentView('wizard');
-      } else if (hash === 'landing') {
-        setCurrentView('landing');
-      }
-    };
-
-    parseHash();
-    window.addEventListener('hashchange', parseHash);
-    return () => window.removeEventListener('hashchange', parseHash);
-  }, []);
-
-  const handleNavigate = (view: 'landing' | 'dashboard' | 'wizard', eventId?: string) => {
-    if (view === 'landing') {
-      window.location.hash = 'landing';
-    } else if (view === 'dashboard') {
-      window.location.hash = 'dashboard';
-    } else if (view === 'wizard') {
-      window.location.hash = 'wizard';
-    }
-    setCurrentView(view);
-    if (eventId) {
-      setSelectedEventId(eventId);
-    }
-  };
-
-  const handleSelectEvent = (eventId: string, title?: string) => {
-    setSelectedEventId(eventId);
-    if (title) setActiveEventTitle(title);
-    setCurrentView('event');
-    window.location.hash = `event/${eventId}`;
-  };
-
-  const handleEventCreated = (event: EventFullDetail) => {
-    setCreatedEventDetail(event);
-    setSelectedEventId(event.id);
-    setActiveEventTitle(event.title);
-    setCurrentView('event');
-    window.location.hash = `event/${event.id}`;
-  };
+  const {
+    currentView,
+    selectedEventId,
+    activeEventTitle,
+    createdEventDetail,
+    currency,
+    setCurrency,
+    privacyModalOpen,
+    setPrivacyModalOpen,
+    navigate,
+    selectEvent,
+    handleEventCreated,
+    setActiveEventTitle,
+  } = useAppRouter();
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-indigo-500 selection:text-white pb-14 md:pb-0">
@@ -83,7 +40,7 @@ export function App() {
       {/* Top Navbar with Dynamic Breadcrumbs */}
       <Navbar
         currentView={currentView}
-        onNavigate={handleNavigate}
+        onNavigate={navigate}
         currency={currency}
         onCurrencyChange={setCurrency}
         onOpenPrivacy={() => setPrivacyModalOpen(true)}
@@ -111,16 +68,16 @@ export function App() {
         >
           {currentView === 'landing' && (
             <LandingPage
-              onStartPlanning={() => handleNavigate('wizard')}
-              onOpenDashboard={() => handleNavigate('dashboard')}
+              onStartPlanning={() => navigate('wizard')}
+              onOpenDashboard={() => navigate('dashboard')}
               currency={currency}
             />
           )}
 
           {currentView === 'dashboard' && (
             <DashboardPage
-              onSelectEvent={handleSelectEvent}
-              onCreateNew={() => handleNavigate('wizard')}
+              onSelectEvent={selectEvent}
+              onCreateNew={() => navigate('wizard')}
               currency={currency}
             />
           )}
@@ -128,7 +85,7 @@ export function App() {
           {currentView === 'wizard' && (
             <EventWizardPage
               onEventCreated={handleEventCreated}
-              onCancel={() => handleNavigate('dashboard')}
+              onCancel={() => navigate('dashboard')}
               defaultCurrency={currency}
             />
           )}
@@ -137,7 +94,7 @@ export function App() {
             <EventDetailPage
               eventId={selectedEventId}
               initialEvent={createdEventDetail && createdEventDetail.id === selectedEventId ? createdEventDetail : undefined}
-              onBack={() => handleNavigate('dashboard')}
+              onBack={() => navigate('dashboard')}
               currency={currency}
               onTitleLoaded={(title) => setActiveEventTitle(title)}
             />
@@ -147,7 +104,7 @@ export function App() {
 
       {/* Comprehensive Modern Footer */}
       <Footer
-        onNavigate={handleNavigate}
+        onNavigate={navigate}
         onOpenPrivacy={() => setPrivacyModalOpen(true)}
       />
 

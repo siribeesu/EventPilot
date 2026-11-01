@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * Structured Enterprise Logger
  * Formats server events with timestamps, levels, and contextual metadata.

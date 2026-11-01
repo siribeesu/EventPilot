@@ -16,7 +16,9 @@
     "test:coverage": "cd server && npm run test:coverage",
     "test:critical": "cd server && npm run test:critical",
     "test:e2e": "cd server && npm run test:e2e",
-    "lint": "npx oxlint -c .oxlintrc.json server/src client/src && cd client && tsc -b --noEmit && cd ../server && tsc --noEmit",
+    "lint:eslint": "npx eslint client/src server/src",
+    "lint:oxlint": "npx oxlint -c .oxlintrc.json server/src client/src",
+    "lint": "npm run lint:eslint && npm run lint:oxlint && cd client && tsc -b --noEmit && cd ../server && tsc --noEmit",
     "verify": "npm run lint && npm run build && npm run test:critical && npm run test && npm run test:coverage && npm run test:e2e"
   },
   "dependencies": {
@@ -39,7 +41,11 @@
     "@types/node": "^22.13.10",
     "@types/pg": "^8.11.11",
     "@types/uuid": "^10.0.0",
-    "typescript": "^7.0.2"
+    "@typescript-eslint/eslint-plugin": "^8.72.1",
+    "@typescript-eslint/parser": "^8.72.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "typescript": "^5.8.2"
   },
   "optionalDependencies": {
     "@rolldown/binding-linux-x64-gnu": "^1.2.14",

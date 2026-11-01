@@ -572,13 +572,13 @@ EventPilot is pre-configured for **single-project zero-config deployment** on Ve
 
 ---
 
----
-
-## 12. Governance, Security & Licensing
+## 12. Governance, Security, Operations & Licensing
 
 - **Security Policy**: Comprehensive reporting procedures, supported versions, and defensive security controls are documented in [`SECURITY.md`](SECURITY.md).
-- **Contributing**: Development guidelines, branch strategy, and quality gates are outlined in [`CONTRIBUTING.md`](CONTRIBUTING.md).
+- **Contributing Guide**: Development workflows, branch naming, and quality gates are outlined in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 - **Code Ownership**: Component and domain ownership definitions are established in [`.github/CODEOWNERS`](.github/CODEOWNERS).
-- **Production Operations**: Infrastructure, environment configuration, and runbooks are maintained in [`docs/PRODUCTION_READINESS.md`](docs/PRODUCTION_READINESS.md).
-- **Architecture Decisions**: Architectural rationale and roadmap are tracked in [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+- **Quality Checklist**: Repo-level quality standards and pre-merge gates are detailed in [`docs/checklist.md`](docs/checklist.md).
+- **Deployment Guide**: Production infrastructure and cloud setup steps are documented in [`docs/deployment.md`](docs/deployment.md).
+- **Operations & Runbooks**: Runtime metrics baselines, alerting, and incident recovery runbooks are maintained in [`docs/operations.md`](docs/operations.md) and [`docs/PRODUCTION_READINESS.md`](docs/PRODUCTION_READINESS.md).
+- **Architecture & Decision Log**: System topology and architectural decision records are indexed in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and [`docs/DECISION_LOG.md`](docs/DECISION_LOG.md).
 - **License**: Released under the terms of the [MIT License](LICENSE). Copyright &copy; 2026 Siri Beesu and EventPilot Contributors.

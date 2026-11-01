@@ -1,19 +1,12 @@
 import React, { useState } from 'react';
-import {
-  Sparkles,
-  ArrowRight,
-  ArrowLeft,
-  CheckCircle,
-  Calendar,
-  MapPin,
-  Heart,
-  Cake,
-  Flame,
-  ShieldCheck,
-  PartyPopper,
-} from 'lucide-react';
+import { Sparkles, ArrowRight, ArrowLeft } from 'lucide-react';
 import type { EventType, IndoorOutdoor, EventFullDetail } from '../types';
 import { api } from '../services/api';
+import { QuickTemplate } from '../components/wizard/wizardTemplates';
+import { LiveBlueprintSidebar } from '../components/wizard/LiveBlueprintSidebar';
+import { Step1EventBasics } from '../components/wizard/Step1EventBasics';
+import { Step2BudgetGuests } from '../components/wizard/Step2BudgetGuests';
+import { Step3PrioritiesPreferences } from '../components/wizard/Step3PrioritiesPreferences';
 
 interface EventWizardPageProps {
   onEventCreated: (event: EventFullDetail) => void;
@@ -47,59 +40,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
   const [priorityAreas, setPriorityAreas] = useState<string[]>(['catering', 'venue']);
   const [additionalRequirements, setAdditionalRequirements] = useState('');
 
-
-  const quickTemplates = [
-    {
-      title: 'Grand Heritage Palace Wedding',
-      eventType: 'wedding' as EventType,
-      budget: 1500000,
-      guestCount: 250,
-      location: 'Umaid Bhawan Palace, Jodhpur',
-      theme: 'Royal Rajputana Gold & Crimson',
-      cultural: 'Traditional Marwari Heritage',
-      dietary: 'Gourmet Pure Vegetarian Banquet',
-      priorities: ['catering', 'venue', 'decoration'],
-      notes: 'Need live royal nagada welcome, vintage car entry, and stage pyrotechnics.',
-    },
-    {
-      title: 'National Tech Hackathon & Conference',
-      eventType: 'college' as EventType,
-      budget: 350000,
-      guestCount: 180,
-      location: 'Convention Center, Bengaluru',
-      theme: 'Modern Cyber Minimalist',
-      cultural: 'Corporate Tech Innovation',
-      dietary: 'High-energy wraps, snack bowls & specialty coffee bar',
-      priorities: ['venue', 'entertainment', 'catering'],
-      notes: 'Dual Gigabit fiber internet, multi-display LED walls, and 24-hr catering access.',
-    },
-    {
-      title: 'Retro Neon 30th Birthday Bash',
-      eventType: 'birthday' as EventType,
-      budget: 75000,
-      guestCount: 50,
-      location: 'Rooftop Lounge, Mumbai',
-      theme: '80s Retro Neon Glow',
-      cultural: 'Cosmopolitan Party',
-      dietary: 'Finger food sliders, live taco station, artisanal mocktail bar',
-      priorities: ['entertainment', 'decoration', 'catering'],
-      notes: 'Glow accessories, live DJ set with 80s synth-pop, and custom neon photo booth.',
-    },
-    {
-      title: 'Annual Charity Fundraising Gala',
-      eventType: 'community' as EventType,
-      budget: 600000,
-      guestCount: 200,
-      location: 'Grand Ballroom, New Delhi',
-      theme: 'Black-Tie Midnight Elegance',
-      cultural: 'Philanthropic Formal',
-      dietary: '4-Course Plated Fine Dining & Champagne Reception',
-      priorities: ['venue', 'catering', 'photography'],
-      notes: 'Silent auction display tables, keynote stage setup, and press media backdrop.',
-    },
-  ];
-
-  const applyQuickTemplate = (tpl: typeof quickTemplates[0]) => {
+  const applyQuickTemplate = (tpl: QuickTemplate) => {
     setTitle(tpl.title);
     setEventType(tpl.eventType);
     setBudget(tpl.budget);
@@ -117,25 +58,9 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
     }
   };
 
-  const priorityOptions = [
-    { id: 'venue', label: 'Venue & Ambiance' },
-    { id: 'catering', label: 'Food & Gourmet Dining' },
-    { id: 'decoration', label: 'Bespoke Floral & Stage Decor' },
-    { id: 'photography', label: 'Photography & Videography' },
-    { id: 'entertainment', label: 'DJ, Music & Live Entertainment' },
-  ];
-
-  const categoryPresets: { id: EventType; label: string; icon: React.ElementType; desc: string }[] = [
-    { id: 'wedding', label: 'Wedding & Reception', icon: Heart, desc: 'Bespoke ceremonies, catering & decor' },
-    { id: 'birthday', label: 'Birthday Celebration', icon: Cake, desc: 'Themes, cakes & party entertainment' },
-    { id: 'anniversary', label: 'Milestone Anniversary', icon: Sparkles, desc: 'Intimate dinner & memory timeline' },
-    { id: 'college', label: 'College Festival', icon: Flame, desc: 'Trussing, audio gear & crowd logistics' },
-    { id: 'community', label: 'Community Gala', icon: PartyPopper, desc: 'Public permits, seating & staging' },
-  ];
-
   const togglePriority = (id: string) => {
     if (priorityAreas.includes(id)) {
-      setPriorityAreas(priorityAreas.filter(p => p !== id));
+      setPriorityAreas(priorityAreas.filter((p) => p !== id));
     } else {
       setPriorityAreas([...priorityAreas, id]);
     }
@@ -169,12 +94,12 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
 
   const handleNext = () => {
     if (validateStep(step)) {
-      setStep(prev => prev + 1);
+      setStep((prev) => prev + 1);
     }
   };
 
   const handleBack = () => {
-    setStep(prev => prev - 1);
+    setStep((prev) => prev - 1);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -242,7 +167,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
           <button
             type="button"
             onClick={onCancel}
-            className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 focus-visible:ring-2 focus-visible:ring-indigo-500 rounded transition mb-1 inline-flex items-center space-x-1"
+            className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 focus-visible:ring-2 focus-visible:ring-indigo-500 rounded transition mb-1 inline-flex items-center space-x-1 cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
             <span>Return to Dashboard</span>
@@ -265,149 +190,24 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
 
       {/* Main 2-Column Responsive Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Live Blueprint & Journey Navigator (4 cols on desktop) */}
-        <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
-          {/* Step Journey Tracker */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Planning Steps
-            </h2>
-            <div className="space-y-3">
-              {[
-                { s: 1, title: '1. Core Details', desc: 'Title, category, date & hours' },
-                { s: 2, title: '2. Scale & Budget', desc: 'Location, guest count, financial limit' },
-                { s: 3, title: '3. Style & Priorities', desc: 'Themes, dining & AI safeguards' },
-              ].map(item => {
-                const isCurrent = step === item.s;
-                const isComplete = step > item.s;
-                return (
-                  <div
-                    key={item.s}
-                    className={`flex items-start space-x-3 p-3 rounded-xl transition ${
-                      isCurrent
-                        ? 'bg-indigo-50/80 border border-indigo-200 text-indigo-900'
-                        : isComplete
-                        ? 'bg-slate-50 text-slate-700 border border-transparent'
-                        : 'text-slate-400'
-                    }`}
-                  >
-                    <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5 ${
-                        isCurrent
-                          ? 'bg-indigo-600 text-white'
-                          : isComplete
-                          ? 'bg-emerald-600 text-white'
-                          : 'bg-slate-200 text-slate-500'
-                      }`}
-                    >
-                      {isComplete ? <CheckCircle className="w-4 h-4" /> : item.s}
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold">{item.title}</div>
-                      <div className="text-[11px] text-slate-500">{item.desc}</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+        {/* Left Column: Live Blueprint & Journey Navigator */}
+        <LiveBlueprintSidebar
+          step={step}
+          title={title}
+          eventType={eventType}
+          eventDate={eventDate}
+          daysUntil={daysUntil}
+          budget={budget}
+          currency={currency}
+          guestCount={guestCount}
+          perGuestCost={perGuestCost}
+          location={location}
+          indoorOutdoor={indoorOutdoor}
+          priorityAreas={priorityAreas}
+          aiTip={getAiTip()}
+        />
 
-          {/* Live Blueprint Preview Card */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                Live Plan Blueprint
-              </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 capitalize">
-                {eventType}
-              </span>
-            </div>
-
-            <div className="space-y-2.5">
-              <div>
-                <h3 className="font-extrabold text-slate-900 text-base">
-                  {title.trim() || 'Untitled Celebration'}
-                </h3>
-                <div className="text-xs text-slate-500 flex items-center space-x-1.5 mt-0.5">
-                  <Calendar className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
-                  <span>
-                    {eventDate || 'Date pending'}{' '}
-                    {daysUntil !== null && daysUntil >= 0 ? `(in ${daysUntil} days)` : ''}
-                  </span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
-                <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                  <div className="text-[10px] font-semibold text-slate-400 uppercase">Target Budget</div>
-                  <div className="text-sm font-bold text-slate-900">
-                    {currency} {budget.toLocaleString()}
-                  </div>
-                </div>
-
-                <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                  <div className="text-[10px] font-semibold text-slate-400 uppercase">Headcount</div>
-                  <div className="text-sm font-bold text-slate-900">
-                    {guestCount} Guests
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-indigo-50/50 p-2.5 rounded-xl border border-indigo-100 text-xs flex items-center justify-between">
-                <span className="text-indigo-800 font-medium">Estimated Per-Guest:</span>
-                <span className="font-bold text-indigo-900">
-                  {currency} {perGuestCost.toLocaleString()}
-                </span>
-              </div>
-
-              {location && (
-                <div className="text-xs text-slate-600 flex items-center space-x-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
-                  <span className="truncate">{location} ({indoorOutdoor})</span>
-                </div>
-              )}
-
-              {priorityAreas.length > 0 && (
-                <div className="pt-2">
-                  <span className="text-[10px] font-semibold text-slate-400 uppercase block mb-1">
-                    Protected Priorities:
-                  </span>
-                  <div className="flex flex-wrap gap-1">
-                    {priorityAreas.map(p => (
-                      <span
-                        key={p}
-                        className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 capitalize"
-                      >
-                        {p}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Contextual AI Advisor Card */}
-          <div className="bg-indigo-50/80 rounded-3xl p-6 text-slate-900 border border-indigo-200/80 shadow-xs space-y-3.5">
-            <div className="flex items-center space-x-2.5">
-              <div className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                <Sparkles className="w-4 h-4" aria-hidden="true" />
-              </div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-900">
-                AI Planner Guidance
-              </h3>
-            </div>
-            <p className="text-xs leading-relaxed text-slate-600">
-              {getAiTip()}
-            </p>
-            <div className="pt-2 border-t border-indigo-200 flex items-center space-x-2 text-[11px] text-indigo-700 font-semibold">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" aria-hidden="true" />
-              <span>Budget Rescue Mode™ Protected</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column: Expansive Step Form Card (8 cols on desktop) */}
+        {/* Right Column: Step Form Card */}
         <div className="lg:col-span-8">
           <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">
             {/* Wizard Card Header */}
@@ -417,7 +217,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                   <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                     Step {step} of 3
                   </span>
-                  <span className="text-xs text-slate-400 font-medium">
+                  <span className="text-xs text-slate-300 font-medium">
                     {step === 1 ? 'Core Parameters' : step === 2 ? 'Scale & Financial Target' : 'Style, Dining & Priorities'}
                   </span>
                 </div>
@@ -430,7 +230,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
               <button
                 type="button"
                 onClick={onCancel}
-                className="text-xs font-semibold text-slate-400 hover:text-white px-3 py-1.5 rounded-xl hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-white transition cursor-pointer"
+                className="text-xs font-semibold text-slate-300 hover:text-white px-3 py-1.5 rounded-xl hover:bg-slate-800 focus-visible:ring-2 focus-visible:ring-white transition cursor-pointer"
               >
                 Cancel
               </button>
@@ -454,377 +254,52 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
             {/* Wizard Form Body */}
             <form onSubmit={handleSubmit} className="p-8 space-y-6">
               {step === 1 && (
-                <div className="space-y-6">
-
-                  {/* Quick-Start Event Templates Banner */}
-                  <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-blue-50 border border-indigo-100/90 space-y-2.5">
-                    <div className="flex items-center space-x-2">
-                      <Sparkles className="w-4 h-4 text-indigo-600" aria-hidden="true" />
-                      <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                        Quick-Start Event Templates (1-Click Fill)
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      {quickTemplates.map((tpl, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => applyQuickTemplate(tpl)}
-                          className="text-left p-2.5 rounded-xl border border-indigo-200/60 bg-white/80 hover:bg-white hover:border-indigo-400 hover:shadow-xs transition text-xs font-medium text-slate-800 focus-visible:ring-2 focus-visible:ring-indigo-500 cursor-pointer"
-                        >
-                          <div className="font-semibold text-indigo-900 truncate">{tpl.title}</div>
-                          <div className="text-[10px] text-slate-500 mt-0.5">{currency} {tpl.budget.toLocaleString()} • {tpl.guestCount} Guests</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Event Title */}
-                  <div>
-                    <label htmlFor="wizard-event-title" className="block text-sm font-semibold text-slate-800 mb-1.5">
-                      Event Name or Celebration Title <span className="text-red-500" aria-hidden="true">*</span>
-                    </label>
-                    <input
-                      id="wizard-event-title"
-                      type="text"
-                      required
-                      aria-required="true"
-                      aria-invalid={!!errors.title}
-                      aria-describedby={errors.title ? 'wizard-title-error' : undefined}
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      placeholder="e.g. Aarav & Diya Wedding, Maya's Sweet 16, National Tech Fest 2026"
-                      className={`w-full px-4 py-3 rounded-xl border text-sm focus-visible:outline-none focus-visible:ring-2 ${
-                        errors.title ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-300 focus-visible:ring-indigo-500'
-                      }`}
-                    />
-                    {errors.title && (
-                      <p id="wizard-title-error" role="alert" className="text-xs text-red-500 mt-1">
-                        {errors.title}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Event Type Grid with Rich Cards */}
-                  <div>
-                    <span id="event-type-label" className="block text-sm font-semibold text-slate-800 mb-2">
-                      Event Category <span className="text-red-500" aria-hidden="true">*</span>
-                    </span>
-                    <div
-                      role="radiogroup"
-                      aria-labelledby="event-type-label"
-                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
-                    >
-                      {categoryPresets.map((t) => {
-                        const Icon = t.icon;
-                        const isSelected = eventType === t.id;
-                        return (
-                          <button
-                            key={t.id}
-                            type="button"
-                            role="radio"
-                            aria-checked={isSelected}
-                            onClick={() => setEventType(t.id)}
-                            className={`p-3.5 rounded-2xl border text-left transition flex items-start space-x-3 focus-visible:ring-2 focus-visible:ring-indigo-500 ${
-                              isSelected
-                                ? 'border-indigo-600 bg-indigo-50/80 ring-1 ring-indigo-500 shadow-xs'
-                                : 'border-slate-200 bg-white hover:bg-slate-50'
-                            }`}
-                          >
-                            <div
-                              className={`p-2 rounded-xl flex-shrink-0 ${
-                                isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600'
-                              }`}
-                            >
-                              <Icon className="w-4 h-4" />
-                            </div>
-                            <div>
-                              <div className="text-xs font-bold text-slate-900">{t.label}</div>
-                              <div className="text-[11px] text-slate-500 leading-snug mt-0.5">{t.desc}</div>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Event Date & Times in 3 Columns */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                      <label htmlFor="wizard-event-date" className="block text-sm font-semibold text-slate-800 mb-1.5">
-                        Event Date <span className="text-red-500" aria-hidden="true">*</span>
-                      </label>
-                      <input
-                        id="wizard-event-date"
-                        type="date"
-                        required
-                        aria-required="true"
-                        aria-invalid={!!errors.eventDate}
-                        aria-describedby={errors.eventDate ? 'wizard-date-error' : undefined}
-                        value={eventDate}
-                        onChange={(e) => setEventDate(e.target.value)}
-                        className={`w-full px-4 py-2.5 rounded-xl border text-sm focus-visible:outline-none focus-visible:ring-2 ${
-                          errors.eventDate ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-300 focus-visible:ring-indigo-500'
-                        }`}
-                      />
-                      {errors.eventDate && (
-                        <p id="wizard-date-error" role="alert" className="text-xs text-red-500 mt-1">
-                          {errors.eventDate}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label htmlFor="wizard-start-time" className="block text-sm font-semibold text-slate-800 mb-1.5">
-                        Start Time
-                      </label>
-                      <input
-                        id="wizard-start-time"
-                        type="time"
-                        value={startTime}
-                        onChange={(e) => setStartTime(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="wizard-end-time" className="block text-sm font-semibold text-slate-800 mb-1.5">
-                        End Time
-                      </label>
-                      <input
-                        id="wizard-end-time"
-                        type="time"
-                        value={endTime}
-                        onChange={(e) => setEndTime(e.target.value)}
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-                      />
-                    </div>
-                  </div>
-                </div>
+                <Step1EventBasics
+                  title={title}
+                  setTitle={setTitle}
+                  eventType={eventType}
+                  setEventType={setEventType}
+                  eventDate={eventDate}
+                  setEventDate={setEventDate}
+                  startTime={startTime}
+                  setStartTime={setStartTime}
+                  endTime={endTime}
+                  setEndTime={setEndTime}
+                  currency={currency}
+                  errors={errors}
+                  onApplyTemplate={applyQuickTemplate}
+                />
               )}
 
               {step === 2 && (
-                <div className="space-y-6">
-                  {/* Location & Indoor/Outdoor */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="sm:col-span-2">
-                      <label htmlFor="wizard-location" className="block text-sm font-semibold text-slate-800 mb-1.5">
-                        City / Venue Location <span className="text-red-500" aria-hidden="true">*</span>
-                      </label>
-                      <input
-                        id="wizard-location"
-                        type="text"
-                        required
-                        aria-required="true"
-                        aria-invalid={!!errors.location}
-                        aria-describedby={errors.location ? 'wizard-location-error' : undefined}
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        placeholder="e.g. Grand Palace Banquet Mumbai, Taj West End Bengaluru"
-                        className={`w-full px-4 py-2.5 rounded-xl border text-sm focus-visible:outline-none focus-visible:ring-2 ${
-                          errors.location ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-300 focus-visible:ring-indigo-500'
-                        }`}
-                      />
-                      {errors.location && (
-                        <p id="wizard-location-error" role="alert" className="text-xs text-red-500 mt-1">
-                          {errors.location}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label htmlFor="wizard-venue-style" className="block text-sm font-semibold text-slate-800 mb-1.5">
-                        Setting Type
-                      </label>
-                      <select
-                        id="wizard-venue-style"
-                        value={indoorOutdoor}
-                        onChange={(e) => setIndoorOutdoor(e.target.value as IndoorOutdoor)}
-                        className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-                      >
-                        <option value="indoor">Indoor Hall / Banquet</option>
-                        <option value="outdoor">Outdoor Lawn / Beach</option>
-                        <option value="both">Both (Lawn + Hall)</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Budget & Currency */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="sm:col-span-2">
-                      <label htmlFor="wizard-budget" className="block text-sm font-semibold text-slate-800 mb-1.5">
-                        Total Budget Limit <span className="text-red-500" aria-hidden="true">*</span>
-                      </label>
-                      <div className="relative">
-                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold" aria-hidden="true">
-                          {currency === 'INR' ? '₹' : currency === 'USD' ? '$' : currency}
-                        </span>
-                        <input
-                          id="wizard-budget"
-                          type="number"
-                          required
-                          aria-required="true"
-                          aria-invalid={!!errors.budget}
-                          aria-describedby={errors.budget ? 'wizard-budget-error' : undefined}
-                          value={budget}
-                          onChange={(e) => setBudget(Number(e.target.value))}
-                          placeholder="50000"
-                          className={`w-full pl-9 pr-4 py-2.5 rounded-xl border text-sm font-bold text-slate-900 focus-visible:outline-none focus-visible:ring-2 ${
-                            errors.budget ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-300 focus-visible:ring-indigo-500'
-                          }`}
-                        />
-                      </div>
-                      {errors.budget && (
-                        <p id="wizard-budget-error" role="alert" className="text-xs text-red-500 mt-1">
-                          {errors.budget}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label htmlFor="wizard-currency" className="block text-sm font-semibold text-slate-800 mb-1.5">
-                        Currency
-                      </label>
-                      <select
-                        id="wizard-currency"
-                        value={currency}
-                        onChange={(e) => setCurrency(e.target.value)}
-                        className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-                      >
-                        <option value="INR">INR (₹)</option>
-                        <option value="USD">USD ($)</option>
-                        <option value="EUR">EUR (€)</option>
-                        <option value="GBP">GBP (£)</option>
-                        <option value="AED">AED</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Guest Count */}
-                  <div>
-                    <label htmlFor="wizard-guest-count" className="block text-sm font-semibold text-slate-800 mb-1.5">
-                      Expected Guest Headcount <span className="text-red-500" aria-hidden="true">*</span>
-                    </label>
-                    <input
-                      id="wizard-guest-count"
-                      type="number"
-                      required
-                      aria-required="true"
-                      aria-invalid={!!errors.guestCount}
-                      aria-describedby={errors.guestCount ? 'wizard-guest-error' : undefined}
-                      value={guestCount}
-                      onChange={(e) => setGuestCount(Number(e.target.value))}
-                      placeholder="100"
-                      className={`w-full px-4 py-2.5 rounded-xl border text-sm font-bold focus-visible:outline-none focus-visible:ring-2 ${
-                        errors.guestCount ? 'border-red-400 focus-visible:ring-red-400' : 'border-slate-300 focus-visible:ring-indigo-500'
-                      }`}
-                    />
-                    {errors.guestCount && (
-                      <p id="wizard-guest-error" role="alert" className="text-xs text-red-500 mt-1">
-                        {errors.guestCount}
-                      </p>
-                    )}
-                    <p className="text-xs text-slate-500 mt-1.5">
-                      Per-guest dining allocations, table layouts, and beverage estimations adjust to this count.
-                    </p>
-                  </div>
-                </div>
+                <Step2BudgetGuests
+                  location={location}
+                  setLocation={setLocation}
+                  indoorOutdoor={indoorOutdoor}
+                  setIndoorOutdoor={setIndoorOutdoor}
+                  budget={budget}
+                  setBudget={setBudget}
+                  currency={currency}
+                  setCurrency={setCurrency}
+                  guestCount={guestCount}
+                  setGuestCount={setGuestCount}
+                  errors={errors}
+                />
               )}
 
               {step === 3 && (
-                <div className="space-y-6">
-                  {/* Priority Areas */}
-                  <div>
-                    <span id="priority-areas-label" className="block text-sm font-semibold text-slate-800 mb-1.5">
-                      Select Priority Areas (AI safeguards these allocations during budget adjustments)
-                    </span>
-                    <div
-                      role="group"
-                      aria-labelledby="priority-areas-label"
-                      className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2"
-                    >
-                      {priorityOptions.map((opt) => (
-                        <button
-                          key={opt.id}
-                          type="button"
-                          aria-pressed={priorityAreas.includes(opt.id)}
-                          onClick={() => togglePriority(opt.id)}
-                          className={`p-3.5 rounded-xl border text-xs font-semibold text-left flex items-center justify-between transition focus-visible:ring-2 focus-visible:ring-indigo-500 ${
-                            priorityAreas.includes(opt.id)
-                              ? 'border-indigo-600 bg-indigo-50/80 text-indigo-900 ring-1 ring-indigo-500'
-                              : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                          }`}
-                        >
-                          <span>{opt.label}</span>
-                          {priorityAreas.includes(opt.id) && (
-                            <CheckCircle className="w-4 h-4 text-indigo-600 flex-shrink-0" aria-hidden="true" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Theme & Cultural */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="wizard-theme" className="block text-sm font-semibold text-slate-800 mb-1.5">
-                        Theme & Aesthetic Style
-                      </label>
-                      <input
-                        id="wizard-theme"
-                        type="text"
-                        value={themePreference}
-                        onChange={(e) => setThemePreference(e.target.value)}
-                        placeholder="e.g. Royal Marigold, Boho Chic, Neon Cyberpunk"
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="wizard-cultural" className="block text-sm font-semibold text-slate-800 mb-1.5">
-                        Cultural / Regional Traditions
-                      </label>
-                      <input
-                        id="wizard-cultural"
-                        type="text"
-                        value={culturalPreference}
-                        onChange={(e) => setCulturalPreference(e.target.value)}
-                        placeholder="e.g. Traditional Indian Sangeet, South Indian, Western Black-Tie"
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Dietary Preferences */}
-                  <div>
-                    <label htmlFor="wizard-dietary" className="block text-sm font-semibold text-slate-800 mb-1.5">
-                      Dietary Requirements & Menu Concepts
-                    </label>
-                    <input
-                      id="wizard-dietary"
-                      type="text"
-                      value={dietaryPreferences}
-                      onChange={(e) => setDietaryPreferences(e.target.value)}
-                      placeholder="e.g. Pure Vegetarian, Jain counters available, Halal, Street food live stations"
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-                    />
-                  </div>
-
-                  {/* Additional Requirements */}
-                  <div>
-                    <label htmlFor="wizard-notes" className="block text-sm font-semibold text-slate-800 mb-1.5">
-                      Additional Notes or Vendor Requirements
-                    </label>
-                    <textarea
-                      id="wizard-notes"
-                      rows={3}
-                      value={additionalRequirements}
-                      onChange={(e) => setAdditionalRequirements(e.target.value)}
-                      placeholder="e.g. Need acoustic sound setup during dinner; require drone footage for stage entrance..."
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-                    />
-                  </div>
-                </div>
+                <Step3PrioritiesPreferences
+                  priorityAreas={priorityAreas}
+                  togglePriority={togglePriority}
+                  themePreference={themePreference}
+                  setThemePreference={setThemePreference}
+                  culturalPreference={culturalPreference}
+                  setCulturalPreference={setCulturalPreference}
+                  dietaryPreferences={dietaryPreferences}
+                  setDietaryPreferences={setDietaryPreferences}
+                  additionalRequirements={additionalRequirements}
+                  setAdditionalRequirements={setAdditionalRequirements}
+                />
               )}
 
               {/* Wizard Footer Controls */}
@@ -834,7 +309,7 @@ export const EventWizardPage: React.FC<EventWizardPageProps> = ({
                     type="button"
                     onClick={handleBack}
                     disabled={isSubmitting}
-                    className="inline-flex items-center space-x-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-indigo-500 transition"
+                    className="inline-flex items-center space-x-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-slate-900 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-indigo-500 transition cursor-pointer"
                   >
                     <ArrowLeft className="w-4 h-4" aria-hidden="true" />
                     <span>Back</span>

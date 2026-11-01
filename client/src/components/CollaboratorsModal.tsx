@@ -152,8 +152,8 @@ export const CollaboratorsModal: React.FC<CollaboratorsModalProps> = ({
             </div>
             <div className="flex items-center justify-between gap-3 pt-1">
               <div className="flex items-center gap-2">
-                <label className="text-xs text-slate-400">Access Role:</label>
-                <select aria-label="Access role"
+                <label htmlFor="access-role-select" className="text-xs text-slate-400">Access Role:</label>
+                <select id="access-role-select" aria-label="Access role"
                   value={role}
                   onChange={e => setRole(e.target.value as 'editor' | 'viewer')}
                   className="px-2.5 py-1.5 bg-slate-900 border border-slate-700/80 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus-visible:ring-2 focus-visible:ring-indigo-500"

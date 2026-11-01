@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
+  "plugins": ["react", "typescript", "oxc", "jsx-a11y"],
   "rules": {
     "no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
     "no-console": "error",
@@ -8,6 +8,7 @@
     "no-control-regex": "off",
     "eqeqeq": "error",
     "prefer-const": "error",
+    "jsx-a11y/prefer-tag-over-role": "off",
     "react/set-state-in-effect": "off",
     "react/purity": "off",
     "react-hooks/exhaustive-deps": "warn"

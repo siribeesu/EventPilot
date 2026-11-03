@@ -46,7 +46,7 @@
     "@typescript-eslint/parser": "^8.72.1",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
-    "typescript": "^5.8.2"
+    "typescript": "^7.0.2"
   },
   "optionalDependencies": {
     "@rolldown/binding-linux-x64-gnu": "^1.2.16",
